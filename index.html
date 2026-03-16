@@ -16,10 +16,99 @@
             --azul-medio: #4A90C2;        /* Azul medio acentos */
             --gris-claro: #F5F7FA;        /* Fondos suaves */
             --texto: #2C3E50;             /* Texto principal */
+            --fondo-app: #ffffff;
+            --fondo-seccion: #ffffff;
+            --borde: #ddd;
+            --fondo-input: #ffffff;
+            --texto-secundario: #666;
         }
         
+        /* MODO OSCURO - Para gente de buen gusto */
+        body.dark-mode {
+            --azul-principal: #8b949e;
+            --azul-oscuro: #6e7681;
+            --azul-claro: #161b22;
+            --azul-medio: #6e7681;
+            --gris-claro: #0d1117;
+            --texto: #e6edf3;
+            --fondo-app: #0d1117;
+            --fondo-seccion: #161b22;
+            --borde: #30363d;
+            --fondo-input: #21262d;
+            --texto-secundario: #8b949e;
+        }
+        body.dark-mode {
+            background: linear-gradient(rgba(13, 17, 23, 0.92), rgba(13, 17, 23, 0.92)), url('fondo_huechuraba.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        body.dark-mode #loginScreen { 
+            background: linear-gradient(rgba(13, 17, 23, 0.88), rgba(13, 17, 23, 0.88)), url('fondo_huechuraba.png');
+            background-size: cover;
+            background-position: center;
+        }
+        body.dark-mode #loginBox { background: var(--fondo-seccion); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        body.dark-mode #loginBox h1 { color: #e6edf3; }
+        body.dark-mode .login-subtitle { background: #21262d; color: #e6edf3; }
+        body.dark-mode #loginBox input { background: var(--fondo-input); border-color: var(--borde); color: var(--texto); }
+        body.dark-mode #loginBox > button { background: #238636; }
+        body.dark-mode #loginBox > button:hover { background: #2ea043; }
+        body.dark-mode #headerTop { background: var(--fondo-seccion); border-color: var(--borde); }
+        body.dark-mode #headerNav { background: #21262d; }
+        body.dark-mode .tab-btn { color: #8b949e; }
+        body.dark-mode .tab-btn:hover { background: #30363d; color: #e6edf3; }
+        body.dark-mode .tab-btn.active { background: #0d1117; color: #e6edf3; }
+        body.dark-mode .section { background: var(--fondo-seccion); }
+        body.dark-mode .section h2 { color: #58a6ff; background: #21262d; border-color: var(--borde); }
+        body.dark-mode label { color: #8b949e; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { 
+            background: var(--fondo-input); 
+            border-color: var(--borde); 
+            color: var(--texto); 
+        }
+        body.dark-mode .btn { background: #238636; }
+        body.dark-mode .btn:hover { background: #2ea043; }
+        body.dark-mode .btn-small { background: #30363d; color: #e6edf3; }
+        body.dark-mode .btn-small:hover { background: #484f58; }
+        body.dark-mode .btn-secondary { background: #21262d; border-color: var(--borde); color: #e6edf3; }
+        body.dark-mode .btn-secondary:hover { background: #30363d; }
+        body.dark-mode table th { background: #21262d; color: #e6edf3; }
+        body.dark-mode table td { border-color: var(--borde); color: #e6edf3; }
+        body.dark-mode tr:nth-child(even) { background: #161b22; }
+        body.dark-mode tr:hover { background: #21262d; }
+        body.dark-mode .detalle-caso { background: var(--fondo-input); border-color: var(--borde); color: #e6edf3; }
+        body.dark-mode .modal-box { background: var(--fondo-seccion); color: var(--texto); }
+        body.dark-mode .modal-box h3 { color: #e6edf3; }
+        body.dark-mode .tabla-container { border-color: var(--borde); }
+        body.dark-mode .btn-salir { background: #21262d; color: #58a6ff; border-color: #30363d; }
+        body.dark-mode .btn-salir:hover { background: #30363d; }
+        body.dark-mode .user-name { color: #e6edf3; }
+        body.dark-mode .user-role { background: #21262d; color: #8b949e; }
+        
+        /* Toggle modo oscuro */
+        .dark-toggle {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--borde);
+            background: var(--fondo-seccion);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            z-index: 9999;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .dark-toggle:hover { opacity: 1; }
+        
         * { font-family: 'Roboto', Arial, sans-serif; font-size: 14px; box-sizing: border-box; }
-        body { margin: 0; padding: 0; color: var(--texto); }
+        body { margin: 0; padding: 0; color: var(--texto); background: var(--gris-claro); }
         
         /* LOGIN */
         #loginScreen {
@@ -147,6 +236,55 @@
             background: rgba(255,255,255,0.05);
         }
         
+        /* BOTONES DE PANEL */
+        .btn-panel {
+            padding: 10px 18px;
+            font-size: 13px;
+            background: #21262d;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+        .btn-panel:hover {
+            background: #30363d;
+            color: #58a6ff;
+        }
+        .btn-panel.active {
+            background: #30363d;
+            color: #58a6ff;
+        }
+        /* Botón actualizar siempre con estilo activo */
+        .btn-panel-actualizar {
+            padding: 10px 18px;
+            font-size: 13px;
+            background: #30363d;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 400;
+        }
+        .btn-panel-actualizar:hover {
+            background: #484f58;
+        }
+        /* Botón imprimir amarillo */
+        .btn-panel-print {
+            padding: 10px 18px;
+            font-size: 13px;
+            background: #21262d;
+            color: #d29922;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 400;
+        }
+        .btn-panel-print:hover {
+            background: #30363d;
+        }
+        
         /* SECCIONES */
         .section { display: none; }
         .section.active { display: block; }
@@ -154,7 +292,126 @@
         /* MENSAJES */
         .msg { padding: 10px; margin: 10px 0; border-radius: 4px; }
         .msg.ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .msg.err { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .msg.err { background: #21262d; color: #f85149; border: 1px solid #30363d; }
+        body.dark-mode .msg.ok { background: #1a4d2e; color: #56d364; border-color: #238636; }
+        body.dark-mode .msg.err { background: #21262d; color: #f85149; border-color: #30363d; }
+        
+        /* BOTÓN PEQUEÑO */
+        .btn-small {
+            padding: 4px 10px;
+            font-size: 11px;
+            background: var(--azul-medio);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .btn-small:hover { background: var(--azul-oscuro); }
+        
+        /* RADIO OPTIONS ESTILIZADOS */
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border: 1px solid var(--borde, #ccc);
+            border-radius: 4px;
+            background: var(--fondo-input, #f5f5f5);
+            transition: all 0.2s;
+        }
+        .radio-option:hover {
+            border-color: var(--azul-principal);
+        }
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+        .radio-box {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--borde, #ccc);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: transparent;
+            transition: all 0.2s;
+        }
+        .radio-option input[type="radio"]:checked + .radio-box {
+            background: #58a6ff;
+            border-color: #58a6ff;
+            color: white;
+        }
+        body.dark-mode .radio-option {
+            background: #21262d;
+            border-color: #30363d;
+        }
+        body.dark-mode .radio-box {
+            border-color: #30363d;
+            background: transparent;
+        }
+        
+        /* RADIO BUTTONS CAMIONES */
+        .radio-camion {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 10px 15px;
+            border: 1px solid var(--borde, #ccc);
+            border-radius: 4px;
+            background: var(--fondo-input, #f5f5f5);
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .radio-camion:hover {
+            border-color: var(--azul-principal);
+        }
+        .radio-camion input[type="radio"] {
+            display: none;
+        }
+        .radio-camion .radio-box {
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--borde, #ccc);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: transparent;
+            flex-shrink: 0;
+            background: transparent;
+        }
+        .radio-camion input[type="radio"]:checked + .radio-box {
+            background: #58a6ff;
+            border-color: #58a6ff;
+            color: white;
+        }
+        .radio-camion .camion-info {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .radio-camion .camion-numero {
+            font-size: 14px;
+        }
+        .radio-camion .camion-sector {
+            font-size: 11px;
+            color: #666;
+        }
+        body.dark-mode .radio-camion {
+            background: #21262d;
+            border-color: #30363d;
+        }
+        body.dark-mode .radio-camion .camion-numero {
+            color: #e6edf3;
+        }
+        body.dark-mode .radio-camion .camion-sector {
+            color: #8b949e;
+        }
         
         /* ID GENERADO */
         #idGenerado { 
@@ -328,7 +585,7 @@
             <label>N° Municipal *</label>
             <input type="text" id="f1_numero" tabindex="6" oninput="this.value = this.value.toUpperCase()">
 
-            <label>Detalle Ubicación <small style="font-weight:normal">(Casa J, Condo Las Arboledas, Barrio Las Bandurrias, etc.)</small></label>
+            <label>Detalle Ubicación <small style="font-weight:normal">(Casa, Villa, Población, Condominio o Referencia de ubicación)</small></label>
             <input type="text" id="f1_detalle_ubicacion" tabindex="7" oninput="this.value = this.value.toUpperCase()">
 
             <label>UV (Unidad Vecinal)</label>
@@ -397,18 +654,48 @@
                 Retiro con costo: Derechos municipales 1 UTM por m³
             </div>
 
-            <label>Estado de Acción *</label>
-            <select id="f2_estado_accion" onchange="toggleFechaRetiro()">
-                <option value="">-- Seleccionar --</option>
-                <option value="RETIRO POR RUTA">RETIRO POR RUTA (programado)</option>
-                <option value="RETIRO 24HRS">RETIRO 24HRS (inmediato)</option>
-                <option value="PENDIENTE DE PAGO">PENDIENTE DE PAGO</option>
-                <option value="NO PROCEDE">NO PROCEDE</option>
-            </select>
+            <!-- CHECKBOX APROBACIÓN - SI/NO -->
+            <label>¿Aprueba Retiro? *</label>
+            <div class="radio-group-inline" style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <label class="radio-option">
+                    <input type="radio" name="f2_aprueba" value="SI" onchange="toggleOpcionesRetiro()">
+                    <span class="radio-box">✓</span>
+                    <span>SÍ</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="f2_aprueba" value="NO" onchange="toggleOpcionesRetiro()">
+                    <span class="radio-box">✗</span>
+                    <span>NO</span>
+                </label>
+            </div>
 
-            <div id="f2_fecha_retiro_container" style="display: none;">
-                <label>Fecha de Retiro *</label>
-                <input type="date" id="f2_fecha_retiro">
+            <!-- OPCIONES SI APRUEBA -->
+            <div id="f2_opciones_retiro" style="display: none;">
+                <label>Tipo de Retiro *</label>
+                <select id="f2_tipo_retiro" onchange="toggleFechaRetiro()">
+                    <option value="">-- Seleccionar --</option>
+                    <option value="RETIRO POR RUTA">RETIRO POR RUTA (programado)</option>
+                    <option value="RETIRO 24HRS">RETIRO 24HRS (inmediato)</option>
+                    <option value="PENDIENTE DE PAGO">PENDIENTE DE PAGO (requiere pago previo)</option>
+                </select>
+
+                <div id="f2_fecha_retiro_container" style="display: none;">
+                    <label>Fecha de Retiro *</label>
+                    <input type="date" id="f2_fecha_retiro">
+                </div>
+            </div>
+
+            <!-- OPCIONES SI NO APRUEBA -->
+            <div id="f2_opciones_no_aprueba" style="display: none;">
+                <label>Motivo de rechazo *</label>
+                <select id="f2_motivo_rechazo">
+                    <option value="">-- Seleccionar --</option>
+                    <option value="NO ES RSV">NO ES RESIDUO VOLUMINOSO</option>
+                    <option value="DIRECCION NO ENCONTRADA">DIRECCIÓN NO ENCONTRADA</option>
+                    <option value="YA FUE RETIRADO">YA FUE RETIRADO</option>
+                    <option value="VECINO DESISTE">VECINO DESISTE</option>
+                    <option value="OTRO">OTRO MOTIVO</option>
+                </select>
             </div>
 
             <label>Foto de la situación *</label>
@@ -423,33 +710,62 @@
             <div id="f2_msg"></div>
         </div>
 
-        <!-- F3: PROGRAMACIÓN DE RUTA -->
+        <!-- F3: ASIGNACIÓN DE RUTAS -->
         <div id="sec-f3" class="section">
-            <h2>Programación de Ruta</h2>
+            <h2>Asignación de Rutas</h2>
             
             <label>Seleccionar caso *</label>
-            <select id="f3_caso"></select>
+            <select id="f3_caso" onchange="mostrarDetalleF3()"></select>
             <div id="f3_detalle" class="detalle-caso"></div>
 
             <label>Fecha programada para retiro *</label>
             <input type="date" id="f3_fecha">
 
-            <label>Camión asignado *</label>
-            <select id="f3_camion">
-                <option value="">-- Seleccionar --</option>
-                <option>1425 (El Rodeo - Patria Nueva - Las Naves - Pincoya - Vista Hermosa)</option>
-                <option>2251 (Santa Victoria - Guillermo Subiabre - Canchas - Valle Vespucio Norte)</option>
-                <option>2252 (Ultima Hora - Villa Wolf - Pablo Neruda)</option>
-                <option>2254 (Sector Poniente)</option>
-                <option>2255 (Villa Conchali - Bosque uno - Bosque dos - El Barrero - Ciudad Empresarial - Los Almendros)</option>
-                <option>2253 (Volante)</option>
-            </select>
+            <label>Seleccionar Camión *</label>
+            <div class="camiones-grid" style="display: flex; flex-direction: column; gap: 6px; margin: 10px 0; max-width: 500px;">
+                <label class="radio-camion">
+                    <input type="radio" name="f3_camion" value="1425">
+                    <span class="radio-box">✓</span>
+                    <span class="camion-numero">1425</span>
+                    <span class="camion-sector">El Rodeo - Patria Nueva - Las Naves - Pincoya - Vista Hermosa</span>
+                </label>
+                <label class="radio-camion">
+                    <input type="radio" name="f3_camion" value="2251">
+                    <span class="radio-box">✓</span>
+                    <span class="camion-numero">2251</span>
+                    <span class="camion-sector">Santa Victoria - Guillermo Subiabre - Canchas - Valle Vespucio Norte</span>
+                </label>
+                <label class="radio-camion">
+                    <input type="radio" name="f3_camion" value="2252">
+                    <span class="radio-box">✓</span>
+                    <span class="camion-numero">2252</span>
+                    <span class="camion-sector">Ultima Hora - Villa Wolf - Pablo Neruda</span>
+                </label>
+                <label class="radio-camion">
+                    <input type="radio" name="f3_camion" value="2254">
+                    <span class="radio-box">✓</span>
+                    <span class="camion-numero">2254</span>
+                    <span class="camion-sector">Sector Poniente</span>
+                </label>
+                <label class="radio-camion">
+                    <input type="radio" name="f3_camion" value="2255">
+                    <span class="radio-box">✓</span>
+                    <span class="camion-numero">2255</span>
+                    <span class="camion-sector">Villa Conchali - Bosque 1 - Bosque 2 - El Barrero - Ciudad Empresarial - Los Almendros</span>
+                </label>
+                <label class="radio-camion">
+                    <input type="radio" name="f3_camion" value="2253">
+                    <span class="radio-box">✓</span>
+                    <span class="camion-numero">2253</span>
+                    <span class="camion-sector">Volante (apoyo)</span>
+                </label>
+            </div>
 
             <label>Observaciones</label>
             <textarea id="f3_obs" rows="3"></textarea>
 
             <br>
-            <button class="btn" onclick="guardarF3()">PROGRAMAR RUTA</button>
+            <button class="btn" onclick="guardarF3()">ASIGNAR RUTA</button>
             <div id="f3_msg"></div>
         </div>
 
@@ -485,9 +801,9 @@
             <div id="f4_msg"></div>
         </div>
 
-        <!-- LOG VISITAS TÉCNICAS (Admin) -->
+        <!-- PANEL DE VISITAS (Admin) -->
         <div id="sec-visitas" class="section">
-            <h2>Log. Visitas Técnicas</h2>
+            <h2>Panel de Visitas</h2>
             
             <div style="background: var(--azul-claro); padding: 15px; border-radius: 4px; margin-bottom: 15px;">
                 <strong>Fecha de Visita:</strong> <span id="fechaVisitaTexto" style="font-size: 16px; color: var(--azul-principal);"></span>
@@ -495,10 +811,10 @@
             </div>
             
             <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                <button class="btn" onclick="cargarLogVisitas()">ACTUALIZAR</button>
-                <button class="btn" onclick="marcarTodos()">MARCAR TODOS</button>
-                <button class="btn" onclick="desmarcarTodos()">DESMARCAR TODOS</button>
-                <button class="btn" style="background: #28a745;" onclick="generarPDFVisitas()">GENERAR LISTA PDF</button>
+                <button class="btn-panel-actualizar" onclick="cargarLogVisitas()">ACTUALIZAR</button>
+                <button class="btn-panel" onclick="marcarTodos()">MARCAR TODOS</button>
+                <button class="btn-panel" onclick="desmarcarTodos()">DESMARCAR TODOS</button>
+                <button class="btn-panel" onclick="generarPDFVisitas()">GENERAR LISTA PDF</button>
             </div>
             
             <div id="visitas_msg"></div>
@@ -521,15 +837,63 @@
                 </table>
             </div>
             
-            <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
-                <strong>Seleccionadas:</strong> <span id="contadorSeleccion">0</span> solicitudes
+            <div style="margin-top: 15px; padding: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 4px; color: #58a6ff;">
+                Seleccionadas: <span id="contadorSeleccion">0</span> solicitudes
             </div>
         </div>
 
-        <!-- HOJA DE RUTA (Admin) -->
+        <!-- PANEL RUTAS (Admin) -->
         <div id="sec-ruta" class="section">
-            <h2>Hoja de Ruta</h2>
-            <p><em>Módulo en desarrollo - Aquí se verá la lista de retiros programados por ruta</em></p>
+            <h2>Panel Rutas</h2>
+            
+            <!-- Filtro fecha compacto -->
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                <label style="margin: 0;">Fecha:</label>
+                <input type="date" id="fechaFiltroRuta" style="width: 150px;" onchange="cargarPanelRutas()">
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn-panel" onclick="setFechaHoy()">HOY</button>
+                    <button class="btn-panel" onclick="setFechaManana()">MAÑANA</button>
+                </div>
+                <button class="btn-panel" onclick="cargarPanelRutas()">ACTUALIZAR</button>
+                <button class="btn-panel" onclick="imprimirListaRutas()">🖨️ IMPRIMIR LISTA</button>
+            </div>
+            
+            <div id="ruta_msg"></div>
+            
+            <!-- Tabla con filtro de camión -->
+            <div class="tabla-container">
+                <table id="tablaRutas">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 100px;">
+                                CAMIÓN
+                                <select id="filtroCamion" onchange="filtrarTablaCamion()" style="display: block; width: 100%; margin-top: 5px; font-size: 11px; padding: 3px;">
+                                    <option value="">Todos</option>
+                                    <option value="1425">1425</option>
+                                    <option value="2251">2251</option>
+                                    <option value="2252">2252</option>
+                                    <option value="2253">2253</option>
+                                    <option value="2254">2254</option>
+                                    <option value="2255">2255</option>
+                                </select>
+                            </th>
+                            <th>ID</th>
+                            <th>DIRECCIÓN</th>
+                            <th>DETALLE</th>
+                            <th>CONTACTO</th>
+                            <th>TELÉFONO</th>
+                            <th>TIPO</th>
+                            <th>VOLUMEN</th>
+                            <th>ESTADO</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 4px; color: #58a6ff;">
+                Mostrando: <span id="contadorRutas">0</span> retiros
+            </div>
         </div>
 
         <!-- VER CASOS -->
@@ -544,8 +908,8 @@
                     <option value="direccion">Dirección</option>
                     <option value="apellido">Apellido</option>
                 </select>
-                <button class="btn" onclick="cargarTabla()">ACTUALIZAR</button>
-                <button class="btn" onclick="exportarCSV()">EXPORTAR CSV</button>
+                <button class="btn-panel-actualizar" onclick="cargarTabla()">ACTUALIZAR</button>
+                <button class="btn-panel" onclick="exportarCSV()">EXPORTAR CSV</button>
             </div>
             
             <div class="tabla-container">
@@ -559,6 +923,8 @@
                             <th>DIRECCIÓN</th>
                             <th>VISITA</th>
                             <th>ESTADO</th>
+                            <th>📷 VIS</th>
+                            <th>📷 RET</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -582,10 +948,10 @@ const PERMISOS = {
 const NOMBRES_TABS = {
     'f1': 'Ingreso',
     'f2': 'Visita Técnica',
-    'f3': 'Programación Ruta',
+    'f3': 'Asignación Rutas',
     'f4': 'Cierre Solicitud',
-    'visitas': 'Log. Visitas Técnicas',
-    'ruta': 'Hoja de Ruta',
+    'visitas': 'Panel de Visitas',
+    'ruta': 'Panel Rutas',
     'ver': 'Ver Casos'
 };
 
@@ -660,8 +1026,8 @@ function iniciarApp() {
     
     // Header - Corona para el admin principal
     const esAdmin = usuarioActual.id && usuarioActual.id.toLowerCase() === 'pmadrid';
-    const corona = esAdmin ? ' 👑' : '';
-    document.getElementById('headerNombre').textContent = usuarioActual.nombre + corona;
+    const corona = esAdmin ? '👑 ' : '';
+    document.getElementById('headerNombre').textContent = corona + usuarioActual.nombre;
     document.getElementById('headerRol').textContent = usuarioActual.rol;
     
     // Generar tabs según permisos
@@ -693,8 +1059,9 @@ function showTab(tab) {
     
     if (tab === 'f2') cargarSelectCasos('f2', ['INGRESADO', 'PARA VISITA']);
     if (tab === 'f3') cargarSelectCasos('f3', ['PARA RETIRO', 'VISITADO']);
-    if (tab === 'f4') cargarSelectCasos('f4', ['ASIGNADO', 'RETIRO 24HRS']);
+    if (tab === 'f4') cargarSelectCasos('f4', ['PROGRAMADO']);
     if (tab === 'visitas') cargarLogVisitas();
+    if (tab === 'ruta') cargarPanelRutas();
     if (tab === 'ver') cargarTabla();
 }
 
@@ -715,7 +1082,7 @@ async function cargarSelectCasos(form, estadosPermitidos) {
     
     // Agregar HALLAZGO TERRENO solo en F2
     if (form === 'f2') {
-        select.innerHTML += '<option value="HALLAZGO_TERRENO" style="background: #fff3cd; font-weight: bold;">⚠️ HALLAZGO TERRENO (sin solicitud previa)</option>';
+        select.innerHTML += '<option value="HALLAZGO_TERRENO" style="background: #21262d; color: #d29922;">⚠️ HALLAZGO TERRENO (sin solicitud previa)</option>';
     }
     
     if (filtrados.length === 0 && form !== 'f2') {
@@ -858,6 +1225,10 @@ function toggleHallazgoTerreno() {
     if (caso === 'HALLAZGO_TERRENO') {
         camposHallazgo.style.display = 'block';
         detalleCaso.innerHTML = '';
+        // Hallazgo siempre aprueba retiro
+        const radioSi = document.querySelector('input[name="f2_aprueba"][value="SI"]');
+        if (radioSi) radioSi.checked = true;
+        toggleOpcionesRetiro();
     } else {
         camposHallazgo.style.display = 'none';
     }
@@ -874,11 +1245,26 @@ function checkVolumenPago() {
     }
 }
 
+function toggleOpcionesRetiro() {
+    const apruebaRadio = document.querySelector('input[name="f2_aprueba"]:checked');
+    const aprueba = apruebaRadio && apruebaRadio.value === 'SI';
+    const opcionesRetiro = document.getElementById('f2_opciones_retiro');
+    const opcionesNoAprueba = document.getElementById('f2_opciones_no_aprueba');
+    
+    if (aprueba) {
+        opcionesRetiro.style.display = 'block';
+        opcionesNoAprueba.style.display = 'none';
+    } else if (apruebaRadio) {
+        opcionesRetiro.style.display = 'none';
+        opcionesNoAprueba.style.display = 'block';
+    }
+}
+
 function toggleFechaRetiro() {
-    const estado = document.getElementById('f2_estado_accion').value;
+    const tipoRetiro = document.getElementById('f2_tipo_retiro').value;
     const container = document.getElementById('f2_fecha_retiro_container');
     
-    if (estado === 'RETIRO POR RUTA') {
+    if (tipoRetiro === 'RETIRO POR RUTA') {
         container.style.display = 'block';
         // Fecha por defecto: mañana (o lunes si es sábado)
         const fechaRetiro = calcularFechaVisita().fechaObj;
@@ -924,8 +1310,11 @@ document.addEventListener('DOMContentLoaded', function() {
 async function guardarF2() {
     const idCaso = document.getElementById('f2_caso').value;
     const esHallazgo = idCaso === 'HALLAZGO_TERRENO';
+    const apruebaRadio = document.querySelector('input[name="f2_aprueba"]:checked');
+    const aprueba = apruebaRadio && apruebaRadio.value === 'SI';
     
     if (!idCaso) { mostrarMsg('f2_msg', 'Seleccionar caso', 'err'); return; }
+    if (!apruebaRadio) { mostrarMsg('f2_msg', 'Seleccionar si aprueba o no retiro', 'err'); return; }
     
     // Validar campos de hallazgo si aplica
     if (esHallazgo) {
@@ -941,9 +1330,17 @@ async function guardarF2() {
     }
     
     if (!document.getElementById('f2_volumen').value) { mostrarMsg('f2_msg', 'Seleccionar volumen', 'err'); return; }
-    if (!document.getElementById('f2_estado_accion').value) { mostrarMsg('f2_msg', 'Seleccionar Estado de Acción', 'err'); return; }
     
-    const estadoAccion = document.getElementById('f2_estado_accion').value;
+    // Determinar estado de acción según aprobación
+    let estadoAccion;
+    if (aprueba) {
+        estadoAccion = document.getElementById('f2_tipo_retiro').value;
+        if (!estadoAccion) { mostrarMsg('f2_msg', 'Seleccionar tipo de retiro', 'err'); return; }
+    } else {
+        const motivoRechazo = document.getElementById('f2_motivo_rechazo').value;
+        if (!motivoRechazo) { mostrarMsg('f2_msg', 'Seleccionar motivo de rechazo', 'err'); return; }
+        estadoAccion = 'NO PROCEDE';
+    }
     
     // Validar fecha si es RETIRO POR RUTA
     if (estadoAccion === 'RETIRO POR RUTA' && !document.getElementById('f2_fecha_retiro').value) {
@@ -966,10 +1363,17 @@ async function guardarF2() {
         // Convertir foto a base64
         const fotoBase64 = await fileToBase64(fotoInput.files[0]);
         
+        // Agregar motivo de rechazo a observaciones si no aprueba
+        let observaciones = document.getElementById('f2_obs').value;
+        if (!aprueba) {
+            const motivoRechazo = document.getElementById('f2_motivo_rechazo').value;
+            observaciones = `[${motivoRechazo}] ${observaciones}`;
+        }
+        
         let result;
         
         if (esHallazgo) {
-            // Guardar como Retiro 24Hrs (crea solicitud + visita)
+            // Guardar como Hallazgo Terreno (crea solicitud + visita)
             const retiro24 = {
                 inspector: usuarioActual.nombre,
                 tipo: document.getElementById('f2_hallazgo_tipo').value,
@@ -980,7 +1384,7 @@ async function guardarF2() {
                 volumen: document.getElementById('f2_volumen').value,
                 estadoAccion: estadoAccion,
                 fechaRetiro: estadoAccion === 'RETIRO POR RUTA' ? document.getElementById('f2_fecha_retiro').value : '',
-                observaciones: document.getElementById('f2_obs').value,
+                observaciones: observaciones,
                 fotoBase64: fotoBase64,
                 fotoNombre: `HALLAZGO_${Date.now()}.jpg`
             };
@@ -996,7 +1400,7 @@ async function guardarF2() {
                 estadoAccion: estadoAccion,
                 fechaRetiro: estadoAccion === 'RETIRO POR RUTA' ? document.getElementById('f2_fecha_retiro').value : '',
                 volumen: document.getElementById('f2_volumen').value,
-                observaciones: document.getElementById('f2_obs').value,
+                observaciones: observaciones,
                 fotoBase64: fotoBase64,
                 fotoNombre: `${idCaso}_${Date.now()}.jpg`
             };
@@ -1108,66 +1512,120 @@ async function guardarRetiro24() {
     }
 }
 
-// ===================== F3: PROGRAMACIÓN RUTA =====================
-function guardarF3() {
+// ===================== F3: ASIGNACIÓN RUTAS =====================
+async function guardarF3() {
     const idCaso = document.getElementById('f3_caso').value;
     if (!idCaso) { mostrarMsg('f3_msg', 'Seleccionar caso', 'err'); return; }
     if (!document.getElementById('f3_fecha').value) { mostrarMsg('f3_msg', 'Ingresar fecha', 'err'); return; }
-    if (!document.getElementById('f3_camion').value) { mostrarMsg('f3_msg', 'Seleccionar camión', 'err'); return; }
     
-    const casos = getCasos();
-    const caso = casos.find(c => c.id === idCaso);
+    // Obtener camión seleccionado del radio button
+    const camionSeleccionado = document.querySelector('input[name="f3_camion"]:checked');
+    if (!camionSeleccionado) { mostrarMsg('f3_msg', 'Seleccionar camión', 'err'); return; }
     
-    caso.asignacion = {
+    const btnGuardar = document.querySelector('#sec-f3 .btn');
+    btnGuardar.textContent = 'ASIGNANDO...';
+    btnGuardar.disabled = true;
+    
+    const asignacion = {
+        idSolicitud: idCaso,
         fecha: document.getElementById('f3_fecha').value,
-        camion: document.getElementById('f3_camion').value,
-        operador: usuarioActual.nombre, // Viene del login
+        camion: camionSeleccionado.value,
+        operador: usuarioActual.nombre,
         observaciones: document.getElementById('f3_obs').value
     };
-    caso.estado = 'ASIGNADO';
     
-    if (saveCasos(casos)) {
-        mostrarMsg('f3_msg', `✓ RUTA PROGRAMADA: ${idCaso}`, 'ok');
+    const result = await apiCall('asignarRuta', { asignacion });
+    
+    btnGuardar.textContent = 'ASIGNAR RUTA';
+    btnGuardar.disabled = false;
+    
+    if (result.success) {
+        // Mostrar modal de confirmación
+        document.getElementById('modalIdSolicitud').textContent = idCaso;
+        document.getElementById('modalDetalle').textContent = `Ruta asignada → Camión ${camionSeleccionado.value} - ${document.getElementById('f3_fecha').value}`;
+        document.getElementById('modalOk').classList.add('active');
+        
         limpiarForm('f3');
-        cargarSelectCasos('f3', ['VISITADO', 'INGRESADO']);
+        // Limpiar selección de camión
+        document.querySelectorAll('input[name="f3_camion"]').forEach(r => r.checked = false);
+        cargarSelectCasos('f3', ['PARA RETIRO']);
+    } else {
+        mostrarMsg('f3_msg', 'Error: ' + (result.error || 'No se pudo asignar'), 'err');
+    }
+}
+
+function mostrarDetalleF3() {
+    const select = document.getElementById('f3_caso');
+    const detalle = document.getElementById('f3_detalle');
+    
+    if (select.value && select.dataset.casos) {
+        const casos = JSON.parse(select.dataset.casos);
+        const caso = casos.find(c => c.id === select.value);
+        if (caso) {
+            const solicitante = caso.solicitante || (caso.nombre + ' ' + caso.apellidos);
+            const direccion = caso.direccion || (caso.calle + ' ' + caso.numero);
+            detalle.innerHTML = `
+                <strong>Solicitante:</strong> ${solicitante}<br>
+                <strong>Dirección:</strong> ${direccion}<br>
+                <strong>Tipo:</strong> ${caso.tipo}<br>
+                <strong>Volumen:</strong> ${caso.volumen || '-'}
+            `;
+        }
+    } else {
+        detalle.innerHTML = '';
     }
 }
 
 // ===================== F4: CIERRE =====================
-function guardarF4() {
+async function guardarF4() {
     const idCaso = document.getElementById('f4_caso').value;
     if (!idCaso) { mostrarMsg('f4_msg', 'Seleccionar caso', 'err'); return; }
     if (!document.getElementById('f4_fecha').value) { mostrarMsg('f4_msg', 'Ingresar fecha', 'err'); return; }
     if (!document.getElementById('f4_ejecutado').value) { mostrarMsg('f4_msg', 'Indicar resultado', 'err'); return; }
     
-    const casos = getCasos();
-    const caso = casos.find(c => c.id === idCaso);
+    const btnGuardar = document.querySelector('#sec-f4 .btn');
+    btnGuardar.textContent = 'GUARDANDO...';
+    btnGuardar.disabled = true;
     
-    caso.ejecucion = {
-        fecha: document.getElementById('f4_fecha').value,
-        resultado: document.getElementById('f4_ejecutado').value,
-        inspector: usuarioActual.nombre, // Viene del login
+    const resultado = document.getElementById('f4_ejecutado').value;
+    
+    const cierre = {
+        idSolicitud: idCaso,
+        fechaEjecucion: document.getElementById('f4_fecha').value,
+        resultado: resultado,
         volumenRetirado: document.getElementById('f4_volumen').value,
+        inspector: usuarioActual.nombre,
         observaciones: document.getElementById('f4_obs').value
     };
-    caso.estado = document.getElementById('f4_ejecutado').value.startsWith('SI') ? 'EJECUTADO' : 'FALLIDO';
     
-    if (saveCasos(casos)) {
-        mostrarMsg('f4_msg', `✓ SOLICITUD CERRADA: ${idCaso}`, 'ok');
+    const result = await apiCall('cerrarSolicitud', { cierre });
+    
+    btnGuardar.textContent = 'CERRAR SOLICITUD';
+    btnGuardar.disabled = false;
+    
+    if (result.success) {
+        const estadoFinal = resultado.startsWith('SI') ? 'RETIRADO' : 'FALLIDO';
+        // Mostrar modal de confirmación
+        document.getElementById('modalIdSolicitud').textContent = idCaso;
+        document.getElementById('modalDetalle').textContent = `Solicitud cerrada → ${estadoFinal}`;
+        document.getElementById('modalOk').classList.add('active');
+        
         limpiarForm('f4');
-        cargarSelectCasos('f4', ['ASIGNADO']);
+        cargarSelectCasos('f4', ['PROGRAMADO']);
+    } else {
+        mostrarMsg('f4_msg', 'Error: ' + (result.error || 'No se pudo cerrar'), 'err');
     }
 }
 
 // ===================== TABLA =====================
 async function cargarTabla() {
     const tbody = document.querySelector('#tablaCasos tbody');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Cargando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Cargando...</td></tr>';
     
     const result = await apiCall('obtenerSolicitudes', {});
     
     if (!result.success || !result.solicitudes || result.solicitudes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay casos registrados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No hay casos registrados</td></tr>';
         return;
     }
     
@@ -1202,6 +1660,8 @@ async function cargarTabla() {
     solicitudes.forEach(c => {
         const fecha = c.fechaIngreso || '-';
         const requiereVisita = c.requiereVisita || '-';
+        const fotoVisita = c.fotoVisita ? `<a href="${c.fotoVisita}" target="_blank" title="Ver foto visita">📷</a>` : '-';
+        const fotoRetiro = c.fotoRetiro ? `<a href="${c.fotoRetiro}" target="_blank" title="Ver foto retiro">📷</a>` : '-';
         tbody.innerHTML += `
             <tr>
                 <td>${c.id}</td>
@@ -1211,6 +1671,8 @@ async function cargarTabla() {
                 <td>${c.direccion || (c.calle + ' ' + c.numero)}</td>
                 <td>${requiereVisita}</td>
                 <td>${c.estado}</td>
+                <td style="text-align:center;">${fotoVisita}</td>
+                <td style="text-align:center;">${fotoRetiro}</td>
             </tr>
         `;
     });
@@ -1333,61 +1795,75 @@ function generarPDFVisitas() {
     <head>
         <meta charset="UTF-8">
         <title>Lista Visitas Técnicas</title>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
         <style>
             @page { size: letter; margin: 1.5cm 1.5cm 2cm 1.5cm; }
             * { font-family: 'Roboto', Arial, sans-serif; font-weight: 400; }
-            body { font-size: 9px; }
+            body { font-size: 9px; margin: 0; }
+            
+            /* HEADER - Sin línea azul */
             .header { 
                 display: flex;
-                align-items: center;
+                align-items: flex-start;
                 justify-content: space-between;
-                margin-bottom: 15px; 
-                padding-bottom: 10px; 
+                margin-bottom: 10px; 
             }
-            .header-logo {
-                height: 45px;
-            }
-            .header-text {
-                text-align: right;
-            }
+            .header-logo { height: 60px; }
+            .header-text { text-align: right; }
             .header-text h1 { 
-                color: #0054A6; 
+                color: #000; 
                 margin: 0; 
-                font-size: 12px; 
+                font-size: 10px; 
                 font-weight: 400;
                 text-transform: uppercase;
-                font-variant: small-caps;
-                letter-spacing: 1px;
             }
             .header-text h2 { 
-                margin: 5px 0 0 0; 
+                margin: 3px 0 0 0; 
                 font-size: 11px; 
                 font-weight: 400;
             }
-            .fecha-gen { 
-                text-align: right; 
-                font-size: 8px; 
-                color: #666; 
-                margin-bottom: 8px; 
+            
+            /* INFO TÍTULO - Justificado a la derecha */
+            .info-titulo {
+                text-align: right;
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #ccc;
             }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+            .info-titulo-texto {
+                font-size: 16px;
+                font-weight: 400;
+                display: block;
+            }
+            .info-titulo-sub {
+                font-size: 9px;
+                color: #666;
+                display: block;
+                margin-top: 2px;
+            }
+            
+            .fecha-gen { text-align: right; font-size: 8px; color: #666; margin-bottom: 8px; }
+            
+            /* TABLA - Headers sin fondo de color */
+            table { width: 100%; border-collapse: collapse; }
             th { 
-                background: #0054A6; 
-                color: white; 
+                background: none;
+                color: #000; 
                 padding: 6px 4px; 
                 text-align: left; 
                 font-size: 8px; 
-                font-weight: 400; 
+                font-weight: 400;
+                border-bottom: 2px solid #000;
+                border-top: 1px solid #000;
             }
             td { 
-                border: 1px solid #ccc; 
+                border-bottom: 1px solid #ccc; 
                 padding: 5px 4px; 
                 font-size: 8px; 
                 vertical-align: top; 
-                font-weight: 400;
             }
-            tr:nth-child(even) { background: #f5f5f5; }
+            tr:nth-child(even) { background: #f9f9f9; }
+            
             .col-id { width: 55px; }
             .col-dir { width: 115px; }
             .col-det { width: 90px; }
@@ -1395,34 +1871,31 @@ function generarPDFVisitas() {
             .col-contacto { width: 80px; }
             .col-tipo { width: 55px; }
             .col-obs { width: auto; }
-            .total { margin-top: 12px; font-size: 9px; }
-            .footer { 
-                margin-top: 15px; 
-                text-align: center; 
-                font-size: 8px; 
-                color: #666; 
-            }
-            .pie-pagina {
-                position: fixed;
-                bottom: 0.5cm;
-                left: 1.5cm;
-                right: 1.5cm;
-                display: flex;
-                justify-content: space-between;
-                font-size: 8px;
-                color: #666;
-                padding-top: 5px;
-            }
+            
+            .total { margin-top: 10px; font-size: 9px; }
+            
+            /* FIRMA - Espacio duplicado */
+            .firma { margin-top: 60px; display: flex; justify-content: center; }
+            .firma-box { text-align: center; width: 200px; }
+            .firma-linea { border-top: 1px solid #000; margin-top: 30px; padding-top: 5px; font-size: 9px; }
+            
+            .footer { margin-top: 15px; text-align: center; font-size: 8px; color: #666; }
         </style>
     </head>
     <body>
         <div class="header">
-            <img src="https://huechuraba.cl/images/Logo-Huechuraba-v3.svg" class="header-logo" alt="Huechuraba">
+            <img src="logo_aseo_huechuraba.png" class="header-logo" alt="Aseo Huechuraba">
             <div class="header-text">
                 <h1>Municipalidad de Huechuraba - Dirección de Aseo y Ornato</h1>
-                <h2>SOLICITUDES VISITAS TÉCNICAS ${fechaVisita.texto}</h2>
+                <h2>VISITAS TÉCNICAS - ${fechaVisita.texto}</h2>
             </div>
         </div>
+        
+        <div class="info-titulo">
+            <span class="info-titulo-texto">LISTADO DE VISITAS PROGRAMADAS</span>
+            <span class="info-titulo-sub">Inspección en Terreno</span>
+        </div>
+        
         <div class="fecha-gen">Generado: ${fechaImpresion}</div>
         
         <table>
@@ -1459,14 +1932,17 @@ function generarPDFVisitas() {
     html += `
             </tbody>
         </table>
-        <div class="total">Total solicitudes: ${solicitudesSeleccionadas.length}</div>
+        <div class="total"><strong>Total solicitudes:</strong> ${solicitudesSeleccionadas.length}</div>
+        
+        <div class="firma">
+            <div class="firma-box">
+                <div class="firma-linea">Inspector Responsable</div>
+            </div>
+        </div>
+        
         <div class="footer">
             SGRRV - Sistema de Gestión de Recolección de Residuos Voluminosos<br>
-            Documento generado automáticamente
-        </div>
-        <div class="pie-pagina">
-            <span>Impreso: ${fechaImpresion}</span>
-            <span>Hoja 1</span>
+            Generado: ${fechaImpresion}
         </div>
     </body>
     </html>
@@ -1479,6 +1955,317 @@ function generarPDFVisitas() {
     ventana.print();
     
     mostrarMsg('visitas_msg', `✓ Lista generada con ${solicitudesSeleccionadas.length} solicitudes`, 'ok');
+}
+
+// ===================== PANEL RUTAS =====================
+let rutasProgramadas = [];
+
+function setFechaHoy() {
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fechaFiltroRuta').value = hoy;
+    cargarPanelRutas();
+}
+
+function setFechaManana() {
+    const manana = new Date();
+    manana.setDate(manana.getDate() + 1);
+    document.getElementById('fechaFiltroRuta').value = manana.toISOString().split('T')[0];
+    cargarPanelRutas();
+}
+
+async function cargarPanelRutas() {
+    const tbody = document.querySelector('#tablaRutas tbody');
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Cargando...</td></tr>';
+    
+    // Si no hay fecha seleccionada, usar hoy por defecto
+    if (!document.getElementById('fechaFiltroRuta').value) {
+        setFechaHoy();
+        return;
+    }
+    
+    const fechaFiltro = document.getElementById('fechaFiltroRuta').value;
+    
+    const result = await apiCall('obtenerRutas', { fecha: fechaFiltro });
+    
+    console.log('obtenerRutas result:', result); // Debug
+    
+    if (!result.success) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Error al cargar</td></tr>';
+        return;
+    }
+    
+    rutasProgramadas = result.rutas || [];
+    
+    // Resetear filtro de camión
+    document.getElementById('filtroCamion').value = '';
+    
+    if (rutasProgramadas.length === 0) {
+        let mensaje = 'No hay rutas programadas para esta fecha';
+        if (result.debug) {
+            console.log('Debug info:', result.debug);
+        }
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;">${mensaje}</td></tr>`;
+        document.getElementById('contadorRutas').textContent = '0';
+        return;
+    }
+    
+    // Ordenar por camión y luego por ID
+    rutasProgramadas.sort((a, b) => {
+        if (a.camion !== b.camion) return String(a.camion).localeCompare(String(b.camion));
+        return a.id.localeCompare(b.id);
+    });
+    
+    renderizarTablaRutas(rutasProgramadas);
+}
+
+function renderizarTablaRutas(rutas) {
+    const tbody = document.querySelector('#tablaRutas tbody');
+    tbody.innerHTML = '';
+    
+    rutas.forEach(r => {
+        const estadoColor = r.estado === 'PROGRAMADO' ? '#ffc107' : (r.estado === 'RETIRADO' ? '#28a745' : '#dc3545');
+        tbody.innerHTML += `
+            <tr data-camion="${r.camion}">
+                <td style="font-weight: 400;">🚛 ${r.camion}</td>
+                <td>${r.id}</td>
+                <td>${r.direccion || '-'}</td>
+                <td>${r.detalle || '-'}</td>
+                <td>${r.contacto || '-'}</td>
+                <td>${r.telefono || '-'}</td>
+                <td>${r.tipo || '-'}</td>
+                <td>${r.volumen || '-'}</td>
+                <td style="background: ${estadoColor}; color: ${r.estado === 'PROGRAMADO' ? '#000' : 'white'};">${r.estado}</td>
+            </tr>
+        `;
+    });
+    
+    document.getElementById('contadorRutas').textContent = rutas.length;
+}
+
+function filtrarTablaCamion() {
+    const filtro = document.getElementById('filtroCamion').value;
+    
+    if (!filtro) {
+        // Mostrar todos
+        renderizarTablaRutas(rutasProgramadas);
+    } else {
+        // Filtrar por camión
+        const rutasFiltradas = rutasProgramadas.filter(r => r.camion === filtro);
+        renderizarTablaRutas(rutasFiltradas);
+    }
+}
+
+function imprimirListaRutas() {
+    const filtro = document.getElementById('filtroCamion').value;
+    let rutasImprimir;
+    let numeroCamion;
+    let subtitulo;
+    
+    if (filtro) {
+        rutasImprimir = rutasProgramadas.filter(r => r.camion === filtro);
+        numeroCamion = filtro;
+        // Sectores por camión
+        const sectores = {
+            '1425': 'El Rodeo - Patria Nueva - Las Naves - Pincoya - Vista Hermosa',
+            '2251': 'Santa Victoria - Guillermo Subiabre - Canchas - Valle Vespucio Norte',
+            '2252': 'Ultima Hora - Villa Wolf - Pablo Neruda',
+            '2253': 'Volante (apoyo)',
+            '2254': 'Sector Poniente',
+            '2255': 'Villa Conchali - Bosque 1 - Bosque 2 - El Barrero - Ciudad Empresarial - Los Almendros'
+        };
+        subtitulo = sectores[filtro] || '';
+    } else {
+        rutasImprimir = rutasProgramadas;
+        numeroCamion = null; // Indica que es listado general
+        subtitulo = 'Todos los Sectores';
+    }
+    
+    if (rutasImprimir.length === 0) {
+        mostrarMsg('ruta_msg', 'No hay rutas para imprimir', 'err');
+        return;
+    }
+    
+    const fechaFiltro = document.getElementById('fechaFiltroRuta').value;
+    const fechaFormateada = new Date(fechaFiltro + 'T12:00:00').toLocaleDateString('es-CL', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).toUpperCase();
+    const fechaImpresion = new Date().toLocaleString('es-CL');
+    
+    // Determinar columnas según si hay filtro o no
+    const mostrarColumnaCamion = !filtro;
+    
+    let html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Hoja de Ruta - Camión ${numeroCamion}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+        <style>
+            @page { size: letter; margin: 1.5cm 1.5cm 2cm 1.5cm; }
+            * { font-family: 'Roboto', Arial, sans-serif; font-weight: 400; }
+            body { font-size: 9px; margin: 0; }
+            
+            /* HEADER - Sin línea azul, sin fondo */
+            .header { 
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 10px; 
+            }
+            .header-logo { height: 60px; }
+            .header-text { text-align: right; }
+            .header-text h1 { 
+                color: #000; 
+                margin: 0; 
+                font-size: 10px; 
+                font-weight: 400;
+                text-transform: uppercase;
+            }
+            .header-text h2 { 
+                margin: 3px 0 0 0; 
+                font-size: 11px; 
+                font-weight: 400;
+            }
+            
+            /* INFO CAMIÓN - Justificado a la derecha */
+            .info-camion {
+                text-align: right;
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid #ccc;
+            }
+            .info-camion-numero {
+                font-size: 16px;
+                font-weight: 400;
+                display: block;
+            }
+            .info-camion-sector {
+                font-size: 9px;
+                color: #666;
+                display: block;
+                margin-top: 2px;
+            }
+            
+            .fecha-gen { text-align: right; font-size: 8px; color: #666; margin-bottom: 8px; }
+            
+            /* TABLA - Headers sin fondo de color */
+            table { width: 100%; border-collapse: collapse; }
+            th { 
+                background: none;
+                color: #000; 
+                padding: 6px 4px; 
+                text-align: left; 
+                font-size: 8px; 
+                font-weight: 400;
+                border-bottom: 2px solid #000;
+                border-top: 1px solid #000;
+            }
+            td { 
+                border-bottom: 1px solid #ccc; 
+                padding: 5px 4px; 
+                font-size: 8px; 
+                vertical-align: top; 
+            }
+            tr:nth-child(even) { background: #f9f9f9; }
+            
+            .col-orden { width: 20px; text-align: center; }
+            .col-camion { width: 45px; }
+            .col-id { width: 65px; }
+            .col-dir { width: 115px; }
+            .col-det { width: 75px; }
+            .col-contacto { width: 85px; }
+            .col-tel { width: 70px; }
+            .col-tipo { width: 55px; }
+            .col-vol { width: 40px; }
+            .col-check { width: 25px; text-align: center; }
+            
+            .total { margin-top: 10px; font-size: 9px; }
+            
+            .firma { margin-top: 60px; display: flex; justify-content: space-around; }
+            .firma-box { text-align: center; width: 180px; }
+            .firma-linea { border-top: 1px solid #000; margin-top: 30px; padding-top: 5px; font-size: 9px; }
+            
+            .footer { margin-top: 15px; text-align: center; font-size: 8px; color: #666; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <img src="logo_aseo_huechuraba.png" class="header-logo" alt="Aseo Huechuraba">
+            <div class="header-text">
+                <h1>Municipalidad de Huechuraba - Dirección de Aseo y Ornato</h1>
+                <h2>HOJA DE RUTA - ${fechaFormateada}</h2>
+            </div>
+        </div>
+        
+        <div class="info-camion">
+            <span class="info-camion-numero">${numeroCamion ? 'CAMIÓN ' + numeroCamion : 'LISTADO GENERAL DE RETIROS'}</span>
+            <span class="info-camion-sector">${subtitulo}</span>
+        </div>
+        
+        <div class="fecha-gen">Generado: ${fechaImpresion}</div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-orden">#</th>
+                    ${mostrarColumnaCamion ? '<th class="col-camion">CAMIÓN</th>' : ''}
+                    <th class="col-id">ID</th>
+                    <th class="col-dir">DIRECCIÓN</th>
+                    <th class="col-det">DETALLE</th>
+                    <th class="col-contacto">CONTACTO</th>
+                    <th class="col-tel">TELÉFONO</th>
+                    <th class="col-tipo">TIPO</th>
+                    <th class="col-vol">VOL.</th>
+                    <th class="col-check">✓</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    rutasImprimir.forEach((r, idx) => {
+        html += `
+            <tr>
+                <td style="text-align: center; font-weight: 400;">${idx + 1}</td>
+                ${mostrarColumnaCamion ? `<td style="font-weight: 400;">${r.camion}</td>` : ''}
+                <td>${r.id}</td>
+                <td>${r.direccion || '-'}</td>
+                <td>${r.detalle || '-'}</td>
+                <td>${r.contacto || '-'}</td>
+                <td>${r.telefono || '-'}</td>
+                <td>${r.tipo || '-'}</td>
+                <td>${r.volumen || '-'}</td>
+                <td style="text-align: center;">☐</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+        </table>
+        <div class="total"><strong>Total retiros:</strong> ${rutasImprimir.length}</div>
+        
+        <div class="firma">
+            <div class="firma-box">
+                <div class="firma-linea">Firma Conductor</div>
+            </div>
+            <div class="firma-box">
+                <div class="firma-linea">Firma Supervisor</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            SGRRV - Sistema de Gestión de Recolección de Residuos Voluminosos<br>
+            Generado: ${fechaImpresion}
+        </div>
+    </body>
+    </html>
+    `;
+    
+    const ventana = window.open('', '_blank');
+    ventana.document.write(html);
+    ventana.document.close();
+    ventana.print();
+    
+    mostrarMsg('ruta_msg', `✓ Hoja de ruta generada: ${tituloCamion} (${rutasImprimir.length} retiros)`, 'ok');
 }
 
 function exportarCSV() {
@@ -1526,11 +2313,20 @@ function mostrarMsg(id, texto, tipo) {
 
 function limpiarForm(prefix) {
     document.querySelectorAll(`#sec-${prefix} input, #sec-${prefix} select, #sec-${prefix} textarea`).forEach(el => {
-        if (el.type !== 'button') el.value = '';
+        if (el.type === 'radio' || el.type === 'checkbox') {
+            el.checked = false;
+        } else if (el.type !== 'button') {
+            el.value = '';
+        }
     });
     // Limpiar detalle si existe
     const detalle = document.getElementById(prefix + '_detalle');
     if (detalle) detalle.innerHTML = '';
+    // Ocultar opciones de retiro
+    const opcionesRetiro = document.getElementById(prefix + '_opciones_retiro');
+    const opcionesNoAprueba = document.getElementById(prefix + '_opciones_no_aprueba');
+    if (opcionesRetiro) opcionesRetiro.style.display = 'none';
+    if (opcionesNoAprueba) opcionesNoAprueba.style.display = 'none';
 }
 
 function cerrarModal() {
@@ -1669,6 +2465,25 @@ verificarSesion();
         <button onclick="cerrarModal()">ACEPTAR</button>
     </div>
 </div>
+
+<!-- TOGGLE MODO OSCURO -->
+<button class="dark-toggle" onclick="toggleDarkMode()" title="Modo oscuro">🌙</button>
+
+<script>
+// Modo oscuro - para gente de buen gusto
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark ? 'on' : 'off');
+    document.querySelector('.dark-toggle').textContent = isDark ? '☀️' : '🌙';
+}
+
+// Cargar preferencia guardada
+if (localStorage.getItem('darkMode') === 'on') {
+    document.body.classList.add('dark-mode');
+    document.querySelector('.dark-toggle').textContent = '☀️';
+}
+</script>
 
 </body>
 </html>
