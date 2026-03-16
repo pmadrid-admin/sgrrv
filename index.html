@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGRRV Huechuraba</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <style>
+        /* PALETA MUNICIPALIDAD DE HUECHURABA */
+        :root {
+            --azul-principal: #0054A6;    /* Azul institucional */
+            --azul-oscuro: #003D7A;       /* Azul oscuro hover */
+            --azul-claro: #E8F1FA;        /* Azul claro fondo */
+            --azul-medio: #4A90C2;        /* Azul medio acentos */
+            --gris-claro: #F5F7FA;        /* Fondos suaves */
+            --texto: #2C3E50;             /* Texto principal */
+        }
+        
+        * { font-family: 'Roboto', Arial, sans-serif; font-size: 14px; box-sizing: border-box; }
+        body { margin: 0; padding: 0; color: var(--texto); }
+        
+        /* LOGIN */
+        #loginScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: var(--gris-claro);
+        }
+        #loginBox {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 360px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        #loginBox h1 { font-size: 20px; margin: 0; color: var(--azul-principal); font-weight: 400; }
+        .login-subtitle { 
+            font-size: 13px; 
+            margin: 0 0 20px 0; 
+            font-weight: normal; 
+            color: white; 
+            background: var(--azul-principal);
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        #loginBox label { display: block; margin: 10px 0 3px 0; color: var(--texto); }
+        #loginBox input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        #loginBox input:focus { outline: none; border-color: var(--azul-principal); }
+        #loginBox > button { width: 100%; padding: 12px; background: var(--azul-principal); color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: 400; }
+        #loginBox > button:hover { background: var(--azul-oscuro); }
+        #loginError { color: #c0392b; font-size: 12px; margin-top: 10px; }
+        
+        /* APP */
+        #appScreen { display: none; }
+        
+        /* HEADER SUPERIOR - BARRA BLANCA */
+        #headerTop {
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        #headerTop .header-left {
+            display: flex;
+            align-items: center;
+        }
+        #headerTop .header-logo {
+            height: 45px;
+        }
+        #headerTop .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        #headerTop .user-info { 
+            font-size: 13px; 
+            color: var(--texto);
+            text-align: right;
+        }
+        #headerTop .user-name { font-weight: 400; color: var(--azul-principal); }
+        #headerTop .user-role { 
+            background: var(--azul-claro); 
+            color: var(--azul-principal);
+            padding: 3px 10px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            margin-left: 10px;
+            font-weight: 400;
+        }
+        #headerTop .btn-salir {
+            background: white;
+            border: 1px solid #ccc;
+            color: var(--texto);
+            padding: 6px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        #headerTop .btn-salir:hover { background: #f5f5f5; border-color: #999; }
+        
+        /* HEADER INFERIOR - BARRA AZUL CON MENÚ */
+        #headerNav {
+            background: var(--azul-principal);
+            padding: 0 20px;
+        }
+        
+        /* CONTENIDO */
+        #content { padding: 20px; background: var(--gris-claro); min-height: calc(100vh - 120px); }
+        h2 { font-size: 16px; margin: 20px 0 10px 0; background: var(--azul-principal); color: white; padding: 10px 12px; border-radius: 4px; font-weight: 400; }
+        label { display: block; margin: 10px 0 3px 0; font-weight: 400; color: var(--texto); }
+        input, select, textarea { width: 100%; max-width: 400px; padding: 8px; margin-bottom: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--azul-principal); }
+        button.btn { padding: 10px 20px; margin: 10px 5px 10px 0; cursor: pointer; background: var(--azul-principal); color: white; border: none; border-radius: 4px; font-weight: 400; }
+        button.btn:hover { background: var(--azul-oscuro); }
+        
+        /* TABS - ESTILO BARRA AZUL */
+        .tab-buttons { 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .tab-buttons button { 
+            background: transparent; 
+            border: none; 
+            padding: 12px 20px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.8);
+            font-size: 13px;
+            font-weight: 400;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-buttons button.active { 
+            color: white;
+            border-bottom-color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        .tab-buttons button:hover:not(.active) { 
+            color: white;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        /* SECCIONES */
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        /* MENSAJES */
+        .msg { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .msg.ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .msg.err { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        /* ID GENERADO */
+        #idGenerado { 
+            font-size: 18px; 
+            font-weight: 400; 
+            background: var(--azul-claro); 
+            color: var(--azul-principal);
+            padding: 12px; 
+            margin: 10px 0;
+            max-width: 400px;
+            border-radius: 4px;
+            border-left: 4px solid var(--azul-principal);
+        }
+        
+        /* TABLA */
+        .tabla-container {
+            max-height: 500px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        table { border-collapse: collapse; width: 100%; margin: 0; min-width: 800px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; white-space: nowrap; }
+        th { background: var(--azul-principal); color: white; position: sticky; top: 0; z-index: 10; }
+        tr:nth-child(even) { background: var(--azul-claro); }
+        tr:hover { background: #d0e4f5; }
+        
+        /* DETALLE CASO */
+        .detalle-caso {
+            background: var(--azul-claro);
+            padding: 12px;
+            margin: 10px 0;
+            max-width: 400px;
+            font-size: 13px;
+            border-radius: 4px;
+            border: 1px solid #cce0f0;
+        }
+        
+        /* MODAL CONFIRMACIÓN */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .modal-box .icon-ok {
+            width: 60px;
+            height: 60px;
+            background: #28a745;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px auto;
+        }
+        .modal-box .icon-ok svg { stroke: white; }
+        .modal-box h3 { margin: 0 0 10px 0; color: var(--azul-principal); font-size: 18px; }
+        .modal-box p { margin: 0 0 20px 0; color: #666; font-size: 14px; }
+        .modal-box .modal-id { font-size: 20px; font-weight: 400; color: var(--azul-principal); margin: 10px 0; }
+        .modal-box button { 
+            padding: 10px 30px; 
+            background: var(--azul-principal); 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .modal-box button:hover { background: var(--azul-oscuro); }
+    </style>
+</head>
+<body>
+
+<!-- PANTALLA LOGIN -->
+<div id="loginScreen">
+    <div id="loginBox">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1>SGRRV HUECHURABA</h1>
+        </div>
+        <div class="login-subtitle">Sistema de Gestión de Residuos Sólidos Voluminosos</div>
+        
+        <label>Usuario</label>
+        <input type="text" id="loginUser" placeholder="Ej: pmadrid">
+        
+        <label>Clave</label>
+        <div style="position: relative; max-width: 100%;">
+            <input type="password" id="loginPass" placeholder="Ingrese su clave" style="padding-right: 40px;">
+            <button type="button" id="togglePass" onclick="togglePassword()" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 5px; width: auto;">
+                <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
+        </div>
+        
+        <button onclick="intentarLogin()">INGRESAR</button>
+        <div id="loginError"></div>
+    </div>
+</div>
+
+<!-- PANTALLA APP -->
+<div id="appScreen">
+    <!-- HEADER SUPERIOR - BARRA BLANCA -->
+    <div id="headerTop">
+        <div class="header-left">
+            <img src="https://huechuraba.cl/images/Logo-Huechuraba-v3.svg" alt="Huechuraba" class="header-logo">
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <span class="user-name" id="headerNombre"></span>
+                <span class="user-role" id="headerRol"></span>
+            </div>
+            <button class="btn-salir" onclick="cerrarSesion()">SALIR</button>
+        </div>
+    </div>
+    
+    <!-- HEADER INFERIOR - BARRA AZUL CON MENÚ -->
+    <div id="headerNav">
+        <div class="tab-buttons" id="tabButtons">
+            <!-- Botones se generan dinámicamente según rol -->
+        </div>
+    </div>
+    
+    <!-- CONTENIDO -->
+    <div id="content">
+        
+        <!-- F1: INGRESO SOLICITUD -->
+        <div id="sec-f1" class="section">
+            <h2>Ingreso de Solicitud</h2>
+            <div id="idGenerado"></div>
+            
+            <!-- TIPO DE SOLICITUD (primero) -->
+            <label>Tipo de Solicitud *</label>
+            <select id="f1_tipo" tabindex="1">
+                <option value="">-- Seleccionar --</option>
+                <option>ESCOMBROS</option>
+                <option>CACHUREOS</option>
+                <option>PODAS</option>
+                <option>OTRO</option>
+            </select>
+
+            <!-- DATOS SOLICITANTE -->
+            <label>Nombre Solicitante *</label>
+            <input type="text" id="f1_nombre" tabindex="2" oninput="this.value = this.value.toUpperCase()">
+
+            <label>Apellido Solicitante *</label>
+            <input type="text" id="f1_apellidos" tabindex="3" oninput="this.value = this.value.toUpperCase()">
+
+            <label>Fono Contacto * <small style="font-weight:normal">(9) XXXX-XXXX ó (2) XXXX-XXXX</small></label>
+            <input type="text" id="f1_telefono" tabindex="4" placeholder="(9) XXXX-XXXX" maxlength="14" oninput="formatearTelefono(this)">
+
+            <!-- DIRECCIÓN -->
+            <label>Calle o Pasaje *</label>
+            <input type="text" id="f1_calle" tabindex="5" oninput="this.value = this.value.toUpperCase()">
+
+            <label>N° Municipal *</label>
+            <input type="text" id="f1_numero" tabindex="6" oninput="this.value = this.value.toUpperCase()">
+
+            <label>Detalle Ubicación <small style="font-weight:normal">(Casa J, Condo Las Arboledas, Barrio Las Bandurrias, etc.)</small></label>
+            <input type="text" id="f1_detalle_ubicacion" tabindex="7" oninput="this.value = this.value.toUpperCase()">
+
+            <label>UV (Unidad Vecinal)</label>
+            <input type="text" id="f1_uv" tabindex="8" oninput="this.value = this.value.toUpperCase()">
+
+            <!-- VISITA Y OBS -->
+            <label>¿Requiere Visita Técnica? *</label>
+            <select id="f1_visita" tabindex="9">
+                <option value="">-- Seleccionar --</option>
+                <option>SI</option>
+                <option>NO</option>
+            </select>
+
+            <label>Observaciones</label>
+            <textarea id="f1_obs" tabindex="10" rows="3"></textarea>
+
+            <br>
+            <button class="btn" tabindex="11" onclick="guardarF1()">GUARDAR SOLICITUD</button>
+            <div id="f1_msg"></div>
+        </div>
+
+        <!-- F2: VISITA TÉCNICA -->
+        <div id="sec-f2" class="section">
+            <h2>Visita Técnica y Condiciones de Retiro</h2>
+            
+            <label>Seleccionar caso *</label>
+            <select id="f2_caso" onchange="toggleHallazgoTerreno()"></select>
+            
+            <!-- Detalle caso normal -->
+            <div id="f2_detalle" class="detalle-caso"></div>
+            
+            <!-- Campos para HALLAZGO TERRENO -->
+            <div id="f2_hallazgo_campos" style="display: none;">
+                <div style="background: #fff3cd; padding: 12px; border-radius: 4px; border-left: 4px solid #ffc107; margin: 10px 0;">
+                    Registrando hallazgo en terreno - Se creará solicitud automáticamente
+                </div>
+                
+                <label>Tipo de Residuo *</label>
+                <select id="f2_hallazgo_tipo">
+                    <option value="">-- Seleccionar --</option>
+                    <option>ESCOMBROS</option>
+                    <option>CACHUREOS</option>
+                    <option>PODAS</option>
+                    <option>OTRO</option>
+                </select>
+                
+                <label>Calle / Pasaje o Avenida *</label>
+                <input type="text" id="f2_hallazgo_calle" oninput="this.value = this.value.toUpperCase()">
+                
+                <label>N° Municipal o Referencia *</label>
+                <input type="text" id="f2_hallazgo_numero" oninput="this.value = this.value.toUpperCase()">
+            </div>
+
+            <label>Volumen (m³) *</label>
+            <select id="f2_volumen" onchange="checkVolumenPago()">
+                <option value="">-- Seleccionar --</option>
+                <option value="MENOS DE 1 M³">MENOS DE 1 M³ (sin costo)</option>
+                <option value="1 M³">1 M³</option>
+                <option value="2 M³">2 M³</option>
+                <option value="3 M³">3 M³</option>
+                <option value="4 M³">4 M³</option>
+                <option value="5 M³">5 M³</option>
+                <option value="MÁS DE 5 M³">MÁS DE 5 M³</option>
+            </select>
+            <div id="f2_aviso_pago" style="display: none; background: #d4edda; padding: 10px; border-radius: 4px; margin: 5px 0; border-left: 4px solid #28a745;">
+                Retiro con costo: Derechos municipales 1 UTM por m³
+            </div>
+
+            <label>Estado de Acción *</label>
+            <select id="f2_estado_accion" onchange="toggleFechaRetiro()">
+                <option value="">-- Seleccionar --</option>
+                <option value="RETIRO POR RUTA">RETIRO POR RUTA (programado)</option>
+                <option value="RETIRO 24HRS">RETIRO 24HRS (inmediato)</option>
+                <option value="PENDIENTE DE PAGO">PENDIENTE DE PAGO</option>
+                <option value="NO PROCEDE">NO PROCEDE</option>
+            </select>
+
+            <div id="f2_fecha_retiro_container" style="display: none;">
+                <label>Fecha de Retiro *</label>
+                <input type="date" id="f2_fecha_retiro">
+            </div>
+
+            <label>Foto de la situación *</label>
+            <input type="file" id="f2_foto" accept="image/*" capture="environment" style="max-width: 400px;">
+            <div id="f2_foto_preview" style="margin: 10px 0; max-width: 300px;"></div>
+
+            <label>Observaciones técnicas</label>
+            <textarea id="f2_obs" rows="3"></textarea>
+
+            <br>
+            <button class="btn" onclick="guardarF2()">GUARDAR VISITA</button>
+            <div id="f2_msg"></div>
+        </div>
+
+        <!-- F3: PROGRAMACIÓN DE RUTA -->
+        <div id="sec-f3" class="section">
+            <h2>Programación de Ruta</h2>
+            
+            <label>Seleccionar caso *</label>
+            <select id="f3_caso"></select>
+            <div id="f3_detalle" class="detalle-caso"></div>
+
+            <label>Fecha programada para retiro *</label>
+            <input type="date" id="f3_fecha">
+
+            <label>Camión asignado *</label>
+            <select id="f3_camion">
+                <option value="">-- Seleccionar --</option>
+                <option>1425 (El Rodeo - Patria Nueva - Las Naves - Pincoya - Vista Hermosa)</option>
+                <option>2251 (Santa Victoria - Guillermo Subiabre - Canchas - Valle Vespucio Norte)</option>
+                <option>2252 (Ultima Hora - Villa Wolf - Pablo Neruda)</option>
+                <option>2254 (Sector Poniente)</option>
+                <option>2255 (Villa Conchali - Bosque uno - Bosque dos - El Barrero - Ciudad Empresarial - Los Almendros)</option>
+                <option>2253 (Volante)</option>
+            </select>
+
+            <label>Observaciones</label>
+            <textarea id="f3_obs" rows="3"></textarea>
+
+            <br>
+            <button class="btn" onclick="guardarF3()">PROGRAMAR RUTA</button>
+            <div id="f3_msg"></div>
+        </div>
+
+        <!-- F4: CIERRE SOLICITUD -->
+        <div id="sec-f4" class="section">
+            <h2>Cierre de Solicitud</h2>
+            
+            <label>Seleccionar caso *</label>
+            <select id="f4_caso"></select>
+            <div id="f4_detalle" class="detalle-caso"></div>
+
+            <label>Fecha de ejecución *</label>
+            <input type="date" id="f4_fecha">
+
+            <label>¿Se ejecutó el retiro? *</label>
+            <select id="f4_ejecutado">
+                <option value="">-- Seleccionar --</option>
+                <option>SI - COMPLETO</option>
+                <option>SI - PARCIAL</option>
+                <option>NO - VECINO AUSENTE</option>
+                <option>NO - ACCESO IMPOSIBLE</option>
+                <option>NO - OTRO MOTIVO</option>
+            </select>
+
+            <label>Volumen retirado (m³)</label>
+            <input type="number" id="f4_volumen" step="0.1">
+
+            <label>Observaciones de cierre</label>
+            <textarea id="f4_obs" rows="3"></textarea>
+
+            <br>
+            <button class="btn" onclick="guardarF4()">CERRAR SOLICITUD</button>
+            <div id="f4_msg"></div>
+        </div>
+
+        <!-- LOG VISITAS TÉCNICAS (Admin) -->
+        <div id="sec-visitas" class="section">
+            <h2>Log. Visitas Técnicas</h2>
+            
+            <div style="background: var(--azul-claro); padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                <strong>Fecha de Visita:</strong> <span id="fechaVisitaTexto" style="font-size: 16px; color: var(--azul-principal);"></span>
+                <br><small>Las solicitudes marcadas con ✓ saldrán en la lista impresa</small>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                <button class="btn" onclick="cargarLogVisitas()">ACTUALIZAR</button>
+                <button class="btn" onclick="marcarTodos()">MARCAR TODOS</button>
+                <button class="btn" onclick="desmarcarTodos()">DESMARCAR TODOS</button>
+                <button class="btn" style="background: #28a745;" onclick="generarPDFVisitas()">GENERAR LISTA PDF</button>
+            </div>
+            
+            <div id="visitas_msg"></div>
+            
+            <div class="tabla-container">
+                <table id="tablaVisitas">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px; text-align: center;">✓</th>
+                            <th>ID</th>
+                            <th>FECHA ING.</th>
+                            <th>DIRECCIÓN</th>
+                            <th>DETALLE</th>
+                            <th>TELÉFONO</th>
+                            <th>TIPO</th>
+                            <th>OBS</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                <strong>Seleccionadas:</strong> <span id="contadorSeleccion">0</span> solicitudes
+            </div>
+        </div>
+
+        <!-- HOJA DE RUTA (Admin) -->
+        <div id="sec-ruta" class="section">
+            <h2>Hoja de Ruta</h2>
+            <p><em>Módulo en desarrollo - Aquí se verá la lista de retiros programados por ruta</em></p>
+        </div>
+
+        <!-- VER CASOS -->
+        <div id="sec-ver" class="section">
+            <h2>Ver Casos</h2>
+            
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
+                <label style="margin: 0;">Ordenar por:</label>
+                <select id="ordenarPor" onchange="cargarTabla()" style="width: auto;">
+                    <option value="fecha">Fecha Ingreso (reciente primero)</option>
+                    <option value="id">Número de ID</option>
+                    <option value="direccion">Dirección</option>
+                    <option value="apellido">Apellido</option>
+                </select>
+                <button class="btn" onclick="cargarTabla()">ACTUALIZAR</button>
+                <button class="btn" onclick="exportarCSV()">EXPORTAR CSV</button>
+            </div>
+            
+            <div class="tabla-container">
+                <table id="tablaCasos">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>FECHA</th>
+                            <th>TIPO</th>
+                            <th>SOLICITANTE</th>
+                            <th>DIRECCIÓN</th>
+                            <th>VISITA</th>
+                            <th>ESTADO</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===================== API CONFIG =====================
+const API_URL = 'https://script.google.com/macros/s/AKfycbwlmWxLFq3jZD99ygE3Cy372q0rx8tZCJxmNfxTy1pxofR6IAvRbOCAdmJV9mYmYcDunQ/exec';
+
+// ===================== PERMISOS =====================
+const PERMISOS = {
+    'OPERADOR': ['f1', 'f3', 'ver'],
+    'INSPECTOR': ['f2', 'f4', 'ver'],
+    'ADMINISTRADOR': ['f1', 'f2', 'f3', 'f4', 'visitas', 'ruta', 'ver']
+};
+
+const NOMBRES_TABS = {
+    'f1': 'Ingreso',
+    'f2': 'Visita Técnica',
+    'f3': 'Programación Ruta',
+    'f4': 'Cierre Solicitud',
+    'visitas': 'Log. Visitas Técnicas',
+    'ruta': 'Hoja de Ruta',
+    'ver': 'Ver Casos'
+};
+
+let usuarioActual = null;
+
+// ===================== API CALLS =====================
+async function apiCall(action, data = {}) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action, ...data })
+        });
+        return await response.json();
+    } catch (error) {
+        console.error('Error API:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// ===================== LOGIN =====================
+async function intentarLogin() {
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const btnLogin = document.querySelector('#loginBox button');
+    
+    if (!user || !pass) {
+        document.getElementById('loginError').textContent = 'Ingrese usuario y clave';
+        return;
+    }
+    
+    // Mostrar cargando
+    btnLogin.textContent = 'Verificando...';
+    btnLogin.disabled = true;
+    
+    const result = await apiCall('login', { usuario: user, clave: pass });
+    
+    btnLogin.textContent = 'INGRESAR';
+    btnLogin.disabled = false;
+    
+    if (result.success) {
+        usuarioActual = result.usuario;
+        localStorage.setItem('sgrrv_session', JSON.stringify(usuarioActual));
+        iniciarApp();
+    } else {
+        document.getElementById('loginError').textContent = result.error || 'Error de conexión';
+    }
+}
+
+function cerrarSesion() {
+    localStorage.removeItem('sgrrv_session');
+    usuarioActual = null;
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appScreen').style.display = 'none';
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginError').textContent = '';
+}
+
+function verificarSesion() {
+    const session = localStorage.getItem('sgrrv_session');
+    if (session) {
+        usuarioActual = JSON.parse(session);
+        iniciarApp();
+    }
+}
+
+// ===================== APP =====================
+function iniciarApp() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appScreen').style.display = 'block';
+    
+    // Header - Corona para el admin principal
+    const esAdmin = usuarioActual.id && usuarioActual.id.toLowerCase() === 'pmadrid';
+    const corona = esAdmin ? ' 👑' : '';
+    document.getElementById('headerNombre').textContent = usuarioActual.nombre + corona;
+    document.getElementById('headerRol').textContent = usuarioActual.rol;
+    
+    // Generar tabs según permisos
+    const permisos = PERMISOS[usuarioActual.rol];
+    const tabContainer = document.getElementById('tabButtons');
+    tabContainer.innerHTML = '';
+    
+    permisos.forEach((tab, idx) => {
+        const btn = document.createElement('button');
+        btn.textContent = NOMBRES_TABS[tab];
+        btn.id = 'btn-' + tab;
+        btn.onclick = () => showTab(tab);
+        tabContainer.appendChild(btn);
+    });
+    
+    // Mostrar primera pestaña permitida
+    showTab(permisos[0]);
+    initSelectsEnter();
+    initNavegacionTeclado();
+}
+
+// ===================== TABS =====================
+function showTab(tab) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById('sec-' + tab).classList.add('active');
+    document.getElementById('btn-' + tab).classList.add('active');
+    
+    if (tab === 'f2') cargarSelectCasos('f2', ['INGRESADO', 'PARA VISITA']);
+    if (tab === 'f3') cargarSelectCasos('f3', ['PARA RETIRO', 'VISITADO']);
+    if (tab === 'f4') cargarSelectCasos('f4', ['ASIGNADO', 'RETIRO 24HRS']);
+    if (tab === 'visitas') cargarLogVisitas();
+    if (tab === 'ver') cargarTabla();
+}
+
+async function cargarSelectCasos(form, estadosPermitidos) {
+    const select = document.getElementById(form + '_caso');
+    select.innerHTML = '<option value="">Cargando...</option>';
+    
+    const result = await apiCall('obtenerSolicitudes', {});
+    
+    if (!result.success) {
+        select.innerHTML = '<option value="">Error al cargar</option>';
+        return;
+    }
+    
+    const filtrados = result.solicitudes.filter(c => estadosPermitidos.includes(c.estado));
+    
+    select.innerHTML = '<option value="">-- Seleccionar caso --</option>';
+    
+    // Agregar HALLAZGO TERRENO solo en F2
+    if (form === 'f2') {
+        select.innerHTML += '<option value="HALLAZGO_TERRENO" style="background: #fff3cd; font-weight: bold;">⚠️ HALLAZGO TERRENO (sin solicitud previa)</option>';
+    }
+    
+    if (filtrados.length === 0 && form !== 'f2') {
+        select.innerHTML = '<option value="">-- No hay casos pendientes --</option>';
+        return;
+    }
+    
+    filtrados.forEach(c => {
+        const direccion = c.direccion || (c.calle + ' ' + c.numero);
+        select.innerHTML += `<option value="${c.id}">${c.id} | ${direccion} | ${c.tipo}</option>`;
+    });
+    
+    // Guardar para mostrar detalle
+    select.dataset.casos = JSON.stringify(filtrados);
+    
+    select.onchange = function() {
+        if (form === 'f2') {
+            toggleHallazgoTerreno();
+        }
+        
+        if (this.value && this.value !== 'HALLAZGO_TERRENO') {
+            const casos = JSON.parse(this.dataset.casos || '[]');
+            const caso = casos.find(c => c.id === this.value);
+            const detalle = document.getElementById(form + '_detalle');
+            if (caso) {
+                const solicitante = caso.solicitante || (caso.nombre + ' ' + caso.apellidos);
+                const direccion = caso.direccion || (caso.calle + ' ' + caso.numero);
+                detalle.innerHTML = `
+                    <strong>Solicitante:</strong> ${solicitante}<br>
+                    <strong>Teléfono:</strong> ${caso.telefono || '-'}<br>
+                    <strong>Dirección:</strong> ${direccion}<br>
+                    <strong>Detalle:</strong> ${caso.detalleUbicacion || '-'}<br>
+                    <strong>Tipo:</strong> ${caso.tipo}<br>
+                    <strong>Observaciones:</strong> ${caso.observaciones || '-'}
+                `;
+            } else {
+                detalle.innerHTML = '';
+            }
+        }
+    };
+}
+
+// ===================== DATOS =====================
+function getCasos() {
+    try {
+        return JSON.parse(localStorage.getItem('sgrrv_casos') || '[]');
+    } catch(e) {
+        console.error('Error leyendo localStorage:', e);
+        return [];
+    }
+}
+
+function saveCasos(casos) {
+    try {
+        localStorage.setItem('sgrrv_casos', JSON.stringify(casos));
+        return true;
+    } catch(e) {
+        console.error('Error guardando localStorage:', e);
+        alert('ERROR: No se puede guardar. Descarga el archivo y ábrelo directamente en tu navegador.');
+        return false;
+    }
+}
+
+function generarID() {
+    const casos = getCasos();
+    const año = new Date().getFullYear();
+    const añoCorto = String(año).slice(-2); // Solo últimos 2 dígitos
+    const num = casos.filter(c => c.id.includes(añoCorto)).length + 1;
+    return `RSV${añoCorto}-${String(num).padStart(4, '0')}`;
+}
+
+// ===================== F1: INGRESO =====================
+async function guardarF1() {
+    // Campos obligatorios
+    const camposRequeridos = [
+        {id: 'tipo', nombre: 'Tipo de Solicitud'},
+        {id: 'nombre', nombre: 'Nombre Solicitante'},
+        {id: 'apellidos', nombre: 'Apellido Solicitante'},
+        {id: 'telefono', nombre: 'Fono Contacto'},
+        {id: 'calle', nombre: 'Calle o Pasaje'},
+        {id: 'numero', nombre: 'N° Municipal'},
+        {id: 'visita', nombre: 'Requiere Visita Técnica'}
+    ];
+    
+    for (let campo of camposRequeridos) {
+        if (!document.getElementById('f1_' + campo.id).value) {
+            mostrarMsg('f1_msg', 'Completar: ' + campo.nombre, 'err');
+            document.getElementById('f1_' + campo.id).focus();
+            return;
+        }
+    }
+    
+    const nombre = document.getElementById('f1_nombre').value.toUpperCase();
+    const apellidos = document.getElementById('f1_apellidos').value.toUpperCase();
+    const calle = document.getElementById('f1_calle').value.toUpperCase();
+    const numero = document.getElementById('f1_numero').value.toUpperCase();
+    
+    const solicitud = {
+        funcionario: usuarioActual.nombre,
+        tipo: document.getElementById('f1_tipo').value,
+        nombre: nombre,
+        apellidos: apellidos,
+        telefono: document.getElementById('f1_telefono').value,
+        calle: calle,
+        numero: numero,
+        detalleUbicacion: document.getElementById('f1_detalle_ubicacion').value.toUpperCase(),
+        uv: document.getElementById('f1_uv').value.toUpperCase(),
+        requiereVisita: document.getElementById('f1_visita').value,
+        observaciones: document.getElementById('f1_obs').value
+    };
+    
+    // Mostrar guardando
+    const btnGuardar = document.querySelector('#sec-f1 .btn');
+    btnGuardar.textContent = 'GUARDANDO...';
+    btnGuardar.disabled = true;
+    
+    const result = await apiCall('guardarSolicitud', { solicitud });
+    
+    btnGuardar.textContent = 'GUARDAR SOLICITUD';
+    btnGuardar.disabled = false;
+    
+    if (result.success) {
+        // Mostrar modal de confirmación
+        document.getElementById('modalIdSolicitud').textContent = result.id;
+        document.getElementById('modalDetalle').textContent = `${nombre} ${apellidos} - ${calle} ${numero}`;
+        document.getElementById('modalOk').classList.add('active');
+        
+        limpiarForm('f1');
+    } else {
+        mostrarMsg('f1_msg', 'Error: ' + (result.error || 'No se pudo guardar'), 'err');
+    }
+}
+
+// ===================== F2: VISITA TÉCNICA =====================
+function toggleHallazgoTerreno() {
+    const caso = document.getElementById('f2_caso').value;
+    const camposHallazgo = document.getElementById('f2_hallazgo_campos');
+    const detalleCaso = document.getElementById('f2_detalle');
+    
+    if (caso === 'HALLAZGO_TERRENO') {
+        camposHallazgo.style.display = 'block';
+        detalleCaso.innerHTML = '';
+    } else {
+        camposHallazgo.style.display = 'none';
+    }
+}
+
+function checkVolumenPago() {
+    const volumen = document.getElementById('f2_volumen').value;
+    const avisoPago = document.getElementById('f2_aviso_pago');
+    
+    if (volumen && volumen !== 'MENOS DE 1 M³') {
+        avisoPago.style.display = 'block';
+    } else {
+        avisoPago.style.display = 'none';
+    }
+}
+
+function toggleFechaRetiro() {
+    const estado = document.getElementById('f2_estado_accion').value;
+    const container = document.getElementById('f2_fecha_retiro_container');
+    
+    if (estado === 'RETIRO POR RUTA') {
+        container.style.display = 'block';
+        // Fecha por defecto: mañana (o lunes si es sábado)
+        const fechaRetiro = calcularFechaVisita().fechaObj;
+        document.getElementById('f2_fecha_retiro').valueAsDate = fechaRetiro;
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+// Preview de foto
+document.addEventListener('DOMContentLoaded', function() {
+    // F2 foto preview
+    const f2Foto = document.getElementById('f2_foto');
+    if (f2Foto) {
+        f2Foto.addEventListener('change', function(e) {
+            const preview = document.getElementById('f2_foto_preview');
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    preview.innerHTML = `<img src="${ev.target.result}" style="max-width: 100%; border-radius: 4px; border: 1px solid #ccc;">`;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    }
+    
+    // R24 foto preview
+    const r24Foto = document.getElementById('r24_foto');
+    if (r24Foto) {
+        r24Foto.addEventListener('change', function(e) {
+            const preview = document.getElementById('r24_foto_preview');
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    preview.innerHTML = `<img src="${ev.target.result}" style="max-width: 100%; border-radius: 4px; border: 1px solid #ccc;">`;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    }
+});
+
+async function guardarF2() {
+    const idCaso = document.getElementById('f2_caso').value;
+    const esHallazgo = idCaso === 'HALLAZGO_TERRENO';
+    
+    if (!idCaso) { mostrarMsg('f2_msg', 'Seleccionar caso', 'err'); return; }
+    
+    // Validar campos de hallazgo si aplica
+    if (esHallazgo) {
+        if (!document.getElementById('f2_hallazgo_tipo').value) { 
+            mostrarMsg('f2_msg', 'Seleccionar tipo de residuo', 'err'); return; 
+        }
+        if (!document.getElementById('f2_hallazgo_calle').value) { 
+            mostrarMsg('f2_msg', 'Ingresar calle', 'err'); return; 
+        }
+        if (!document.getElementById('f2_hallazgo_numero').value) { 
+            mostrarMsg('f2_msg', 'Ingresar número o referencia', 'err'); return; 
+        }
+    }
+    
+    if (!document.getElementById('f2_volumen').value) { mostrarMsg('f2_msg', 'Seleccionar volumen', 'err'); return; }
+    if (!document.getElementById('f2_estado_accion').value) { mostrarMsg('f2_msg', 'Seleccionar Estado de Acción', 'err'); return; }
+    
+    const estadoAccion = document.getElementById('f2_estado_accion').value;
+    
+    // Validar fecha si es RETIRO POR RUTA
+    if (estadoAccion === 'RETIRO POR RUTA' && !document.getElementById('f2_fecha_retiro').value) {
+        mostrarMsg('f2_msg', 'Seleccionar fecha de retiro', 'err');
+        return;
+    }
+    
+    // Validar foto
+    const fotoInput = document.getElementById('f2_foto');
+    if (!fotoInput.files || !fotoInput.files[0]) {
+        mostrarMsg('f2_msg', 'Debe subir una foto', 'err');
+        return;
+    }
+    
+    const btnGuardar = document.querySelector('#sec-f2 .btn');
+    btnGuardar.textContent = 'SUBIENDO FOTO...';
+    btnGuardar.disabled = true;
+    
+    try {
+        // Convertir foto a base64
+        const fotoBase64 = await fileToBase64(fotoInput.files[0]);
+        
+        let result;
+        
+        if (esHallazgo) {
+            // Guardar como Retiro 24Hrs (crea solicitud + visita)
+            const retiro24 = {
+                inspector: usuarioActual.nombre,
+                tipo: document.getElementById('f2_hallazgo_tipo').value,
+                calle: document.getElementById('f2_hallazgo_calle').value.toUpperCase(),
+                numero: document.getElementById('f2_hallazgo_numero').value.toUpperCase(),
+                detalleUbicacion: '',
+                uv: '',
+                volumen: document.getElementById('f2_volumen').value,
+                estadoAccion: estadoAccion,
+                fechaRetiro: estadoAccion === 'RETIRO POR RUTA' ? document.getElementById('f2_fecha_retiro').value : '',
+                observaciones: document.getElementById('f2_obs').value,
+                fotoBase64: fotoBase64,
+                fotoNombre: `HALLAZGO_${Date.now()}.jpg`
+            };
+            
+            btnGuardar.textContent = 'GUARDANDO...';
+            result = await apiCall('guardarRetiro24', { retiro24 });
+            
+        } else {
+            // Guardar visita normal
+            const visita = {
+                idSolicitud: idCaso,
+                inspector: usuarioActual.nombre,
+                estadoAccion: estadoAccion,
+                fechaRetiro: estadoAccion === 'RETIRO POR RUTA' ? document.getElementById('f2_fecha_retiro').value : '',
+                volumen: document.getElementById('f2_volumen').value,
+                observaciones: document.getElementById('f2_obs').value,
+                fotoBase64: fotoBase64,
+                fotoNombre: `${idCaso}_${Date.now()}.jpg`
+            };
+            
+            btnGuardar.textContent = 'GUARDANDO...';
+            result = await apiCall('guardarVisita', { visita });
+        }
+        
+        btnGuardar.textContent = 'GUARDAR VISITA';
+        btnGuardar.disabled = false;
+        
+        if (result.success) {
+            // Mostrar modal de confirmación
+            const idMostrar = esHallazgo ? result.id : idCaso;
+            document.getElementById('modalIdSolicitud').textContent = idMostrar;
+            document.getElementById('modalDetalle').textContent = esHallazgo 
+                ? `Hallazgo registrado - ${estadoAccion}` 
+                : `Visita registrada - ${estadoAccion}`;
+            document.getElementById('modalOk').classList.add('active');
+            
+            limpiarForm('f2');
+            document.getElementById('f2_foto_preview').innerHTML = '';
+            document.getElementById('f2_fecha_retiro_container').style.display = 'none';
+            document.getElementById('f2_hallazgo_campos').style.display = 'none';
+            document.getElementById('f2_aviso_pago').style.display = 'none';
+            cargarSelectCasos('f2', ['INGRESADO', 'PARA VISITA']);
+        } else {
+            mostrarMsg('f2_msg', 'Error: ' + (result.error || 'No se pudo guardar'), 'err');
+        }
+    } catch (error) {
+        btnGuardar.textContent = 'GUARDAR VISITA';
+        btnGuardar.disabled = false;
+        mostrarMsg('f2_msg', 'Error: ' + error.message, 'err');
+    }
+}
+
+// Convertir archivo a base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            // Remover el prefijo "data:image/...;base64,"
+            const base64 = reader.result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = error => reject(error);
+    });
+}
+
+// ===================== RETIRO 24HRS =====================
+async function guardarRetiro24() {
+    // Validar campos
+    if (!document.getElementById('r24_tipo').value) { mostrarMsg('r24_msg', 'Seleccionar tipo de residuo', 'err'); return; }
+    if (!document.getElementById('r24_calle').value) { mostrarMsg('r24_msg', 'Ingresar calle', 'err'); return; }
+    if (!document.getElementById('r24_numero').value) { mostrarMsg('r24_msg', 'Ingresar número o referencia', 'err'); return; }
+    if (!document.getElementById('r24_volumen').value) { mostrarMsg('r24_msg', 'Seleccionar volumen', 'err'); return; }
+    
+    // Validar foto
+    const fotoInput = document.getElementById('r24_foto');
+    if (!fotoInput.files || !fotoInput.files[0]) {
+        mostrarMsg('r24_msg', 'Debe subir una foto', 'err');
+        return;
+    }
+    
+    const btnGuardar = document.querySelector('#sec-retiro24 .btn');
+    btnGuardar.textContent = 'SUBIENDO FOTO...';
+    btnGuardar.disabled = true;
+    
+    try {
+        // Convertir foto a base64
+        const fotoBase64 = await fileToBase64(fotoInput.files[0]);
+        
+        const retiro24 = {
+            inspector: usuarioActual.nombre,
+            tipo: document.getElementById('r24_tipo').value,
+            calle: document.getElementById('r24_calle').value.toUpperCase(),
+            numero: document.getElementById('r24_numero').value.toUpperCase(),
+            detalleUbicacion: document.getElementById('r24_detalle').value.toUpperCase(),
+            uv: document.getElementById('r24_uv').value.toUpperCase(),
+            volumen: document.getElementById('r24_volumen').value,
+            observaciones: document.getElementById('r24_obs').value,
+            fotoBase64: fotoBase64,
+            fotoNombre: `R24_${Date.now()}.jpg`
+        };
+        
+        btnGuardar.textContent = 'GUARDANDO...';
+        
+        const result = await apiCall('guardarRetiro24', { retiro24 });
+        
+        btnGuardar.textContent = 'REGISTRAR RETIRO 24HRS';
+        btnGuardar.disabled = false;
+        
+        if (result.success) {
+            // Mostrar modal de confirmación
+            document.getElementById('modalIdSolicitud').textContent = result.id;
+            document.getElementById('modalDetalle').textContent = `Retiro 24Hrs registrado - ${retiro24.calle} ${retiro24.numero}`;
+            document.getElementById('modalOk').classList.add('active');
+            
+            limpiarForm('retiro24');
+            document.getElementById('r24_foto_preview').innerHTML = '';
+        } else {
+            mostrarMsg('r24_msg', 'Error: ' + (result.error || 'No se pudo guardar'), 'err');
+        }
+    } catch (error) {
+        btnGuardar.textContent = 'REGISTRAR RETIRO 24HRS';
+        btnGuardar.disabled = false;
+        mostrarMsg('r24_msg', 'Error: ' + error.message, 'err');
+    }
+}
+
+// ===================== F3: PROGRAMACIÓN RUTA =====================
+function guardarF3() {
+    const idCaso = document.getElementById('f3_caso').value;
+    if (!idCaso) { mostrarMsg('f3_msg', 'Seleccionar caso', 'err'); return; }
+    if (!document.getElementById('f3_fecha').value) { mostrarMsg('f3_msg', 'Ingresar fecha', 'err'); return; }
+    if (!document.getElementById('f3_camion').value) { mostrarMsg('f3_msg', 'Seleccionar camión', 'err'); return; }
+    
+    const casos = getCasos();
+    const caso = casos.find(c => c.id === idCaso);
+    
+    caso.asignacion = {
+        fecha: document.getElementById('f3_fecha').value,
+        camion: document.getElementById('f3_camion').value,
+        operador: usuarioActual.nombre, // Viene del login
+        observaciones: document.getElementById('f3_obs').value
+    };
+    caso.estado = 'ASIGNADO';
+    
+    if (saveCasos(casos)) {
+        mostrarMsg('f3_msg', `✓ RUTA PROGRAMADA: ${idCaso}`, 'ok');
+        limpiarForm('f3');
+        cargarSelectCasos('f3', ['VISITADO', 'INGRESADO']);
+    }
+}
+
+// ===================== F4: CIERRE =====================
+function guardarF4() {
+    const idCaso = document.getElementById('f4_caso').value;
+    if (!idCaso) { mostrarMsg('f4_msg', 'Seleccionar caso', 'err'); return; }
+    if (!document.getElementById('f4_fecha').value) { mostrarMsg('f4_msg', 'Ingresar fecha', 'err'); return; }
+    if (!document.getElementById('f4_ejecutado').value) { mostrarMsg('f4_msg', 'Indicar resultado', 'err'); return; }
+    
+    const casos = getCasos();
+    const caso = casos.find(c => c.id === idCaso);
+    
+    caso.ejecucion = {
+        fecha: document.getElementById('f4_fecha').value,
+        resultado: document.getElementById('f4_ejecutado').value,
+        inspector: usuarioActual.nombre, // Viene del login
+        volumenRetirado: document.getElementById('f4_volumen').value,
+        observaciones: document.getElementById('f4_obs').value
+    };
+    caso.estado = document.getElementById('f4_ejecutado').value.startsWith('SI') ? 'EJECUTADO' : 'FALLIDO';
+    
+    if (saveCasos(casos)) {
+        mostrarMsg('f4_msg', `✓ SOLICITUD CERRADA: ${idCaso}`, 'ok');
+        limpiarForm('f4');
+        cargarSelectCasos('f4', ['ASIGNADO']);
+    }
+}
+
+// ===================== TABLA =====================
+async function cargarTabla() {
+    const tbody = document.querySelector('#tablaCasos tbody');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Cargando...</td></tr>';
+    
+    const result = await apiCall('obtenerSolicitudes', {});
+    
+    if (!result.success || !result.solicitudes || result.solicitudes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay casos registrados</td></tr>';
+        return;
+    }
+    
+    // Ordenar según selección
+    const ordenarPor = document.getElementById('ordenarPor').value;
+    let solicitudes = result.solicitudes.slice();
+    
+    switch(ordenarPor) {
+        case 'fecha':
+            solicitudes.reverse(); // Más reciente primero
+            break;
+        case 'id':
+            solicitudes.sort((a, b) => b.id.localeCompare(a.id)); // Mayor ID primero
+            break;
+        case 'direccion':
+            solicitudes.sort((a, b) => {
+                const dirA = a.direccion || (a.calle + ' ' + a.numero) || '';
+                const dirB = b.direccion || (b.calle + ' ' + b.numero) || '';
+                return dirA.localeCompare(dirB);
+            });
+            break;
+        case 'apellido':
+            solicitudes.sort((a, b) => {
+                const apA = a.apellidos || '';
+                const apB = b.apellidos || '';
+                return apA.localeCompare(apB);
+            });
+            break;
+    }
+    
+    tbody.innerHTML = '';
+    solicitudes.forEach(c => {
+        const fecha = c.fechaIngreso || '-';
+        const requiereVisita = c.requiereVisita || '-';
+        tbody.innerHTML += `
+            <tr>
+                <td>${c.id}</td>
+                <td>${fecha}</td>
+                <td>${c.tipo || '-'}</td>
+                <td>${c.solicitante || (c.nombre + ' ' + c.apellidos)}</td>
+                <td>${c.direccion || (c.calle + ' ' + c.numero)}</td>
+                <td>${requiereVisita}</td>
+                <td>${c.estado}</td>
+            </tr>
+        `;
+    });
+}
+
+// ===================== LOG VISITAS TÉCNICAS =====================
+let solicitudesParaVisita = [];
+
+function calcularFechaVisita() {
+    const hoy = new Date();
+    let fechaVisita = new Date(hoy);
+    fechaVisita.setDate(fechaVisita.getDate() + 1); // Mañana
+    
+    // Si mañana es domingo, pasar a lunes
+    if (fechaVisita.getDay() === 0) {
+        fechaVisita.setDate(fechaVisita.getDate() + 1);
+    }
+    // Si hoy es sábado, visita es lunes
+    if (hoy.getDay() === 6) {
+        fechaVisita.setDate(hoy.getDate() + 2);
+    }
+    
+    const dias = ['DOMINGO', 'LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO'];
+    const dia = dias[fechaVisita.getDay()];
+    const fecha = fechaVisita.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    
+    return { fechaObj: fechaVisita, texto: `${dia} ${fecha}` };
+}
+
+async function cargarLogVisitas() {
+    const tbody = document.querySelector('#tablaVisitas tbody');
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Cargando...</td></tr>';
+    
+    // Mostrar fecha de visita
+    const fechaVisita = calcularFechaVisita();
+    document.getElementById('fechaVisitaTexto').textContent = fechaVisita.texto;
+    
+    const result = await apiCall('obtenerSolicitudes', {});
+    
+    if (!result.success) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Error al cargar</td></tr>';
+        return;
+    }
+    
+    // Filtrar: INGRESADO + PARA VISITA (atrasadas)
+    solicitudesParaVisita = result.solicitudes.filter(c => 
+        c.estado === 'INGRESADO' || c.estado === 'PARA VISITA'
+    );
+    
+    if (solicitudesParaVisita.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No hay solicitudes pendientes de visita</td></tr>';
+        actualizarContador();
+        return;
+    }
+    
+    // Ordenar por ID (correlativo)
+    solicitudesParaVisita.sort((a, b) => a.id.localeCompare(b.id));
+    
+    tbody.innerHTML = '';
+    solicitudesParaVisita.forEach((c, idx) => {
+        const direccion = c.direccion || (c.calle + ' ' + c.numero) || '-';
+        const detalle = c.detalleUbicacion || '-';
+        const obs = c.observaciones || '-';
+        const obsCorta = obs.length > 30 ? obs.substring(0, 30) + '...' : obs;
+        const esAtrasada = c.estado === 'PARA VISITA';
+        const claseFila = esAtrasada ? 'style="background: #fff3cd;"' : '';
+        
+        tbody.innerHTML += `
+            <tr ${claseFila}>
+                <td style="text-align: center;">
+                    <input type="checkbox" class="check-visita" data-id="${c.id}" onchange="actualizarContador()">
+                </td>
+                <td>${c.id}${esAtrasada ? ' ⚠️' : ''}</td>
+                <td>${c.fechaIngreso || '-'}</td>
+                <td>${direccion}</td>
+                <td>${detalle}</td>
+                <td>${c.telefono || '-'}</td>
+                <td>${c.tipo || '-'}</td>
+                <td title="${obs}">${obsCorta}</td>
+            </tr>
+        `;
+    });
+    
+    actualizarContador();
+}
+
+function actualizarContador() {
+    const checks = document.querySelectorAll('.check-visita:checked');
+    document.getElementById('contadorSeleccion').textContent = checks.length;
+}
+
+function marcarTodos() {
+    document.querySelectorAll('.check-visita').forEach(cb => cb.checked = true);
+    actualizarContador();
+}
+
+function desmarcarTodos() {
+    document.querySelectorAll('.check-visita').forEach(cb => cb.checked = false);
+    actualizarContador();
+}
+
+function generarPDFVisitas() {
+    const checksSeleccionados = document.querySelectorAll('.check-visita:checked');
+    
+    if (checksSeleccionados.length === 0) {
+        mostrarMsg('visitas_msg', 'Debe seleccionar al menos una solicitud', 'err');
+        return;
+    }
+    
+    const idsSeleccionados = Array.from(checksSeleccionados).map(cb => cb.dataset.id);
+    const solicitudesSeleccionadas = solicitudesParaVisita.filter(s => idsSeleccionados.includes(s.id));
+    
+    const fechaVisita = calcularFechaVisita();
+    const fechaImpresion = new Date().toLocaleString('es-CL');
+    
+    // Generar HTML para imprimir
+    let html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Lista Visitas Técnicas</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <style>
+            @page { size: letter; margin: 1.5cm 1.5cm 2cm 1.5cm; }
+            * { font-family: 'Roboto', Arial, sans-serif; font-weight: 400; }
+            body { font-size: 9px; }
+            .header { 
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 15px; 
+                padding-bottom: 10px; 
+            }
+            .header-logo {
+                height: 45px;
+            }
+            .header-text {
+                text-align: right;
+            }
+            .header-text h1 { 
+                color: #0054A6; 
+                margin: 0; 
+                font-size: 12px; 
+                font-weight: 400;
+                text-transform: uppercase;
+                font-variant: small-caps;
+                letter-spacing: 1px;
+            }
+            .header-text h2 { 
+                margin: 5px 0 0 0; 
+                font-size: 11px; 
+                font-weight: 400;
+            }
+            .fecha-gen { 
+                text-align: right; 
+                font-size: 8px; 
+                color: #666; 
+                margin-bottom: 8px; 
+            }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+            th { 
+                background: #0054A6; 
+                color: white; 
+                padding: 6px 4px; 
+                text-align: left; 
+                font-size: 8px; 
+                font-weight: 400; 
+            }
+            td { 
+                border: 1px solid #ccc; 
+                padding: 5px 4px; 
+                font-size: 8px; 
+                vertical-align: top; 
+                font-weight: 400;
+            }
+            tr:nth-child(even) { background: #f5f5f5; }
+            .col-id { width: 55px; }
+            .col-dir { width: 115px; }
+            .col-det { width: 90px; }
+            .col-tel { width: 65px; }
+            .col-contacto { width: 80px; }
+            .col-tipo { width: 55px; }
+            .col-obs { width: auto; }
+            .total { margin-top: 12px; font-size: 9px; }
+            .footer { 
+                margin-top: 15px; 
+                text-align: center; 
+                font-size: 8px; 
+                color: #666; 
+            }
+            .pie-pagina {
+                position: fixed;
+                bottom: 0.5cm;
+                left: 1.5cm;
+                right: 1.5cm;
+                display: flex;
+                justify-content: space-between;
+                font-size: 8px;
+                color: #666;
+                padding-top: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <img src="https://huechuraba.cl/images/Logo-Huechuraba-v3.svg" class="header-logo" alt="Huechuraba">
+            <div class="header-text">
+                <h1>Municipalidad de Huechuraba - Dirección de Aseo y Ornato</h1>
+                <h2>SOLICITUDES VISITAS TÉCNICAS ${fechaVisita.texto}</h2>
+            </div>
+        </div>
+        <div class="fecha-gen">Generado: ${fechaImpresion}</div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-id">ID</th>
+                    <th class="col-dir">DIRECCIÓN</th>
+                    <th class="col-det">DETALLE</th>
+                    <th class="col-tel">TELÉFONO</th>
+                    <th class="col-contacto">CONTACTO</th>
+                    <th class="col-tipo">TIPO</th>
+                    <th class="col-obs">OBSERVACIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    solicitudesSeleccionadas.forEach(c => {
+        const direccion = c.direccion || (c.calle + ' ' + c.numero) || '-';
+        const solicitante = c.solicitante || (c.nombre + ' ' + c.apellidos) || '-';
+        html += `
+            <tr>
+                <td>${c.id}</td>
+                <td>${direccion}</td>
+                <td>${c.detalleUbicacion || '-'}</td>
+                <td>${c.telefono || '-'}</td>
+                <td>${solicitante}</td>
+                <td>${c.tipo || '-'}</td>
+                <td>${c.observaciones || '-'}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+        </table>
+        <div class="total">Total solicitudes: ${solicitudesSeleccionadas.length}</div>
+        <div class="footer">
+            SGRRV - Sistema de Gestión de Recolección de Residuos Voluminosos<br>
+            Documento generado automáticamente
+        </div>
+        <div class="pie-pagina">
+            <span>Impreso: ${fechaImpresion}</span>
+            <span>Hoja 1</span>
+        </div>
+    </body>
+    </html>
+    `;
+    
+    // Abrir ventana de impresión
+    const ventana = window.open('', '_blank');
+    ventana.document.write(html);
+    ventana.document.close();
+    ventana.print();
+    
+    mostrarMsg('visitas_msg', `✓ Lista generada con ${solicitudesSeleccionadas.length} solicitudes`, 'ok');
+}
+
+function exportarCSV() {
+    const casos = getCasos();
+    if (!casos.length) { alert('No hay datos'); return; }
+    
+    // Encabezados según estructura de Sheet
+    let csv = 'ID,FECHA_INGRESO,FUNCIONARIO,TIPO,NOMBRE,APELLIDO,TELEFONO,CALLE,NUMERO,DETALLE_UBICACION,UV,REQUIERE_VISITA,OBSERVACIONES,ESTADO\n';
+    casos.forEach(c => {
+        csv += `${c.id},${c.fechaIngreso},${c.funcionario},${c.tipo},"${c.nombre || ''}","${c.apellidos || ''}",${c.telefono},"${c.calle || c.direccion || ''}","${c.numero || ''}","${c.detalleUbicacion || ''}","${c.uv || ''}",${c.requiereVisita || c.necesitaInspeccion || ''},"${c.observaciones || ''}",${c.estado}\n`;
+    });
+    
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'sgrrv_casos_' + new Date().toISOString().split('T')[0] + '.csv';
+    a.click();
+}
+
+// ===================== UTILS =====================
+function formatearTelefono(input) {
+    let nums = input.value.replace(/\D/g, '');
+    if (nums.length > 9) nums = nums.slice(0, 9);
+    
+    let formatted = '';
+    if (nums.length > 0) {
+        formatted = '(' + nums[0];
+    }
+    if (nums.length > 1) {
+        formatted += ') ' + nums.slice(1, 5);
+    }
+    if (nums.length > 5) {
+        formatted += '-' + nums.slice(5, 9);
+    }
+    
+    input.value = formatted;
+}
+
+function mostrarMsg(id, texto, tipo) {
+    const el = document.getElementById(id);
+    el.className = 'msg ' + tipo;
+    el.textContent = texto;
+    setTimeout(() => el.textContent = '', 5000);
+}
+
+function limpiarForm(prefix) {
+    document.querySelectorAll(`#sec-${prefix} input, #sec-${prefix} select, #sec-${prefix} textarea`).forEach(el => {
+        if (el.type !== 'button') el.value = '';
+    });
+    // Limpiar detalle si existe
+    const detalle = document.getElementById(prefix + '_detalle');
+    if (detalle) detalle.innerHTML = '';
+}
+
+function cerrarModal() {
+    document.getElementById('modalOk').classList.remove('active');
+}
+
+// Abrir selects con ENTER
+function initSelectsEnter() {
+    document.querySelectorAll('select').forEach(select => {
+        select.dataset.expanded = 'false';
+        
+        select.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (this.dataset.expanded === 'false') {
+                    this.dataset.expanded = 'true';
+                    this.size = Math.min(this.options.length, 8);
+                } else {
+                    this.dataset.expanded = 'false';
+                    this.size = 0;
+                    // Mover al siguiente campo
+                    const form = this.closest('.section');
+                    const fields = Array.from(form.querySelectorAll('input, select, textarea, button'));
+                    const idx = fields.indexOf(this);
+                    if (idx < fields.length - 1) {
+                        fields[idx + 1].focus();
+                    }
+                }
+            } else if (e.key === 'Escape') {
+                this.dataset.expanded = 'false';
+                this.size = 0;
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                if (this.dataset.expanded === 'false') {
+                    this.dataset.expanded = 'true';
+                    this.size = Math.min(this.options.length, 8);
+                }
+            }
+        });
+        
+        select.addEventListener('change', function() {
+            this.dataset.expanded = 'false';
+            this.size = 0;
+        });
+        
+        select.addEventListener('blur', function() {
+            this.dataset.expanded = 'false';
+            this.size = 0;
+        });
+    });
+}
+
+// Navegación con Enter en inputs (pasa al siguiente campo)
+function initNavegacionTeclado() {
+    const formularios = ['sec-f1', 'sec-f2', 'sec-f3', 'sec-f4'];
+    
+    formularios.forEach(formId => {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        
+        form.addEventListener('keydown', function(e) {
+            const campos = Array.from(form.querySelectorAll('input, select, textarea, button.btn'));
+            const actual = document.activeElement;
+            const idx = campos.indexOf(actual);
+            
+            // ENTER en input/textarea → siguiente campo
+            if (e.key === 'Enter' && (actual.tagName === 'INPUT' || (actual.tagName === 'TEXTAREA' && !e.shiftKey))) {
+                // No aplica si es textarea con Shift (nueva línea)
+                if (actual.tagName === 'INPUT') {
+                    e.preventDefault();
+                    if (idx < campos.length - 1) {
+                        campos[idx + 1].focus();
+                    }
+                }
+            }
+            
+            // Flechas arriba/abajo en inputs → navegar campos
+            if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && actual.tagName === 'INPUT') {
+                e.preventDefault();
+                if (e.key === 'ArrowDown' && idx < campos.length - 1) {
+                    campos[idx + 1].focus();
+                } else if (e.key === 'ArrowUp' && idx > 0) {
+                    campos[idx - 1].focus();
+                }
+            }
+        });
+    });
+}
+
+// Login con ENTER
+document.getElementById('loginPass').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') intentarLogin();
+});
+document.getElementById('loginUser').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('loginPass').focus();
+});
+
+// Mostrar/ocultar clave
+function togglePassword() {
+    const passInput = document.getElementById('loginPass');
+    const eyeIcon = document.getElementById('eyeIcon');
+    
+    if (passInput.type === 'password') {
+        passInput.type = 'text';
+        // Ojo tachado
+        eyeIcon.innerHTML = `
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+        `;
+    } else {
+        passInput.type = 'password';
+        // Ojo abierto
+        eyeIcon.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        `;
+    }
+}
+
+// Verificar sesión al cargar
+verificarSesion();
+</script>
+
+<!-- MODAL CONFIRMACIÓN -->
+<div class="modal-overlay" id="modalOk">
+    <div class="modal-box">
+        <div class="icon-ok">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        <h3>Solicitud Ingresada OK</h3>
+        <div class="modal-id" id="modalIdSolicitud"></div>
+        <p id="modalDetalle"></p>
+        <button onclick="cerrarModal()">ACEPTAR</button>
+    </div>
+</div>
+
+</body>
+</html>
