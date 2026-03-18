@@ -3147,12 +3147,32 @@ async function generarInforme() {
     msg.innerHTML = '<div class="msg ok">Generando informe...</div>';
     
     try {
-        // Obtener datos actuales
+        // Obtener datos actuales de solicitudes
         const response = await apiCall('obtenerSolicitudes');
         if (!response.success) throw new Error('Error al obtener datos');
         
         const solicitudes = response.solicitudes;
         const ahora = new Date();
+        
+        // Obtener métricas de cierres (tiempo promedio, retiros diarios)
+        let metricasCierres = {
+            tiempoPromedio: 0,
+            tiempoRecord: 0,
+            retirosHoy: 0,
+            volumenHoy: 0,
+            recordVolumen: 0,
+            fechaRecord: ''
+        };
+        
+        try {
+            const respCierres = await fetch(API_URL + '?action=obtenerMetricasInforme');
+            const dataCierres = await respCierres.json();
+            if (dataCierres.success && dataCierres.metricas) {
+                metricasCierres = dataCierres.metricas;
+            }
+        } catch (e) {
+            console.log('No se pudieron obtener métricas de cierres:', e);
+        }
         
         // Generar número de informe: ISG260319_001
         const fechaStr = ahora.toISOString().slice(2,10).replace(/-/g,'');
@@ -3163,6 +3183,15 @@ async function generarInforme() {
         
         // Calcular métricas actuales
         const metricas = calcularMetricas(solicitudes);
+        
+        // Agregar métricas de cierres
+        metricas.tiempoPromedio = metricasCierres.tiempoPromedio || 0;
+        metricas.tiempoRecord = metricasCierres.tiempoRecord || 0;
+        metricas.retirosHoy = metricasCierres.retirosHoy || 0;
+        metricas.volumenHoy = metricasCierres.volumenHoy || 0;
+        metricas.recordVolumen = metricasCierres.recordVolumen || 0;
+        metricas.fechaRecord = metricasCierres.fechaRecord || '';
+        
         metricasActuales = metricas; // Guardar en variable global
         
         // Obtener informe anterior para comparar
@@ -3493,18 +3522,22 @@ function imprimirInforme() {
     const metricas = metricasActuales;
     const fechaGen = new Date().toLocaleString('es-CL');
     
-    // Calcular datos para tacómetros
-    // Tiempo promedio: calcular desde los datos de cierres (simulado por ahora)
-    const tiempoPromedio = 2.1; // TODO: calcular desde datos reales
-    const tiempoRecord = 3.5;
+    // Calcular datos para tacómetros desde metricasActuales
+    const tiempoPromedio = metricas.tiempoPromedio || 0;
+    const tiempoRecord = metricas.tiempoRecord || 0;
+    // Si no hay récord o es menor que promedio, usar promedio + 1
+    const tiempoRecordMostrar = tiempoRecord > tiempoPromedio ? tiempoRecord : tiempoPromedio;
     const tiempoPct = (tiempoPromedio / 10) * 314.16;
-    const tiempoRecordPct = ((tiempoRecord - tiempoPromedio) / 10) * 314.16;
+    const tiempoRecordPct = tiempoRecord > tiempoPromedio ? ((tiempoRecord - tiempoPromedio) / 10) * 314.16 : 0;
     
-    // Retiros diarios: calcular desde cierres de hoy (simulado por ahora)
-    const retirosHoy = 35; // TODO: calcular desde datos reales
-    const retirosRecord = 52;
-    const retirosPct = (retirosHoy / 90) * 314.16;
-    const retirosRecordPct = ((retirosRecord - retirosHoy) / 90) * 314.16;
+    // Retiros diarios desde metricasActuales
+    const volumenHoy = metricas.volumenHoy || 0;
+    const recordVolumen = metricas.recordVolumen || 0;
+    const fechaRecord = metricas.fechaRecord || '';
+    // Si no hay récord o es menor que hoy, usar hoy
+    const recordMostrar = recordVolumen > volumenHoy ? recordVolumen : volumenHoy;
+    const retirosPct = (volumenHoy / 90) * 314.16;
+    const retirosRecordPct = recordVolumen > volumenHoy ? ((recordVolumen - volumenHoy) / 90) * 314.16 : 0;
     
     // Generar HTML con diseño maqueta v5
     let html = `
@@ -3680,9 +3713,9 @@ function imprimirInforme() {
                             <text x="60" y="70" font-size="7" fill="#aaa" text-anchor="middle">máx: 90</text>
                         </svg>
                     </div>
-                    <div class="tacometro-valor">${retirosHoy} m³</div>
+                    <div class="tacometro-valor">${volumenHoy} m³</div>
                     <div class="tacometro-label">Retirados hoy</div>
-                    <div class="tacometro-meta">▲ Récord: ${retirosRecord} m³</div>
+                    <div class="tacometro-meta">${recordVolumen > 0 ? '▲ Récord: ' + recordVolumen + ' m³' : 'Sin récord'}</div>
                 </div>
             </div>
         </div>
