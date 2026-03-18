@@ -423,8 +423,8 @@ async function cargarDatos() {
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'action=getSolicitudes'
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: 'obtenerSolicitudes' })
         });
         
         const result = await response.json();
