@@ -398,12 +398,12 @@ function actualizarFecha() {
 
 // Crear tarjeta
 function crearTarjeta(solicitud) {
-    const id = solicitud[0] || '';
-    const tipo = solicitud[3] || 'OTRO';
-    const calle = solicitud[7] || '';
-    const numero = solicitud[8] || '';
-    const detalle = solicitud[9] || '';
-    const estado = solicitud[13] || 'INGRESADO';
+    const id = solicitud.id || '';
+    const tipo = solicitud.tipo || 'OTRO';
+    const calle = solicitud.calle || '';
+    const numero = solicitud.numero || '';
+    const detalle = solicitud.detalleUbicacion || '';
+    const estado = solicitud.estado || 'INGRESADO';
     const columna = ESTADO_COLUMNA[estado] || 'otros';
     
     const direccion = `${calle} ${numero}`.trim();
@@ -434,7 +434,7 @@ async function cargarDatos() {
             return;
         }
         
-        const solicitudes = result.data;
+        const solicitudes = result.solicitudes;
         
         // Agrupar por columna
         const grupos = {
@@ -451,9 +451,9 @@ async function cargarDatos() {
         hace30dias.setDate(hace30dias.getDate() - 30);
         
         solicitudes.forEach(s => {
-            const fecha = new Date(s[1]);
+            const fecha = new Date(s.fechaIngreso);
             if (fecha >= hace30dias) {
-                const estado = s[13] || 'INGRESADO';
+                const estado = s.estado || 'INGRESADO';
                 const columna = ESTADO_COLUMNA[estado] || 'otros';
                 grupos[columna].push(s);
             }
@@ -478,7 +478,7 @@ async function cargarDatos() {
         const total = solicitudes.length;
         const hoy = new Date().toISOString().slice(0, 10);
         const solicitudesHoy = solicitudes.filter(s => {
-            const fecha = new Date(s[1]).toISOString().slice(0, 10);
+            const fecha = new Date(s.fechaIngreso).toISOString().slice(0, 10);
             return fecha === hoy;
         }).length;
         
