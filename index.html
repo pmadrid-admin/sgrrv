@@ -1382,6 +1382,8 @@
                         <option value="fecha">Fecha (reciente)</option>
                         <option value="id">ID</option>
                         <option value="estado">Estado</option>
+                        <option value="direccion">Dirección</option>
+                        <option value="uv">UV</option>
                     </select>
                 </div>
                 <div class="filtro-acciones">
@@ -2264,6 +2266,16 @@ async function cargarTabla() {
         case 'estado':
             solicitudes.sort((a, b) => (a.estado || '').localeCompare(b.estado || ''));
             break;
+        case 'direccion':
+            solicitudes.sort((a, b) => {
+                const dirA = a.direccion || (a.calle + ' ' + a.numero) || '';
+                const dirB = b.direccion || (b.calle + ' ' + b.numero) || '';
+                return dirA.localeCompare(dirB);
+            });
+            break;
+        case 'uv':
+            solicitudes.sort((a, b) => (a.uv || '').localeCompare(b.uv || ''));
+            break;
     }
     
     // Actualizar contador
@@ -2278,6 +2290,9 @@ async function cargarTabla() {
     }
     
     tbody.innerHTML = '';
+    const hoy = new Date();
+    const estadosNoRetirado = ['INGRESADO', 'PARA VISITA', 'PARA RETIRO', 'RETIRO 24HRS', 'PROGRAMADO'];
+    
     solicitudes.forEach(c => {
         const fecha = formatearFecha(c.fechaIngreso);
         const tieneFoto = c.fotoVisita || c.fotoRetiro;
@@ -2287,8 +2302,20 @@ async function cargarTabla() {
         
         const badgeClass = getBadgeClass(c.estado);
         
+        // Calcular días desde ingreso para casos no retirados
+        let rowStyle = '';
+        if (estadosNoRetirado.includes(c.estado)) {
+            const fechaIngreso = new Date(c.fechaIngreso);
+            if (!isNaN(fechaIngreso.getTime())) {
+                const diasTranscurridos = Math.floor((hoy - fechaIngreso) / (1000 * 60 * 60 * 24));
+                if (diasTranscurridos > 3) {
+                    rowStyle = 'style="color: #E07020;"'; // Naranja tipo asterisco Claude
+                }
+            }
+        }
+        
         tbody.innerHTML += `
-            <tr>
+            <tr ${rowStyle}>
                 <td><code style="font-size: 11px;">${c.id}</code></td>
                 <td>${fecha}</td>
                 <td>${c.tipo || '-'}</td>
@@ -3460,175 +3487,100 @@ function imprimirInforme() {
     kpis.forEach(kpi => {
         const valor = kpi.querySelector('.kpi-valor')?.textContent || '0';
         const label = kpi.querySelector('.kpi-label')?.textContent || '';
-        const variacion = kpi.querySelector('.kpi-variacion')?.textContent || '';
-        kpiData.push({ valor, label, variacion });
+        kpiData.push({ valor, label });
     });
     
     const metricas = metricasActuales;
     const fechaGen = new Date().toLocaleString('es-CL');
     
-    // Generar HTML con estética de listas de visitas
+    // Calcular datos para tacómetros
+    // Tiempo promedio: calcular desde los datos de cierres (simulado por ahora)
+    const tiempoPromedio = 2.1; // TODO: calcular desde datos reales
+    const tiempoRecord = 3.5;
+    const tiempoPct = (tiempoPromedio / 10) * 314.16;
+    const tiempoRecordPct = ((tiempoRecord - tiempoPromedio) / 10) * 314.16;
+    
+    // Retiros diarios: calcular desde cierres de hoy (simulado por ahora)
+    const retirosHoy = 35; // TODO: calcular desde datos reales
+    const retirosRecord = 52;
+    const retirosPct = (retirosHoy / 90) * 314.16;
+    const retirosRecordPct = ((retirosRecord - retirosHoy) / 90) * 314.16;
+    
+    // Generar HTML con diseño maqueta v5
     let html = `
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
         <title>Informe Gerencia - ${numero}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
-            @page { size: letter; margin: 1.5cm; }
-            * { font-family: 'Roboto', Arial, sans-serif; box-sizing: border-box; }
-            body { font-size: 10px; margin: 0; padding: 15px; color: #333; }
+            @page { size: letter; margin: 10mm; }
+            * { font-family: 'Arial', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+            body { font-size: 9px; color: #333; width: 19cm; padding: 0; }
             
-            /* HEADER */
             .header { 
-                display: flex;
-                align-items: flex-start;
-                justify-content: space-between;
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-                border-bottom: 2px solid #0054A6;
+                width: 19cm; height: 3cm;
+                display: flex; align-items: center; justify-content: space-between;
+                padding-bottom: 0.2cm; border-bottom: 2px solid #0054A6;
             }
-            .header-logo { height: 55px; }
-            .header-center { text-align: center; flex: 1; padding: 0 20px; }
-            .header-center h1 { 
-                color: #0054A6; 
-                margin: 0; 
-                font-size: 14px; 
-                font-weight: 700;
-            }
-            .header-center p { 
-                margin: 3px 0 0 0; 
-                font-size: 9px; 
-                color: #666;
-            }
+            .header-logo { height: 2cm; }
+            .header-center { text-align: center; flex: 1; padding: 0 0.5cm; }
+            .header-center h1 { color: #0054A6; margin: 0; font-size: 14px; font-weight: 700; }
+            .header-center p { margin: 3px 0 0 0; font-size: 8px; color: #666; }
             .header-right { text-align: right; }
-            .header-right .numero { 
-                font-size: 13px; 
-                font-weight: 700; 
-                color: #0054A6;
-            }
-            .header-right .fecha { font-size: 9px; color: #666; }
-            .header-right .comparado { font-size: 8px; color: #999; margin-top: 2px; }
+            .header-right .numero { font-size: 12px; font-weight: 700; color: #0054A6; }
+            .header-right .fecha { font-size: 8px; color: #666; }
+            .header-right .comparado { font-size: 7px; color: #999; }
             
-            /* KPIs */
-            .kpis-container {
-                display: flex;
-                gap: 10px;
-                margin-bottom: 20px;
-            }
+            .cuadro-1 { width: 19cm; height: 3cm; display: flex; gap: 0.3cm; padding: 0.2cm 0; }
             .kpi-box {
-                flex: 1;
-                background: #f8f9fa;
-                border: 1px solid #dee2e6;
-                border-radius: 6px;
-                padding: 12px;
-                text-align: center;
+                flex: 1; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;
+                display: flex; flex-direction: column; justify-content: center; align-items: center;
             }
-            .kpi-box .valor {
-                font-size: 28px;
-                font-weight: 700;
-                color: #0054A6;
-                line-height: 1;
-            }
-            .kpi-box .label {
-                font-size: 9px;
-                color: #666;
-                text-transform: uppercase;
-                margin-top: 5px;
-            }
-            .kpi-box .variacion {
-                font-size: 9px;
-                margin-top: 3px;
-            }
-            .kpi-box .variacion.positivo { color: #28a745; }
-            .kpi-box .variacion.negativo { color: #dc3545; }
+            .kpi-box .valor { font-size: 26px; font-weight: 700; color: #0054A6; line-height: 1; }
+            .kpi-box .label { font-size: 7px; color: #666; text-transform: uppercase; margin-top: 3px; }
             
-            /* SECCIONES DE DATOS */
-            .section {
-                margin-bottom: 20px;
-            }
-            .section h3 {
-                font-size: 11px;
-                font-weight: 500;
-                color: #333;
-                margin: 0 0 8px 0;
-                padding-bottom: 5px;
-                border-bottom: 1px solid #dee2e6;
-            }
+            .cuadro-2 { width: 19cm; height: 6cm; display: flex; gap: 0.4cm; padding: 0.2cm 0; }
+            .cuadro-2a, .cuadro-2b { width: 9.3cm; height: 5.6cm; }
             
-            /* TABLAS DE DATOS */
-            table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-            th { 
-                background: #f8f9fa;
-                color: #333; 
-                padding: 8px 10px; 
-                text-align: left; 
-                font-size: 9px; 
-                font-weight: 500;
-                border-bottom: 2px solid #dee2e6;
-            }
-            td { 
-                border-bottom: 1px solid #eee; 
-                padding: 6px 10px; 
-                font-size: 9px; 
-            }
+            .section h3 { font-size: 9px; font-weight: 600; color: #333; margin: 0 0 0.2cm 0; padding-bottom: 0.1cm; border-bottom: 1px solid #dee2e6; }
+            
+            table { width: 100%; border-collapse: collapse; }
+            th { background: #f8f9fa; color: #333; padding: 3px 5px; text-align: left; font-size: 7px; font-weight: 500; border-bottom: 1px solid #dee2e6; }
+            td { border-bottom: 1px solid #eee; padding: 2.5px 5px; font-size: 8px; }
             tr:nth-child(even) { background: #fafafa; }
-            .td-numero { text-align: right; font-weight: 500; }
-            .td-barra { width: 120px; }
-            .barra-container { 
-                background: #e9ecef; 
-                height: 12px; 
-                border-radius: 3px; 
-                overflow: hidden;
-            }
-            .barra-fill { 
-                height: 100%; 
-                background: #0054A6;
-                border-radius: 3px;
-            }
+            .td-num { text-align: right; font-weight: 500; width: 1cm; }
+            .td-bar { width: 2cm; }
+            .bar-bg { background: #e9ecef; height: 6px; border-radius: 2px; overflow: hidden; }
+            .bar-fill { height: 100%; background: #0054A6; border-radius: 2px; }
+            .bar-fill.green { background: #28a745; }
+            .bar-fill.purple { background: #6f42c1; }
             
-            /* GRID 2 COLUMNAS */
-            .grid-2 {
-                display: flex;
-                gap: 20px;
-            }
-            .grid-2 > div { flex: 1; }
+            .cuadro-34 { width: 19cm; height: 6cm; display: flex; gap: 0.4cm; padding: 0.2cm 0; }
+            .cuadro-3 { width: 9.3cm; height: 5.6cm; }
+            .cuadro-4 { width: 9.3cm; height: 5.6cm; display: flex; gap: 0.2cm; }
             
-            /* FOOTER */
-            .footer {
-                margin-top: 25px;
-                padding-top: 10px;
-                border-top: 1px solid #dee2e6;
-                text-align: center;
-                font-size: 8px;
-                color: #999;
+            .tacometro-box {
+                width: 4.55cm; height: 5.6cm; background: #f8f9fa; border: 1px solid #dee2e6;
+                border-radius: 4px; padding: 0.15cm; text-align: center; display: flex; flex-direction: column;
             }
+            .tacometro-titulo { font-size: 8px; font-weight: 600; color: #333; padding-bottom: 0.1cm; border-bottom: 1px solid #dee2e6; text-align: left; }
+            .tacometro-grafico { flex: 1; display: flex; justify-content: center; align-items: center; }
+            .tacometro-valor { font-size: 20px; font-weight: 700; color: #0054A6; line-height: 1; }
+            .tacometro-label { font-size: 7px; color: #666; margin-top: 2px; }
+            .tacometro-meta { font-size: 7px; color: #28a745; margin-top: 2px; }
             
-            /* FIRMA */
-            .firma {
-                margin-top: 40px;
-                display: flex;
-                justify-content: flex-end;
-            }
-            .firma-box {
-                text-align: center;
-                width: 180px;
-            }
-            .firma-linea {
-                border-top: 1px solid #333;
-                padding-top: 5px;
-                font-size: 9px;
-            }
-            .firma-cargo {
-                font-size: 8px;
-                color: #666;
-            }
+            .firma-espacio { height: 5cm; }
+            .firma-container { width: 19cm; display: flex; justify-content: flex-end; }
+            .firma-box { text-align: center; width: 4.5cm; }
+            .firma-linea { border-top: 1px solid #333; padding-top: 3px; font-size: 8px; font-weight: 500; }
+            .firma-cargo { font-size: 7px; color: #666; }
+            .footer { width: 19cm; text-align: center; font-size: 6px; color: #999; border-top: 1px solid #eee; padding-top: 0.1cm; }
         </style>
     </head>
     <body>
         <div class="header">
-            <img src="logo_aseo_huechuraba.png" class="header-logo" alt="Logo">
+            <img src="logo_aseo_huechuraba.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
             <div class="header-center">
                 <h1>INFORME DE GESTIÓN - SGRRV</h1>
                 <p>Sistema de Gestión de Recolección de Residuos Voluminosos • Huechuraba</p>
@@ -3640,76 +3592,108 @@ function imprimirInforme() {
             </div>
         </div>
         
-        <div class="kpis-container">
+        <div class="cuadro-1">
             ${kpiData.map(k => `
                 <div class="kpi-box">
                     <div class="valor">${k.valor}</div>
                     <div class="label">${k.label}</div>
-                    ${k.variacion ? `<div class="variacion ${k.variacion.includes('+') ? 'positivo' : k.variacion.includes('-') ? 'negativo' : ''}">${k.variacion}</div>` : ''}
                 </div>
             `).join('')}
         </div>
         
-        <div class="grid-2">
-            <div class="section">
+        <div class="cuadro-2">
+            <div class="cuadro-2a section">
                 <h3>📊 Solicitudes por Estado</h3>
                 <table>
-                    <thead><tr><th>Estado</th><th class="td-numero">Cantidad</th><th class="td-barra">Distribución</th></tr></thead>
+                    <thead><tr><th>Estado</th><th class="td-num">Cant.</th><th class="td-bar">Distribución</th></tr></thead>
                     <tbody>
                         ${Object.entries(metricas.porEstado || {}).map(([estado, cant]) => {
                             const pct = metricas.total > 0 ? (cant / metricas.total * 100) : 0;
-                            return `<tr>
-                                <td>${estado}</td>
-                                <td class="td-numero">${cant}</td>
-                                <td class="td-barra"><div class="barra-container"><div class="barra-fill" style="width: ${pct}%"></div></div></td>
-                            </tr>`;
+                            return `<tr><td>${estado}</td><td class="td-num">${cant}</td><td class="td-bar"><div class="bar-bg"><div class="bar-fill" style="width: ${pct}%"></div></div></td></tr>`;
                         }).join('')}
                     </tbody>
                 </table>
             </div>
-            
-            <div class="section">
+            <div class="cuadro-2b section">
                 <h3>📦 Solicitudes por Tipo</h3>
                 <table>
-                    <thead><tr><th>Tipo</th><th class="td-numero">Cantidad</th><th class="td-barra">Distribución</th></tr></thead>
+                    <thead><tr><th>Tipo</th><th class="td-num">Cant.</th><th class="td-bar">Distribución</th></tr></thead>
                     <tbody>
                         ${Object.entries(metricas.porTipo || {}).map(([tipo, cant]) => {
                             const pct = metricas.total > 0 ? (cant / metricas.total * 100) : 0;
-                            return `<tr>
-                                <td>${tipo}</td>
-                                <td class="td-numero">${cant}</td>
-                                <td class="td-barra"><div class="barra-container"><div class="barra-fill" style="width: ${pct}%"></div></div></td>
-                            </tr>`;
+                            return `<tr><td>${tipo}</td><td class="td-num">${cant}</td><td class="td-bar"><div class="bar-bg"><div class="bar-fill green" style="width: ${pct}%"></div></div></td></tr>`;
                         }).join('')}
                     </tbody>
                 </table>
             </div>
         </div>
         
-        <div class="section">
-            <h3>🏘️ Solicitudes por Unidad Vecinal</h3>
-            <table>
-                <thead><tr><th>UV</th><th class="td-numero">Cantidad</th><th class="td-barra">Distribución</th></tr></thead>
-                <tbody>
-                    ${Object.entries(metricas.porUV || {}).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([uv, cant]) => {
-                        const pct = metricas.total > 0 ? (cant / metricas.total * 100) : 0;
-                        return `<tr>
-                            <td>${uv || 'Sin UV'}</td>
-                            <td class="td-numero">${cant}</td>
-                            <td class="td-barra"><div class="barra-container"><div class="barra-fill" style="width: ${pct}%; background: #28a745;"></div></div></td>
-                        </tr>`;
-                    }).join('')}
-                </tbody>
-            </table>
+        <div class="cuadro-34">
+            <div class="cuadro-3 section">
+                <h3>🏘️ Solicitudes por Unidad Vecinal</h3>
+                <table>
+                    <thead><tr><th>UV</th><th class="td-num">Cant.</th><th class="td-bar">Distribución</th></tr></thead>
+                    <tbody>
+                        ${Object.entries(metricas.porUV || {}).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([uv, cant]) => {
+                            const pct = metricas.total > 0 ? (cant / metricas.total * 100) : 0;
+                            return `<tr><td>${uv || 'Sin UV'}</td><td class="td-num">${cant}</td><td class="td-bar"><div class="bar-bg"><div class="bar-fill purple" style="width: ${pct}%"></div></div></td></tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="cuadro-4">
+                <div class="tacometro-box">
+                    <div class="tacometro-titulo">⏱️ Tiempo Promedio</div>
+                    <div class="tacometro-grafico">
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef" stroke-width="12"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#0054A6" stroke-width="12"
+                                    stroke-dasharray="${tiempoPct} 314.16" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#E07020" stroke-width="12"
+                                    stroke-dasharray="${tiempoRecordPct} 314.16" stroke-dashoffset="-${tiempoPct}" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                            <text x="60" y="18" font-size="9" fill="#333" text-anchor="middle" font-weight="500">0</text>
+                            <text x="105" y="63" font-size="9" fill="#333" text-anchor="middle" font-weight="500">2.5</text>
+                            <text x="60" y="110" font-size="9" fill="#333" text-anchor="middle" font-weight="500">5</text>
+                            <text x="15" y="63" font-size="9" fill="#333" text-anchor="middle" font-weight="500">7.5</text>
+                            <text x="60" y="56" font-size="8" fill="#999" text-anchor="middle">días</text>
+                            <text x="60" y="70" font-size="7" fill="#aaa" text-anchor="middle">meta: 3</text>
+                        </svg>
+                    </div>
+                    <div class="tacometro-valor">${tiempoPromedio} días</div>
+                    <div class="tacometro-label">Ingreso → Cierre</div>
+                    <div class="tacometro-meta">${tiempoPromedio <= 3 ? '✓ Bajo meta' : '⚠ Sobre meta'}</div>
+                </div>
+                <div class="tacometro-box">
+                    <div class="tacometro-titulo">🚛 Retiros Diarios</div>
+                    <div class="tacometro-grafico">
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef" stroke-width="12"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#0054A6" stroke-width="12"
+                                    stroke-dasharray="${retirosPct} 314.16" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#E07020" stroke-width="12"
+                                    stroke-dasharray="${retirosRecordPct} 314.16" stroke-dashoffset="-${retirosPct}" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                            <text x="60" y="18" font-size="9" fill="#333" text-anchor="middle" font-weight="500">0</text>
+                            <text x="105" y="63" font-size="9" fill="#333" text-anchor="middle" font-weight="500">22</text>
+                            <text x="60" y="110" font-size="9" fill="#333" text-anchor="middle" font-weight="500">45</text>
+                            <text x="15" y="63" font-size="9" fill="#333" text-anchor="middle" font-weight="500">67</text>
+                            <text x="60" y="56" font-size="8" fill="#999" text-anchor="middle">m³</text>
+                            <text x="60" y="70" font-size="7" fill="#aaa" text-anchor="middle">máx: 90</text>
+                        </svg>
+                    </div>
+                    <div class="tacometro-valor">${retirosHoy} m³</div>
+                    <div class="tacometro-label">Retirados hoy</div>
+                    <div class="tacometro-meta">▲ Récord: ${retirosRecord} m³</div>
+                </div>
+            </div>
         </div>
         
-        <div class="firma">
+        <div class="firma-espacio"></div>
+        <div class="firma-container">
             <div class="firma-box">
                 <div class="firma-linea">Patricio Madrid</div>
                 <div class="firma-cargo">ITS Servicios Aseo • Huechuraba</div>
             </div>
         </div>
-        
         <div class="footer">
             SGRRV - Sistema de Gestión de Recolección de Residuos Voluminosos • Generado: ${fechaGen}
         </div>
