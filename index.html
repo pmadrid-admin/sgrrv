@@ -2640,7 +2640,7 @@ async function generarInforme() {
         const response = await apiCall('obtenerSolicitudes');
         if (!response.success) throw new Error('Error al obtener datos');
         
-        const solicitudes = response.data;
+        const solicitudes = response.solicitudes;
         const ahora = new Date();
         
         // Generar número de informe: ISG260319_001
@@ -2685,28 +2685,28 @@ function calcularMetricas(solicitudes) {
     const estados = ['INGRESADO', 'PARA VISITA', 'PARA RETIRO', 'RETIRO 24HRS', 'PROGRAMADO', 'RETIRADO', 'FALLIDO', 'NO PROCEDE', 'PENDIENTE DE PAGO'];
     estados.forEach(e => porEstado[e] = 0);
     solicitudes.forEach(s => {
-        const estado = s[13] || 'INGRESADO';
+        const estado = s.estado || 'INGRESADO';
         porEstado[estado] = (porEstado[estado] || 0) + 1;
     });
     
     // Por tipo
     const porTipo = {};
     solicitudes.forEach(s => {
-        const tipo = s[3] || 'OTRO';
+        const tipo = s.tipo || 'OTRO';
         porTipo[tipo] = (porTipo[tipo] || 0) + 1;
     });
     
     // Por UV
     const porUV = {};
     solicitudes.forEach(s => {
-        const uv = s[10] || 'Sin UV';
+        const uv = s.uv || 'Sin UV';
         porUV[uv] = (porUV[uv] || 0) + 1;
     });
     
     // Solicitudes últimos 7 días
     const hace7dias = new Date();
     hace7dias.setDate(hace7dias.getDate() - 7);
-    const ultimos7dias = solicitudes.filter(s => new Date(s[1]) >= hace7dias).length;
+    const ultimos7dias = solicitudes.filter(s => new Date(s.fechaIngreso) >= hace7dias).length;
     
     // Tendencia por día (últimos 7 días)
     const tendencia = {};
@@ -2717,7 +2717,7 @@ function calcularMetricas(solicitudes) {
         tendencia[fechaKey] = 0;
     }
     solicitudes.forEach(s => {
-        const fechaKey = new Date(s[1]).toISOString().slice(0,10);
+        const fechaKey = new Date(s.fechaIngreso).toISOString().slice(0,10);
         if (tendencia.hasOwnProperty(fechaKey)) {
             tendencia[fechaKey]++;
         }
