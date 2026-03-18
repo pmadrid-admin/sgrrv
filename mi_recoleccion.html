@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Recolección - SGRRV Huechuraba</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: #e6edf3;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* HEADER */
+        .header {
+            background: linear-gradient(90deg, #0054A6 0%, #003D7A 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header h1 span {
+            font-size: 28px;
+        }
+        
+        .header-info {
+            text-align: right;
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .header-info .fecha {
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .header-info .actualizacion {
+            margin-top: 3px;
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+        
+        /* COLUMNAS DE ESTADO */
+        .columna {
+            flex: 1;
+            background: #161b22;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #30363d;
+        }
+        
+        .columna-header {
+            padding: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .columna-header .contador {
+            background: rgba(255,255,255,0.15);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        /* Colores por estado */
+        .columna.ingresado .columna-header { background: #1a365d; color: #63b3ed; }
+        .columna.para-visita .columna-header { background: #744210; color: #fbd38d; }
+        .columna.programado .columna-header { background: #276749; color: #68d391; }
+        .columna.para-retiro .columna-header { background: #553c9a; color: #b794f4; }
+        .columna.retirado .columna-header { background: #22543d; color: #48bb78; }
+        .columna.otros .columna-header { background: #742a2a; color: #fc8181; }
+        
+        .columna-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        /* TARJETAS */
+        .tarjeta {
+            background: #21262d;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid;
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tarjeta:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .tarjeta.ingresado { border-color: #63b3ed; }
+        .tarjeta.para-visita { border-color: #fbd38d; }
+        .tarjeta.programado { border-color: #68d391; }
+        .tarjeta.para-retiro { border-color: #b794f4; }
+        .tarjeta.retirado { border-color: #48bb78; }
+        .tarjeta.otros { border-color: #fc8181; }
+        
+        .tarjeta-id {
+            font-size: 11px;
+            font-weight: 700;
+            color: #8b949e;
+            margin-bottom: 5px;
+        }
+        
+        .tarjeta-direccion {
+            font-size: 13px;
+            font-weight: 400;
+            color: #e6edf3;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+        
+        .tarjeta-tipo {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: #8b949e;
+        }
+        
+        /* FOOTER */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0d1117;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #30363d;
+            font-size: 11px;
+            color: #8b949e;
+        }
+        
+        .footer .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer .logo img {
+            height: 30px;
+        }
+        
+        .footer .stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .footer .stat {
+            text-align: center;
+        }
+        
+        .footer .stat-valor {
+            font-size: 18px;
+            font-weight: 700;
+            color: #58a6ff;
+        }
+        
+        .footer .stat-label {
+            font-size: 10px;
+            color: #8b949e;
+        }
+        
+        /* LOADING */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #8b949e;
+            font-size: 14px;
+        }
+        
+        .loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid #30363d;
+            border-top-color: #58a6ff;
+            border-radius: 50%;
+            margin-left: 10px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* EMPTY STATE */
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #8b949e;
+            font-size: 12px;
+        }
+        
+        /* Scrollbar */
+        .columna-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .columna-body::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        .columna-body::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 3px;
+        }
+        .columna-body::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                flex-wrap: wrap;
+            }
+            .columna {
+                flex: 1 1 calc(33% - 10px);
+                min-width: 280px;
+                max-height: 350px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .columna {
+                flex: 1 1 100%;
+                max-height: 300px;
+            }
+            .header h1 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1><span>🚛</span> Mi Recolección</h1>
+    <div class="header-info">
+        <div class="fecha" id="fechaActual"></div>
+        <div class="actualizacion">Actualización automática cada 5 min</div>
+    </div>
+</div>
+
+<div class="container" id="container">
+    <div class="columna ingresado">
+        <div class="columna-header">
+            📥 Ingresado <span class="contador" id="cont-ingresado">0</span>
+        </div>
+        <div class="columna-body" id="col-ingresado">
+            <div class="loading">Cargando</div>
+        </div>
+    </div>
+    
+    <div class="columna para-visita">
+        <div class="columna-header">
+            🔍 Para Visita <span class="contador" id="cont-para-visita">0</span>
+        </div>
+        <div class="columna-body" id="col-para-visita">
+            <div class="loading">Cargando</div>
+        </div>
+    </div>
+    
+    <div class="columna programado">
+        <div class="columna-header">
+            📅 Programado <span class="contador" id="cont-programado">0</span>
+        </div>
+        <div class="columna-body" id="col-programado">
+            <div class="loading">Cargando</div>
+        </div>
+    </div>
+    
+    <div class="columna para-retiro">
+        <div class="columna-header">
+            ⏳ Para Retiro <span class="contador" id="cont-para-retiro">0</span>
+        </div>
+        <div class="columna-body" id="col-para-retiro">
+            <div class="loading">Cargando</div>
+        </div>
+    </div>
+    
+    <div class="columna retirado">
+        <div class="columna-header">
+            ✅ Retirado <span class="contador" id="cont-retirado">0</span>
+        </div>
+        <div class="columna-body" id="col-retirado">
+            <div class="loading">Cargando</div>
+        </div>
+    </div>
+    
+    <div class="columna otros">
+        <div class="columna-header">
+            ⚠️ Otros <span class="contador" id="cont-otros">0</span>
+        </div>
+        <div class="columna-body" id="col-otros">
+            <div class="loading">Cargando</div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="logo">
+        <img src="logo_aseo_huechuraba.png" alt="Logo" onerror="this.style.display='none'">
+        <span>SGRRV - Sistema de Gestión de Recolección de Residuos Voluminosos</span>
+    </div>
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-valor" id="stat-total">0</div>
+            <div class="stat-label">TOTAL</div>
+        </div>
+        <div class="stat">
+            <div class="stat-valor" id="stat-hoy">0</div>
+            <div class="stat-label">HOY</div>
+        </div>
+        <div class="stat">
+            <div class="stat-valor" id="stat-pendientes">0</div>
+            <div class="stat-label">PENDIENTES</div>
+        </div>
+    </div>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbwlmWxLFq3jZD99ygE3Cy372q0rx8tZCJxmNfxTy1pxofR6IAvRbOCAdmJV9mYmYcDunQ/exec';
+
+// Mapeo de estados a columnas
+const ESTADO_COLUMNA = {
+    'INGRESADO': 'ingresado',
+    'PARA VISITA': 'para-visita',
+    'PROGRAMADO': 'programado',
+    'PARA RETIRO': 'para-retiro',
+    'RETIRO 24HRS': 'para-retiro',
+    'RETIRADO': 'retirado',
+    'FALLIDO': 'otros',
+    'NO PROCEDE': 'otros',
+    'PENDIENTE DE PAGO': 'otros'
+};
+
+// Actualizar fecha
+function actualizarFecha() {
+    const ahora = new Date();
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    let fecha = ahora.toLocaleDateString('es-CL', opciones);
+    fecha = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+    const hora = ahora.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('fechaActual').textContent = `${fecha} - ${hora}`;
+}
+
+// Crear tarjeta
+function crearTarjeta(solicitud) {
+    const id = solicitud[0] || '';
+    const tipo = solicitud[3] || 'OTRO';
+    const calle = solicitud[7] || '';
+    const numero = solicitud[8] || '';
+    const detalle = solicitud[9] || '';
+    const estado = solicitud[13] || 'INGRESADO';
+    const columna = ESTADO_COLUMNA[estado] || 'otros';
+    
+    const direccion = `${calle} ${numero}`.trim();
+    const direccionCompleta = detalle ? `${direccion}, ${detalle}` : direccion;
+    
+    return `
+        <div class="tarjeta ${columna}">
+            <div class="tarjeta-id">${id}</div>
+            <div class="tarjeta-direccion">${direccionCompleta || 'Sin dirección'}</div>
+            <span class="tarjeta-tipo">${tipo}</span>
+        </div>
+    `;
+}
+
+// Cargar datos
+async function cargarDatos() {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'action=getSolicitudes'
+        });
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            console.error('Error:', result.error);
+            return;
+        }
+        
+        const solicitudes = result.data;
+        
+        // Agrupar por columna
+        const grupos = {
+            'ingresado': [],
+            'para-visita': [],
+            'programado': [],
+            'para-retiro': [],
+            'retirado': [],
+            'otros': []
+        };
+        
+        // Filtrar solo solicitudes recientes (últimos 30 días) para no saturar
+        const hace30dias = new Date();
+        hace30dias.setDate(hace30dias.getDate() - 30);
+        
+        solicitudes.forEach(s => {
+            const fecha = new Date(s[1]);
+            if (fecha >= hace30dias) {
+                const estado = s[13] || 'INGRESADO';
+                const columna = ESTADO_COLUMNA[estado] || 'otros';
+                grupos[columna].push(s);
+            }
+        });
+        
+        // Renderizar columnas (máximo 30 por columna para no saturar)
+        Object.keys(grupos).forEach(col => {
+            const container = document.getElementById(`col-${col}`);
+            const contador = document.getElementById(`cont-${col}`);
+            const items = grupos[col].slice(0, 30);
+            
+            contador.textContent = grupos[col].length;
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="empty">Sin solicitudes</div>';
+            } else {
+                container.innerHTML = items.map(s => crearTarjeta(s)).join('');
+            }
+        });
+        
+        // Estadísticas footer
+        const total = solicitudes.length;
+        const hoy = new Date().toISOString().slice(0, 10);
+        const solicitudesHoy = solicitudes.filter(s => {
+            const fecha = new Date(s[1]).toISOString().slice(0, 10);
+            return fecha === hoy;
+        }).length;
+        
+        const pendientes = grupos['ingresado'].length + 
+                          grupos['para-visita'].length + 
+                          grupos['programado'].length + 
+                          grupos['para-retiro'].length;
+        
+        document.getElementById('stat-total').textContent = total;
+        document.getElementById('stat-hoy').textContent = solicitudesHoy;
+        document.getElementById('stat-pendientes').textContent = pendientes;
+        
+    } catch (error) {
+        console.error('Error cargando datos:', error);
+    }
+}
+
+// Inicializar
+actualizarFecha();
+cargarDatos();
+
+// Actualización automática cada 5 minutos
+setInterval(() => {
+    actualizarFecha();
+    cargarDatos();
+}, 5 * 60 * 1000);
+
+// Actualizar reloj cada minuto
+setInterval(actualizarFecha, 60 * 1000);
+</script>
+
+</body>
+</html>
