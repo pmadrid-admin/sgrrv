@@ -2637,7 +2637,7 @@ async function generarInforme() {
     
     try {
         // Obtener datos actuales
-        const response = await apiCall('getSolicitudes');
+        const response = await apiCall('obtenerSolicitudes');
         if (!response.success) throw new Error('Error al obtener datos');
         
         const solicitudes = response.data;
