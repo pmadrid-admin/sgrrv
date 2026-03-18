@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGRRV Huechuraba v18</title>
+    <title>SGRRV Huechuraba v18a</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
@@ -193,6 +193,20 @@
             font-size: 12px;
         }
         #headerTop .btn-salir:hover { background: #f5f5f5; border-color: #999; }
+        #headerTop .btn-bigmac {
+            padding: 6px 12px;
+            border: 1px solid #E07020;
+            background: #FFF3E0;
+            color: #E07020;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        #headerTop .btn-bigmac:hover { background: #FFE0B2; }
+        body.dark-mode #headerTop .btn-bigmac { background: #3d2a1a; color: #E07020; border-color: #E07020; }
+        body.dark-mode #headerTop .btn-bigmac:hover { background: #4d3a2a; }
         body.dark-mode #headerTop .btn-salir { background: #21262d; color: #58a6ff; border-color: #30363d; }
         body.dark-mode #headerTop .btn-salir:hover { background: #30363d; }
         
@@ -973,6 +987,7 @@
                 <span class="user-name" id="headerNombre"></span>
                 <span class="user-role" id="headerRol"></span>
             </div>
+            <button class="btn-bigmac" onclick="window.open('mi_recoleccion.html', '_blank')">🍔 Big Mac</button>
             <button class="btn-salir" onclick="cerrarSesion()">SALIR</button>
         </div>
     </div>
