@@ -387,6 +387,186 @@
         body.dark-mode .msg.ok { background: #1a4d2e; color: #56d364; border-color: #238636; }
         body.dark-mode .msg.err { background: #21262d; color: #f85149; border-color: #30363d; }
         
+        /* ========== ESTILOS GITHUB ========== */
+        .filtros-github {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            padding: 12px 15px;
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        body.dark-mode .filtros-github {
+            background: #161b22;
+            border-color: #30363d;
+        }
+        .filtro-grupo {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .filtro-grupo label {
+            font-size: 11px;
+            color: #57606a;
+            margin: 0;
+        }
+        body.dark-mode .filtro-grupo label {
+            color: #8b949e;
+        }
+        .filtro-grupo select,
+        .filtro-grupo input {
+            padding: 5px 10px;
+            font-size: 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            background: #fff;
+            color: #24292f;
+            min-width: 120px;
+            margin: 0;
+        }
+        body.dark-mode .filtro-grupo select,
+        body.dark-mode .filtro-grupo input {
+            background: #21262d;
+            border-color: #30363d;
+            color: #e6edf3;
+        }
+        .filtro-grupo select:focus,
+        .filtro-grupo input:focus {
+            outline: none;
+            border-color: #0969da;
+            box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15);
+        }
+        body.dark-mode .filtro-grupo select:focus,
+        body.dark-mode .filtro-grupo input:focus {
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+        }
+        .filtro-acciones {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+        .btn-github {
+            padding: 5px 12px;
+            font-size: 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            background: #f6f8fa;
+            color: #24292f;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-github:hover {
+            background: #f3f4f6;
+            border-color: #1b1f2426;
+        }
+        .btn-github.primary {
+            background: #2da44e;
+            border-color: #2da44e;
+            color: #fff;
+        }
+        .btn-github.primary:hover {
+            background: #2c974b;
+        }
+        body.dark-mode .btn-github {
+            background: #21262d;
+            border-color: #30363d;
+            color: #e6edf3;
+        }
+        body.dark-mode .btn-github:hover {
+            background: #30363d;
+            border-color: #8b949e;
+        }
+        body.dark-mode .btn-github.primary {
+            background: #238636;
+            border-color: #238636;
+        }
+        body.dark-mode .btn-github.primary:hover {
+            background: #2ea043;
+        }
+        .resultados-info {
+            font-size: 12px;
+            color: #57606a;
+            margin-bottom: 10px;
+            padding: 0 5px;
+        }
+        body.dark-mode .resultados-info {
+            color: #8b949e;
+        }
+        
+        /* Tabla estilo GitHub */
+        .tabla-github {
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        body.dark-mode .tabla-github {
+            border-color: #30363d;
+        }
+        .tabla-github table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .tabla-github th {
+            background: #f6f8fa;
+            border-bottom: 1px solid #d0d7de;
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #24292f;
+            text-align: left;
+        }
+        body.dark-mode .tabla-github th {
+            background: #161b22;
+            border-color: #30363d;
+            color: #e6edf3;
+        }
+        .tabla-github td {
+            padding: 10px 12px;
+            font-size: 12px;
+            border-bottom: 1px solid #d0d7de;
+            color: #24292f;
+        }
+        body.dark-mode .tabla-github td {
+            border-color: #21262d;
+            color: #e6edf3;
+        }
+        .tabla-github tr:last-child td {
+            border-bottom: none;
+        }
+        .tabla-github tr:hover td {
+            background: #f6f8fa;
+        }
+        body.dark-mode .tabla-github tr:hover td {
+            background: #161b22;
+        }
+        
+        /* Badges de estado */
+        .badge-estado {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 10px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        .badge-estado.ingresado { background: #ddf4ff; color: #0969da; }
+        .badge-estado.para-visita { background: #fff8c5; color: #9a6700; }
+        .badge-estado.programado { background: #dafbe1; color: #1a7f37; }
+        .badge-estado.para-retiro { background: #fbefff; color: #8250df; }
+        .badge-estado.retirado { background: #dafbe1; color: #1a7f37; }
+        .badge-estado.fallido { background: #ffebe9; color: #cf222e; }
+        .badge-estado.otros { background: #eaeef2; color: #57606a; }
+        body.dark-mode .badge-estado.ingresado { background: #388bfd26; color: #58a6ff; }
+        body.dark-mode .badge-estado.para-visita { background: #bb800926; color: #d29922; }
+        body.dark-mode .badge-estado.programado { background: #2ea04326; color: #3fb950; }
+        body.dark-mode .badge-estado.para-retiro { background: #a371f726; color: #bc8cff; }
+        body.dark-mode .badge-estado.retirado { background: #2ea04326; color: #3fb950; }
+        body.dark-mode .badge-estado.fallido { background: #f8514926; color: #f85149; }
+        body.dark-mode .badge-estado.otros { background: #6e768166; color: #8b949e; }
+        
         /* BOTÓN PEQUEÑO */
         .btn-small {
             padding: 4px 10px;
@@ -592,6 +772,119 @@
             font-size: 14px;
         }
         .modal-box button:hover { background: var(--azul-oscuro); }
+        
+        /* ========== ESTILOS IMPRESIÓN INFORME ========== */
+        @media print {
+            body { background: white !important; }
+            #loginScreen, #headerTop, #headerNav, .dark-toggle, .btn, .btn-panel, 
+            #historialContainer, .modal-overlay { display: none !important; }
+            
+            #content { padding: 0 !important; background: white !important; }
+            .section { display: none !important; }
+            #sec-informes { display: block !important; }
+            #sec-informes h2 { display: none !important; }
+            #informeContainer { display: block !important; }
+            
+            /* Header del informe impreso */
+            .print-header {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: flex-start;
+                border-bottom: 2px solid #0054A6;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+            .print-header img { height: 50px; }
+            .print-header .titulo { 
+                text-align: center; 
+                flex: 1;
+            }
+            .print-header .titulo h1 { 
+                font-size: 16px; 
+                color: #0054A6; 
+                margin: 0;
+            }
+            .print-header .titulo p { 
+                font-size: 10px; 
+                color: #666; 
+                margin: 3px 0 0 0;
+            }
+            .print-header .info-informe {
+                text-align: right;
+                font-size: 10px;
+            }
+            .print-header .info-informe .numero {
+                font-size: 12px;
+                font-weight: 700;
+                color: #0054A6;
+            }
+            
+            /* Ocultar header original del informe */
+            #informeHeader { display: none !important; }
+            
+            /* KPIs en impresión */
+            #kpisContainer {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 10px !important;
+                margin-bottom: 15px !important;
+            }
+            .kpi-card {
+                background: #f5f5f5 !important;
+                border: 1px solid #ddd !important;
+                padding: 10px !important;
+                page-break-inside: avoid;
+            }
+            .kpi-card .kpi-valor { 
+                font-size: 24px !important; 
+                color: #0054A6 !important;
+            }
+            .kpi-card .kpi-label { 
+                font-size: 9px !important; 
+                color: #666 !important;
+            }
+            .kpi-card .kpi-variacion {
+                font-size: 10px !important;
+            }
+            
+            /* Gráficos en impresión */
+            #informeContainer > div {
+                page-break-inside: avoid;
+            }
+            #informeContainer canvas {
+                max-height: 180px !important;
+            }
+            #informeContainer h3 {
+                font-size: 11px !important;
+                color: #333 !important;
+            }
+            
+            /* Footer impresión */
+            .print-footer {
+                display: block !important;
+                position: fixed;
+                bottom: 10mm;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 8px;
+                color: #999;
+                border-top: 1px solid #ddd;
+                padding-top: 5px;
+            }
+            
+            /* Botón imprimir oculto */
+            #informeContainer button { display: none !important; }
+            
+            /* Página */
+            @page {
+                size: letter;
+                margin: 10mm 15mm;
+            }
+        }
+        
+        /* Header y footer para impresión (ocultos en pantalla) */
+        .print-header, .print-footer { display: none; }
     </style>
 </head>
 <body>
@@ -901,21 +1194,26 @@
         <div id="sec-visitas" class="section">
             <h2>Panel de Visitas</h2>
             
-            <div style="background: var(--azul-claro); padding: 15px; border-radius: 4px; margin-bottom: 15px;">
-                <strong>Fecha de Visita:</strong> <span id="fechaVisitaTexto" style="font-size: 16px; color: var(--azul-principal);"></span>
-                <br><small>Las solicitudes marcadas con ✓ saldrán en la lista impresa</small>
+            <div class="filtros-github" style="margin-bottom: 15px;">
+                <div class="filtro-grupo" style="flex: 1;">
+                    <label>Fecha de Visita</label>
+                    <div style="font-size: 16px; font-weight: 500; color: var(--azul-principal);" id="fechaVisitaTexto"></div>
+                </div>
+                <div class="filtro-acciones">
+                    <button class="btn-github" onclick="cargarLogVisitas()">⟳ Actualizar</button>
+                    <button class="btn-github" onclick="marcarTodos()">☑ Todos</button>
+                    <button class="btn-github" onclick="desmarcarTodos()">☐ Ninguno</button>
+                    <button class="btn-github primary" onclick="generarPDFVisitas()">📄 Generar PDF</button>
+                </div>
             </div>
             
-            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                <button class="btn-panel-actualizar" onclick="cargarLogVisitas()">ACTUALIZAR</button>
-                <button class="btn-panel" onclick="marcarTodos()">MARCAR TODOS</button>
-                <button class="btn-panel" onclick="desmarcarTodos()">DESMARCAR TODOS</button>
-                <button class="btn-panel" onclick="generarPDFVisitas()">GENERAR LISTA PDF</button>
+            <div class="resultados-info">
+                <span>Las solicitudes marcadas con ✓ saldrán en la lista impresa</span>
             </div>
             
             <div id="visitas_msg"></div>
             
-            <div class="tabla-container">
+            <div class="tabla-container tabla-github">
                 <table id="tablaVisitas">
                     <thead>
                         <tr>
@@ -933,8 +1231,8 @@
                 </table>
             </div>
             
-            <div class="franja-info">
-                Seleccionadas: <span id="contadorSeleccion">0</span> solicitudes
+            <div class="resultados-info" style="margin-top: 10px; text-align: right;">
+                Seleccionadas: <strong id="contadorSeleccion">0</strong> solicitudes
             </div>
         </div>
 
@@ -942,44 +1240,46 @@
         <div id="sec-ruta" class="section">
             <h2>Panel Rutas</h2>
             
-            <!-- Filtro fecha compacto -->
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                <label style="margin: 0;">Fecha:</label>
-                <input type="date" id="fechaFiltroRuta" style="width: 150px;" onchange="cargarPanelRutas()">
-                <div style="display: flex; gap: 5px;">
-                    <button class="btn-panel" onclick="setFechaHoy()">HOY</button>
-                    <button class="btn-panel" onclick="setFechaManana()">MAÑANA</button>
+            <!-- Filtro fecha estilo GitHub -->
+            <div class="filtros-github" style="margin-bottom: 15px;">
+                <div class="filtro-grupo">
+                    <label>Fecha de Retiro</label>
+                    <input type="date" id="fechaFiltroRuta" onchange="cargarPanelRutas()">
                 </div>
-                <button class="btn-panel" onclick="cargarPanelRutas()">ACTUALIZAR</button>
-                <button class="btn-panel" onclick="imprimirListaRutas()">🖨️ IMPRIMIR LISTA</button>
+                <div class="filtro-grupo">
+                    <label>Camión</label>
+                    <select id="filtroCamion" onchange="filtrarTablaCamion()">
+                        <option value="">Todos</option>
+                        <option value="1425">1425</option>
+                        <option value="2251">2251</option>
+                        <option value="2252">2252</option>
+                        <option value="2253">2253</option>
+                        <option value="2254">2254</option>
+                        <option value="2255">2255</option>
+                    </select>
+                </div>
+                <div class="filtro-acciones">
+                    <button class="btn-github" onclick="setFechaHoy()">Hoy</button>
+                    <button class="btn-github" onclick="setFechaManana()">Mañana</button>
+                    <button class="btn-github" onclick="cargarPanelRutas()">⟳ Actualizar</button>
+                    <button class="btn-github primary" onclick="imprimirListaRutas()">🖨️ Imprimir</button>
+                </div>
             </div>
             
             <div id="ruta_msg"></div>
             
-            <!-- Tabla con filtro de camión -->
-            <div class="tabla-container">
+            <div class="tabla-container tabla-github">
                 <table id="tablaRutas">
                     <thead>
                         <tr>
-                            <th style="min-width: 100px;">
-                                CAMIÓN
-                                <select id="filtroCamion" onchange="filtrarTablaCamion()" style="display: block; width: 100%; margin-top: 5px; font-size: 11px; padding: 3px;">
-                                    <option value="">Todos</option>
-                                    <option value="1425">1425</option>
-                                    <option value="2251">2251</option>
-                                    <option value="2252">2252</option>
-                                    <option value="2253">2253</option>
-                                    <option value="2254">2254</option>
-                                    <option value="2255">2255</option>
-                                </select>
-                            </th>
+                            <th>CAMIÓN</th>
                             <th>ID</th>
                             <th>DIRECCIÓN</th>
                             <th>DETALLE</th>
                             <th>CONTACTO</th>
                             <th>TELÉFONO</th>
                             <th>TIPO</th>
-                            <th>VOLUMEN</th>
+                            <th>VOL.</th>
                             <th>ESTADO</th>
                         </tr>
                     </thead>
@@ -987,8 +1287,8 @@
                 </table>
             </div>
             
-            <div class="franja-info">
-                Mostrando: <span id="contadorRutas">0</span> retiros
+            <div class="resultados-info" style="margin-top: 10px; text-align: right;">
+                Mostrando: <strong id="contadorRutas">0</strong> retiros
             </div>
         </div>
 
@@ -996,19 +1296,61 @@
         <div id="sec-ver" class="section">
             <h2>Ver Casos</h2>
             
-            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
-                <label style="margin: 0;">Ordenar por:</label>
-                <select id="ordenarPor" onchange="cargarTabla()" style="width: auto;">
-                    <option value="fecha">Fecha Ingreso (reciente primero)</option>
-                    <option value="id">Número de ID</option>
-                    <option value="direccion">Dirección</option>
-                    <option value="apellido">Apellido</option>
-                </select>
-                <button class="btn-panel-actualizar" onclick="cargarTabla()">ACTUALIZAR</button>
-                <button class="btn-panel" onclick="exportarCSV()">EXPORTAR CSV</button>
+            <!-- Barra de filtros estilo GitHub -->
+            <div class="filtros-github">
+                <div class="filtro-grupo">
+                    <label>Estado</label>
+                    <select id="filtroEstado" onchange="cargarTabla()">
+                        <option value="">Todos</option>
+                        <option value="INGRESADO">Ingresado</option>
+                        <option value="PARA VISITA">Para Visita</option>
+                        <option value="PARA RETIRO">Para Retiro</option>
+                        <option value="RETIRO 24HRS">Retiro 24hrs</option>
+                        <option value="PROGRAMADO">Programado</option>
+                        <option value="RETIRADO">Retirado</option>
+                        <option value="FALLIDO">Fallido</option>
+                        <option value="NO PROCEDE">No Procede</option>
+                        <option value="PENDIENTE DE PAGO">Pendiente Pago</option>
+                    </select>
+                </div>
+                <div class="filtro-grupo">
+                    <label>Tipo</label>
+                    <select id="filtroTipo" onchange="cargarTabla()">
+                        <option value="">Todos</option>
+                        <option value="ESCOMBROS">Escombros</option>
+                        <option value="CACHUREOS">Cachureos</option>
+                        <option value="PODAS">Podas</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="filtro-grupo">
+                    <label>Desde</label>
+                    <input type="date" id="filtroFechaDesde" onchange="cargarTabla()">
+                </div>
+                <div class="filtro-grupo">
+                    <label>Hasta</label>
+                    <input type="date" id="filtroFechaHasta" onchange="cargarTabla()">
+                </div>
+                <div class="filtro-grupo">
+                    <label>Ordenar</label>
+                    <select id="ordenarPor" onchange="cargarTabla()">
+                        <option value="fecha">Fecha (reciente)</option>
+                        <option value="id">ID</option>
+                        <option value="estado">Estado</option>
+                    </select>
+                </div>
+                <div class="filtro-acciones">
+                    <button class="btn-github" onclick="limpiarFiltros()">Limpiar</button>
+                    <button class="btn-github primary" onclick="exportarCSV()">📥 CSV</button>
+                </div>
             </div>
             
-            <div class="tabla-container">
+            <!-- Contador de resultados -->
+            <div class="resultados-info">
+                <span id="contadorResultados">0 solicitudes</span>
+            </div>
+            
+            <div class="tabla-container tabla-github">
                 <table id="tablaCasos">
                     <thead>
                         <tr>
@@ -1017,10 +1359,9 @@
                             <th>TIPO</th>
                             <th>SOLICITANTE</th>
                             <th>DIRECCIÓN</th>
-                            <th>VISITA</th>
+                            <th>UV</th>
                             <th>ESTADO</th>
-                            <th>📷 VIS</th>
-                            <th>📷 RET</th>
+                            <th>📷</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -1041,7 +1382,21 @@
             
             <!-- Contenedor del informe -->
             <div id="informeContainer" style="display: none;">
-                <!-- Header del informe -->
+                <!-- Header para impresión -->
+                <div class="print-header">
+                    <img src="logo_aseo_huechuraba.png" alt="Logo">
+                    <div class="titulo">
+                        <h1>INFORME DE GESTIÓN - SGRRV</h1>
+                        <p>Sistema de Gestión de Recolección de Residuos Voluminosos • Huechuraba</p>
+                    </div>
+                    <div class="info-informe">
+                        <div class="numero" id="printNumero"></div>
+                        <div id="printFecha"></div>
+                        <div id="printComparado"></div>
+                    </div>
+                </div>
+                
+                <!-- Header del informe (pantalla) -->
                 <div id="informeHeader" style="background: var(--fondo-seccion); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--borde);">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <div>
@@ -1795,64 +2150,134 @@ async function guardarF4() {
 }
 
 // ===================== TABLA =====================
+// Variable global para almacenar solicitudes cargadas
+let solicitudesCargadas = [];
+
 async function cargarTabla() {
     const tbody = document.querySelector('#tablaCasos tbody');
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Cargando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Cargando...</td></tr>';
     
     const result = await apiCall('obtenerSolicitudes', {});
     
     if (!result.success || !result.solicitudes || result.solicitudes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No hay casos registrados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No hay casos registrados</td></tr>';
+        document.getElementById('contadorResultados').textContent = '0 solicitudes';
+        solicitudesCargadas = [];
         return;
     }
     
-    // Ordenar según selección
-    const ordenarPor = document.getElementById('ordenarPor').value;
+    // Guardar para exportar
+    solicitudesCargadas = result.solicitudes.slice();
+    
+    // Aplicar filtros
     let solicitudes = result.solicitudes.slice();
     
+    const filtroEstado = document.getElementById('filtroEstado')?.value || '';
+    const filtroTipo = document.getElementById('filtroTipo')?.value || '';
+    const filtroDesde = document.getElementById('filtroFechaDesde')?.value || '';
+    const filtroHasta = document.getElementById('filtroFechaHasta')?.value || '';
+    
+    if (filtroEstado) {
+        solicitudes = solicitudes.filter(s => s.estado === filtroEstado);
+    }
+    if (filtroTipo) {
+        solicitudes = solicitudes.filter(s => s.tipo === filtroTipo);
+    }
+    if (filtroDesde) {
+        const desde = new Date(filtroDesde);
+        solicitudes = solicitudes.filter(s => {
+            const f = new Date(s.fechaIngreso);
+            return !isNaN(f.getTime()) && f >= desde;
+        });
+    }
+    if (filtroHasta) {
+        const hasta = new Date(filtroHasta);
+        hasta.setHours(23, 59, 59);
+        solicitudes = solicitudes.filter(s => {
+            const f = new Date(s.fechaIngreso);
+            return !isNaN(f.getTime()) && f <= hasta;
+        });
+    }
+    
+    // Ordenar
+    const ordenarPor = document.getElementById('ordenarPor')?.value || 'fecha';
     switch(ordenarPor) {
         case 'fecha':
-            solicitudes.reverse(); // Más reciente primero
+            solicitudes.reverse();
             break;
         case 'id':
-            solicitudes.sort((a, b) => b.id.localeCompare(a.id)); // Mayor ID primero
+            solicitudes.sort((a, b) => b.id.localeCompare(a.id));
             break;
-        case 'direccion':
-            solicitudes.sort((a, b) => {
-                const dirA = a.direccion || (a.calle + ' ' + a.numero) || '';
-                const dirB = b.direccion || (b.calle + ' ' + b.numero) || '';
-                return dirA.localeCompare(dirB);
-            });
+        case 'estado':
+            solicitudes.sort((a, b) => (a.estado || '').localeCompare(b.estado || ''));
             break;
-        case 'apellido':
-            solicitudes.sort((a, b) => {
-                const apA = a.apellidos || '';
-                const apB = b.apellidos || '';
-                return apA.localeCompare(apB);
-            });
-            break;
+    }
+    
+    // Actualizar contador
+    document.getElementById('contadorResultados').textContent = `${solicitudes.length} solicitudes`;
+    
+    // Guardar filtradas para exportar
+    solicitudesCargadas = solicitudes;
+    
+    if (solicitudes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--texto-secundario);">Sin resultados para los filtros seleccionados</td></tr>';
+        return;
     }
     
     tbody.innerHTML = '';
     solicitudes.forEach(c => {
-        const fecha = c.fechaIngreso || '-';
-        const requiereVisita = c.requiereVisita || '-';
-        const fotoVisita = c.fotoVisita ? `<a href="${c.fotoVisita}" target="_blank" title="Ver foto visita">📷</a>` : '-';
-        const fotoRetiro = c.fotoRetiro ? `<a href="${c.fotoRetiro}" target="_blank" title="Ver foto retiro">📷</a>` : '-';
+        const fecha = formatearFecha(c.fechaIngreso);
+        const tieneFoto = c.fotoVisita || c.fotoRetiro;
+        const fotoLink = tieneFoto ? 
+            `<a href="${c.fotoVisita || c.fotoRetiro}" target="_blank" title="Ver foto">📷</a>` : 
+            '<span style="color: var(--texto-secundario);">-</span>';
+        
+        const badgeClass = getBadgeClass(c.estado);
+        
         tbody.innerHTML += `
             <tr>
-                <td>${c.id}</td>
+                <td><code style="font-size: 11px;">${c.id}</code></td>
                 <td>${fecha}</td>
                 <td>${c.tipo || '-'}</td>
-                <td>${c.solicitante || (c.nombre + ' ' + c.apellidos)}</td>
-                <td>${c.direccion || (c.calle + ' ' + c.numero)}</td>
-                <td>${requiereVisita}</td>
-                <td>${c.estado}</td>
-                <td style="text-align:center;">${fotoVisita}</td>
-                <td style="text-align:center;">${fotoRetiro}</td>
+                <td>${c.solicitante || (c.nombre + ' ' + c.apellidos) || '-'}</td>
+                <td>${c.direccion || (c.calle + ' ' + c.numero) || '-'}</td>
+                <td>${c.uv || '-'}</td>
+                <td><span class="badge-estado ${badgeClass}">${c.estado || 'INGRESADO'}</span></td>
+                <td style="text-align:center;">${fotoLink}</td>
             </tr>
         `;
     });
+}
+
+function getBadgeClass(estado) {
+    const map = {
+        'INGRESADO': 'ingresado',
+        'PARA VISITA': 'para-visita',
+        'PROGRAMADO': 'programado',
+        'PARA RETIRO': 'para-retiro',
+        'RETIRO 24HRS': 'para-retiro',
+        'RETIRADO': 'retirado',
+        'FALLIDO': 'fallido',
+        'NO PROCEDE': 'otros',
+        'PENDIENTE DE PAGO': 'otros'
+    };
+    return map[estado] || 'otros';
+}
+
+function formatearFecha(fecha) {
+    if (!fecha) return '-';
+    const d = new Date(fecha);
+    if (isNaN(d.getTime())) return fecha;
+    return d.toLocaleDateString('es-CL');
+}
+
+function limpiarFiltros() {
+    document.getElementById('filtroEstado').value = '';
+    document.getElementById('filtroTipo').value = '';
+    document.getElementById('filtroFechaDesde').value = '';
+    document.getElementById('filtroFechaHasta').value = '';
+    document.getElementById('ordenarPor').value = 'fecha';
+    cargarTabla();
 }
 
 // ===================== LOG VISITAS TÉCNICAS =====================
@@ -2446,16 +2871,21 @@ function imprimirListaRutas() {
 }
 
 function exportarCSV() {
-    const casos = getCasos();
-    if (!casos.length) { alert('No hay datos'); return; }
+    if (!solicitudesCargadas || solicitudesCargadas.length === 0) { 
+        alert('No hay datos para exportar. Primero carga la tabla.'); 
+        return; 
+    }
     
     // Encabezados según estructura de Sheet
-    let csv = 'ID,FECHA_INGRESO,FUNCIONARIO,TIPO,NOMBRE,APELLIDO,TELEFONO,CALLE,NUMERO,DETALLE_UBICACION,UV,REQUIERE_VISITA,OBSERVACIONES,ESTADO\n';
-    casos.forEach(c => {
-        csv += `${c.id},${c.fechaIngreso},${c.funcionario},${c.tipo},"${c.nombre || ''}","${c.apellidos || ''}",${c.telefono},"${c.calle || c.direccion || ''}","${c.numero || ''}","${c.detalleUbicacion || ''}","${c.uv || ''}",${c.requiereVisita || c.necesitaInspeccion || ''},"${c.observaciones || ''}",${c.estado}\n`;
+    let csv = 'ID,FECHA_INGRESO,TIPO,NOMBRE,APELLIDO,TELEFONO,DIRECCION,DETALLE,UV,ESTADO\n';
+    solicitudesCargadas.forEach(c => {
+        const direccion = c.direccion || (c.calle + ' ' + c.numero) || '';
+        csv += `"${c.id || ''}","${formatearFecha(c.fechaIngreso)}","${c.tipo || ''}","${c.nombre || ''}","${c.apellidos || ''}","${c.telefono || ''}","${direccion}","${c.detalleUbicacion || ''}","${c.uv || ''}","${c.estado || ''}"\n`;
     });
     
-    const blob = new Blob([csv], {type: 'text/csv'});
+    // BOM para Excel reconozca UTF-8
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csv], {type: 'text/csv;charset=utf-8'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'sgrrv_casos_' + new Date().toISOString().split('T')[0] + '.csv';
@@ -2703,10 +3133,23 @@ function calcularMetricas(solicitudes) {
         porUV[uv] = (porUV[uv] || 0) + 1;
     });
     
+    // Función para parsear fecha de forma segura
+    function parseFecha(fecha) {
+        if (!fecha) return null;
+        // Si ya es Date
+        if (fecha instanceof Date) return fecha;
+        // Si es string
+        const d = new Date(fecha);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    
     // Solicitudes últimos 7 días
     const hace7dias = new Date();
     hace7dias.setDate(hace7dias.getDate() - 7);
-    const ultimos7dias = solicitudes.filter(s => new Date(s.fechaIngreso) >= hace7dias).length;
+    const ultimos7dias = solicitudes.filter(s => {
+        const f = parseFecha(s.fechaIngreso);
+        return f && f >= hace7dias;
+    }).length;
     
     // Tendencia por día (últimos 7 días)
     const tendencia = {};
@@ -2717,9 +3160,12 @@ function calcularMetricas(solicitudes) {
         tendencia[fechaKey] = 0;
     }
     solicitudes.forEach(s => {
-        const fechaKey = new Date(s.fechaIngreso).toISOString().slice(0,10);
-        if (tendencia.hasOwnProperty(fechaKey)) {
-            tendencia[fechaKey]++;
+        const f = parseFecha(s.fechaIngreso);
+        if (f) {
+            const fechaKey = f.toISOString().slice(0,10);
+            if (tendencia.hasOwnProperty(fechaKey)) {
+                tendencia[fechaKey]++;
+            }
         }
     });
     
@@ -2740,12 +3186,18 @@ function calcularMetricas(solicitudes) {
 }
 
 function mostrarInforme(numero, fecha, metricas, anterior) {
-    // Header
+    // Header pantalla
     document.getElementById('informeNumero').textContent = numero;
     document.getElementById('informeFecha').textContent = fecha.toLocaleString('es-CL');
     document.getElementById('informeAnterior').textContent = anterior ? 
         `${anterior.numero} (${new Date(anterior.fecha).toLocaleDateString('es-CL')})` : 
         'Primer informe';
+    
+    // Header impresión
+    document.getElementById('printNumero').textContent = numero;
+    document.getElementById('printFecha').textContent = fecha.toLocaleString('es-CL');
+    document.getElementById('printComparado').textContent = anterior ? 
+        `vs ${anterior.numero}` : 'Primer informe';
     
     // KPIs
     const kpisContainer = document.getElementById('kpisContainer');
