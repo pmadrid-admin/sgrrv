@@ -203,6 +203,8 @@
             font-size: 12px;
             font-weight: 500;
             transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
         #headerTop .btn-bigmac:hover { background: #FFE0B2; }
         body.dark-mode #headerTop .btn-bigmac { background: #3d2a1a; color: #E07020; border-color: #E07020; }
@@ -987,7 +989,7 @@
                 <span class="user-name" id="headerNombre"></span>
                 <span class="user-role" id="headerRol"></span>
             </div>
-            <button class="btn-bigmac" onclick="window.open('mi_recoleccion.html', '_blank')">🍔 Big Mac</button>
+            <a href="mi_recoleccion.html" target="_blank" class="btn-bigmac">🍔 Big Mac</a>
             <button class="btn-salir" onclick="cerrarSesion()">SALIR</button>
         </div>
     </div>
