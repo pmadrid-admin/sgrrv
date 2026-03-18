@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* PALETA MUNICIPALIDAD DE HUECHURABA */
         :root {
@@ -324,6 +325,59 @@
             background: #0d1117;
             border-color: #30363d;
             color: #58a6ff;
+        }
+        
+        /* KPI CARDS INFORME */
+        .kpi-card {
+            background: var(--fondo-seccion);
+            border: 1px solid var(--borde);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .kpi-card .kpi-valor {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--azul-principal);
+        }
+        .kpi-card .kpi-label {
+            font-size: 11px;
+            color: var(--texto-secundario);
+            margin-top: 5px;
+        }
+        .kpi-card .kpi-variacion {
+            font-size: 12px;
+            margin-top: 8px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        .kpi-card .kpi-variacion.positiva {
+            background: #d4edda;
+            color: #155724;
+        }
+        .kpi-card .kpi-variacion.negativa {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .kpi-card .kpi-variacion.neutra {
+            background: #e8e8e8;
+            color: #666;
+        }
+        body.dark-mode .kpi-card .kpi-valor {
+            color: #58a6ff;
+        }
+        body.dark-mode .kpi-card .kpi-variacion.positiva {
+            background: #1a4d2e;
+            color: #56d364;
+        }
+        body.dark-mode .kpi-card .kpi-variacion.negativa {
+            background: #4d1a1a;
+            color: #f85149;
+        }
+        body.dark-mode .kpi-card .kpi-variacion.neutra {
+            background: #21262d;
+            color: #8b949e;
         }
         
         /* MENSAJES */
@@ -973,6 +1027,86 @@
                 </table>
             </div>
         </div>
+
+        <!-- INFORMES GERENCIA (Solo Admin 👑) -->
+        <div id="sec-informes" class="section">
+            <h2>👑 Informes Gerencia</h2>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="btn" onclick="generarInforme()">📊 GENERAR INFORME</button>
+                <button class="btn-panel" onclick="verHistorialInformes()">📋 HISTORIAL</button>
+            </div>
+            
+            <div id="informes_msg"></div>
+            
+            <!-- Contenedor del informe -->
+            <div id="informeContainer" style="display: none;">
+                <!-- Header del informe -->
+                <div id="informeHeader" style="background: var(--fondo-seccion); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--borde);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="font-size: 18px; font-weight: 700; color: var(--azul-principal);" id="informeNumero"></span>
+                            <br><small id="informeFecha" style="color: var(--texto-secundario);"></small>
+                        </div>
+                        <div style="text-align: right;">
+                            <small style="color: var(--texto-secundario);">Comparado con:</small>
+                            <br><span id="informeAnterior" style="font-size: 12px;"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- KPIs principales -->
+                <div id="kpisContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                </div>
+                
+                <!-- Gráficos -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                    <div style="background: var(--fondo-seccion); padding: 15px; border-radius: 8px; border: 1px solid var(--borde);">
+                        <h3 style="margin: 0 0 15px 0; font-size: 14px; color: var(--texto-secundario);">Solicitudes por Estado</h3>
+                        <canvas id="chartEstados" height="200"></canvas>
+                    </div>
+                    <div style="background: var(--fondo-seccion); padding: 15px; border-radius: 8px; border: 1px solid var(--borde);">
+                        <h3 style="margin: 0 0 15px 0; font-size: 14px; color: var(--texto-secundario);">Solicitudes por Tipo</h3>
+                        <canvas id="chartTipos" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                    <div style="background: var(--fondo-seccion); padding: 15px; border-radius: 8px; border: 1px solid var(--borde);">
+                        <h3 style="margin: 0 0 15px 0; font-size: 14px; color: var(--texto-secundario);">Solicitudes por UV</h3>
+                        <canvas id="chartUV" height="200"></canvas>
+                    </div>
+                    <div style="background: var(--fondo-seccion); padding: 15px; border-radius: 8px; border: 1px solid var(--borde);">
+                        <h3 style="margin: 0 0 15px 0; font-size: 14px; color: var(--texto-secundario);">Tendencia Semanal</h3>
+                        <canvas id="chartTendencia" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Botón imprimir -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn-panel" onclick="imprimirInforme()">🖨️ IMPRIMIR / GUARDAR PDF</button>
+                </div>
+            </div>
+            
+            <!-- Historial de informes -->
+            <div id="historialContainer" style="display: none;">
+                <h3 style="margin-bottom: 15px; font-size: 14px; color: var(--texto-secundario);">Historial de Informes Generados</h3>
+                <div class="tabla-container">
+                    <table id="tablaHistorial">
+                        <thead>
+                            <tr>
+                                <th>N° INFORME</th>
+                                <th>FECHA</th>
+                                <th>TOTAL SOLICITUDES</th>
+                                <th>VARIACIÓN</th>
+                                <th>ACCIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -984,7 +1118,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwlmWxLFq3jZD99ygE3Cy37
 const PERMISOS = {
     'OPERADOR': ['f1', 'f3', 'ver'],
     'INSPECTOR': ['f2', 'f4', 'ver'],
-    'ADMINISTRADOR': ['f1', 'f2', 'f3', 'f4', 'visitas', 'ruta', 'ver']
+    'ADMINISTRADOR': ['f1', 'f2', 'f3', 'f4', 'visitas', 'ruta', 'ver', 'informes']
 };
 
 const NOMBRES_TABS = {
@@ -994,7 +1128,8 @@ const NOMBRES_TABS = {
     'f4': 'Cierre Solicitud',
     'visitas': 'Panel de Visitas',
     'ruta': 'Panel Rutas',
-    'ver': 'Ver Casos'
+    'ver': 'Ver Casos',
+    'informes': '👑 Informes'
 };
 
 let usuarioActual = null;
@@ -2487,6 +2622,317 @@ function togglePassword() {
             <circle cx="12" cy="12" r="3"></circle>
         `;
     }
+}
+
+// ===================== MÓDULO INFORMES GERENCIA =====================
+let chartEstados = null;
+let chartTipos = null;
+let chartUV = null;
+let chartTendencia = null;
+let historialInformes = JSON.parse(localStorage.getItem('sgrrv_informes') || '[]');
+
+async function generarInforme() {
+    const msg = document.getElementById('informes_msg');
+    msg.innerHTML = '<div class="msg ok">Generando informe...</div>';
+    
+    try {
+        // Obtener datos actuales
+        const response = await apiCall('getSolicitudes');
+        if (!response.success) throw new Error('Error al obtener datos');
+        
+        const solicitudes = response.data;
+        const ahora = new Date();
+        
+        // Generar número de informe: ISG260319_001
+        const fechaStr = ahora.toISOString().slice(2,10).replace(/-/g,'');
+        const hoy = fechaStr;
+        const informesHoy = historialInformes.filter(i => i.numero.includes(hoy)).length;
+        const correlativo = String(informesHoy + 1).padStart(3, '0');
+        const numeroInforme = `ISG${hoy}_${correlativo}`;
+        
+        // Calcular métricas actuales
+        const metricas = calcularMetricas(solicitudes);
+        
+        // Obtener informe anterior para comparar
+        const informeAnterior = historialInformes.length > 0 ? historialInformes[historialInformes.length - 1] : null;
+        
+        // Mostrar informe
+        mostrarInforme(numeroInforme, ahora, metricas, informeAnterior);
+        
+        // Guardar en historial
+        const nuevoInforme = {
+            numero: numeroInforme,
+            fecha: ahora.toISOString(),
+            metricas: metricas
+        };
+        historialInformes.push(nuevoInforme);
+        localStorage.setItem('sgrrv_informes', JSON.stringify(historialInformes));
+        
+        msg.innerHTML = '';
+        document.getElementById('informeContainer').style.display = 'block';
+        document.getElementById('historialContainer').style.display = 'none';
+        
+    } catch (error) {
+        msg.innerHTML = `<div class="msg err">Error: ${error.message}</div>`;
+    }
+}
+
+function calcularMetricas(solicitudes) {
+    const total = solicitudes.length;
+    
+    // Por estado
+    const porEstado = {};
+    const estados = ['INGRESADO', 'PARA VISITA', 'PARA RETIRO', 'RETIRO 24HRS', 'PROGRAMADO', 'RETIRADO', 'FALLIDO', 'NO PROCEDE', 'PENDIENTE DE PAGO'];
+    estados.forEach(e => porEstado[e] = 0);
+    solicitudes.forEach(s => {
+        const estado = s[13] || 'INGRESADO';
+        porEstado[estado] = (porEstado[estado] || 0) + 1;
+    });
+    
+    // Por tipo
+    const porTipo = {};
+    solicitudes.forEach(s => {
+        const tipo = s[3] || 'OTRO';
+        porTipo[tipo] = (porTipo[tipo] || 0) + 1;
+    });
+    
+    // Por UV
+    const porUV = {};
+    solicitudes.forEach(s => {
+        const uv = s[10] || 'Sin UV';
+        porUV[uv] = (porUV[uv] || 0) + 1;
+    });
+    
+    // Solicitudes últimos 7 días
+    const hace7dias = new Date();
+    hace7dias.setDate(hace7dias.getDate() - 7);
+    const ultimos7dias = solicitudes.filter(s => new Date(s[1]) >= hace7dias).length;
+    
+    // Tendencia por día (últimos 7 días)
+    const tendencia = {};
+    for (let i = 6; i >= 0; i--) {
+        const fecha = new Date();
+        fecha.setDate(fecha.getDate() - i);
+        const fechaKey = fecha.toISOString().slice(0,10);
+        tendencia[fechaKey] = 0;
+    }
+    solicitudes.forEach(s => {
+        const fechaKey = new Date(s[1]).toISOString().slice(0,10);
+        if (tendencia.hasOwnProperty(fechaKey)) {
+            tendencia[fechaKey]++;
+        }
+    });
+    
+    // Retiradas vs Pendientes
+    const retiradas = porEstado['RETIRADO'] || 0;
+    const pendientes = total - retiradas - (porEstado['NO PROCEDE'] || 0) - (porEstado['FALLIDO'] || 0);
+    
+    return {
+        total,
+        porEstado,
+        porTipo,
+        porUV,
+        ultimos7dias,
+        tendencia,
+        retiradas,
+        pendientes
+    };
+}
+
+function mostrarInforme(numero, fecha, metricas, anterior) {
+    // Header
+    document.getElementById('informeNumero').textContent = numero;
+    document.getElementById('informeFecha').textContent = fecha.toLocaleString('es-CL');
+    document.getElementById('informeAnterior').textContent = anterior ? 
+        `${anterior.numero} (${new Date(anterior.fecha).toLocaleDateString('es-CL')})` : 
+        'Primer informe';
+    
+    // KPIs
+    const kpisContainer = document.getElementById('kpisContainer');
+    const metricasAnt = anterior ? anterior.metricas : null;
+    
+    kpisContainer.innerHTML = `
+        ${crearKPI('Total Solicitudes', metricas.total, metricasAnt?.total)}
+        ${crearKPI('Últimos 7 días', metricas.ultimos7dias, metricasAnt?.ultimos7dias)}
+        ${crearKPI('Retiradas', metricas.retiradas, metricasAnt?.retiradas)}
+        ${crearKPI('Pendientes', metricas.pendientes, metricasAnt?.pendientes)}
+    `;
+    
+    // Gráficos
+    renderizarGraficos(metricas);
+}
+
+function crearKPI(label, valor, valorAnterior) {
+    let variacionHTML = '';
+    if (valorAnterior !== null && valorAnterior !== undefined) {
+        const diff = valor - valorAnterior;
+        const signo = diff > 0 ? '+' : '';
+        const clase = diff > 0 ? 'positiva' : (diff < 0 ? 'negativa' : 'neutra');
+        variacionHTML = `<div class="kpi-variacion ${clase}">${signo}${diff}</div>`;
+    }
+    
+    return `
+        <div class="kpi-card">
+            <div class="kpi-valor">${valor}</div>
+            <div class="kpi-label">${label}</div>
+            ${variacionHTML}
+        </div>
+    `;
+}
+
+function renderizarGraficos(metricas) {
+    const isDark = document.body.classList.contains('dark-mode');
+    const textColor = isDark ? '#e6edf3' : '#2C3E50';
+    const gridColor = isDark ? '#30363d' : '#ddd';
+    
+    // Destruir gráficos anteriores
+    if (chartEstados) chartEstados.destroy();
+    if (chartTipos) chartTipos.destroy();
+    if (chartUV) chartUV.destroy();
+    if (chartTendencia) chartTendencia.destroy();
+    
+    // Colores para gráficos
+    const colores = ['#0054A6', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1', '#fd7e14', '#20c997', '#e83e8c'];
+    
+    // Gráfico Estados (Doughnut)
+    const ctxEstados = document.getElementById('chartEstados').getContext('2d');
+    const estadosData = Object.entries(metricas.porEstado).filter(([k,v]) => v > 0);
+    chartEstados = new Chart(ctxEstados, {
+        type: 'doughnut',
+        data: {
+            labels: estadosData.map(([k]) => k),
+            datasets: [{
+                data: estadosData.map(([k,v]) => v),
+                backgroundColor: colores.slice(0, estadosData.length)
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { 
+                    position: 'right',
+                    labels: { color: textColor, font: { size: 10 } }
+                }
+            }
+        }
+    });
+    
+    // Gráfico Tipos (Bar)
+    const ctxTipos = document.getElementById('chartTipos').getContext('2d');
+    const tiposData = Object.entries(metricas.porTipo);
+    chartTipos = new Chart(ctxTipos, {
+        type: 'bar',
+        data: {
+            labels: tiposData.map(([k]) => k),
+            datasets: [{
+                label: 'Solicitudes',
+                data: tiposData.map(([k,v]) => v),
+                backgroundColor: '#0054A6'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: textColor }, grid: { color: gridColor } },
+                x: { ticks: { color: textColor }, grid: { display: false } }
+            }
+        }
+    });
+    
+    // Gráfico UV (Bar horizontal)
+    const ctxUV = document.getElementById('chartUV').getContext('2d');
+    const uvData = Object.entries(metricas.porUV).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    chartUV = new Chart(ctxUV, {
+        type: 'bar',
+        data: {
+            labels: uvData.map(([k]) => k),
+            datasets: [{
+                label: 'Solicitudes',
+                data: uvData.map(([k,v]) => v),
+                backgroundColor: '#28a745'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { beginAtZero: true, ticks: { color: textColor }, grid: { color: gridColor } },
+                y: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } }
+            }
+        }
+    });
+    
+    // Gráfico Tendencia (Line)
+    const ctxTendencia = document.getElementById('chartTendencia').getContext('2d');
+    const tendenciaData = Object.entries(metricas.tendencia);
+    chartTendencia = new Chart(ctxTendencia, {
+        type: 'line',
+        data: {
+            labels: tendenciaData.map(([k]) => k.slice(5)),
+            datasets: [{
+                label: 'Solicitudes/día',
+                data: tendenciaData.map(([k,v]) => v),
+                borderColor: '#0054A6',
+                backgroundColor: 'rgba(0, 84, 166, 0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { color: textColor }, grid: { color: gridColor } },
+                x: { ticks: { color: textColor }, grid: { display: false } }
+            }
+        }
+    });
+}
+
+function verHistorialInformes() {
+    document.getElementById('informeContainer').style.display = 'none';
+    document.getElementById('historialContainer').style.display = 'block';
+    
+    const tbody = document.querySelector('#tablaHistorial tbody');
+    tbody.innerHTML = '';
+    
+    if (historialInformes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--texto-secundario);">No hay informes generados</td></tr>';
+        return;
+    }
+    
+    historialInformes.slice().reverse().forEach((informe, idx) => {
+        const anterior = idx < historialInformes.length - 1 ? historialInformes[historialInformes.length - 2 - idx] : null;
+        const variacion = anterior ? informe.metricas.total - anterior.metricas.total : 0;
+        const signo = variacion > 0 ? '+' : '';
+        const colorVar = variacion > 0 ? 'color: #28a745;' : (variacion < 0 ? 'color: #dc3545;' : '');
+        
+        tbody.innerHTML += `
+            <tr>
+                <td>${informe.numero}</td>
+                <td>${new Date(informe.fecha).toLocaleString('es-CL')}</td>
+                <td style="text-align: center;">${informe.metricas.total}</td>
+                <td style="text-align: center; ${colorVar}">${signo}${variacion}</td>
+                <td><button class="btn-small" onclick="verInformeHistorico(${historialInformes.length - 1 - idx})">Ver</button></td>
+            </tr>
+        `;
+    });
+}
+
+function verInformeHistorico(index) {
+    const informe = historialInformes[index];
+    const anterior = index > 0 ? historialInformes[index - 1] : null;
+    
+    mostrarInforme(informe.numero, new Date(informe.fecha), informe.metricas, anterior);
+    
+    document.getElementById('informeContainer').style.display = 'block';
+    document.getElementById('historialContainer').style.display = 'none';
+}
+
+function imprimirInforme() {
+    window.print();
 }
 
 // Verificar sesión al cargar
