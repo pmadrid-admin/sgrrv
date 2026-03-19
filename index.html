@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGRRV Huechuraba v18c</title>
+    <title>SGRRV Huechuraba v19</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
@@ -775,6 +775,17 @@
             margin: 0 auto 15px auto;
         }
         .modal-box .icon-ok svg { stroke: white; }
+        .modal-box .icon-warning {
+            width: 60px;
+            height: 60px;
+            background: #FFF3E0;
+            border: 3px solid #E07020;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px auto;
+        }
         .modal-box h3 { margin: 0 0 10px 0; color: var(--azul-principal); font-size: 18px; }
         .modal-box p { margin: 0 0 20px 0; color: #666; font-size: 14px; }
         .modal-box .modal-id { font-size: 20px; font-weight: 400; color: var(--azul-principal); margin: 10px 0; }
@@ -1758,6 +1769,9 @@ function generarID() {
     return `RSV${añoCorto}-${String(num).padStart(4, '0')}`;
 }
 
+// Variable para guardar solicitud pendiente (cuando hay duplicado)
+let solicitudPendiente = null;
+
 // ===================== F1: INGRESO =====================
 async function guardarF1() {
     // Campos obligatorios
@@ -1784,7 +1798,62 @@ async function guardarF1() {
     const calle = document.getElementById('f1_calle').value.toUpperCase();
     const numero = document.getElementById('f1_numero').value.toUpperCase();
     
-    const solicitud = {
+    // VERIFICAR DUPLICADO: buscar si existe misma calle + número
+    const duplicado = solicitudesCargadas.find(s => {
+        const calleExistente = (s.calle || '').toUpperCase().trim();
+        const numeroExistente = (s.numero || '').toUpperCase().trim();
+        return calleExistente === calle.trim() && numeroExistente === numero.trim();
+    });
+    
+    if (duplicado) {
+        // Guardar datos para uso posterior
+        solicitudPendiente = {
+            funcionario: usuarioActual.nombre,
+            tipo: document.getElementById('f1_tipo').value,
+            nombre: nombre,
+            apellidos: apellidos,
+            telefono: document.getElementById('f1_telefono').value,
+            calle: calle,
+            numero: numero,
+            detalleUbicacion: document.getElementById('f1_detalle_ubicacion').value.toUpperCase(),
+            uv: document.getElementById('f1_uv').value.toUpperCase(),
+            requiereVisita: document.getElementById('f1_visita').value,
+            observaciones: document.getElementById('f1_obs').value
+        };
+        
+        // Mostrar modal de alerta
+        document.getElementById('modalIdDuplicado').textContent = `ID N° ${duplicado.id}`;
+        document.getElementById('modalDuplicado').classList.add('active');
+        return;
+    }
+    
+    // Si no hay duplicado, proceder normalmente
+    await procesarGuardadoF1(nombre, apellidos, calle, numero);
+}
+
+// Función para confirmar o cancelar duplicado
+async function confirmarDuplicado(confirmar) {
+    document.getElementById('modalDuplicado').classList.remove('active');
+    
+    if (confirmar && solicitudPendiente) {
+        // Usuario confirmó: guardar de todas formas
+        await procesarGuardadoF1(
+            solicitudPendiente.nombre,
+            solicitudPendiente.apellidos,
+            solicitudPendiente.calle,
+            solicitudPendiente.numero
+        );
+    } else {
+        // Usuario canceló
+        mostrarMsg('f1_msg', 'Ingreso cancelado', 'err');
+    }
+    
+    solicitudPendiente = null;
+}
+
+// Función que procesa el guardado real
+async function procesarGuardadoF1(nombre, apellidos, calle, numero) {
+    const solicitud = solicitudPendiente || {
         funcionario: usuarioActual.nombre,
         tipo: document.getElementById('f1_tipo').value,
         nombre: nombre,
@@ -1809,6 +1878,9 @@ async function guardarF1() {
     btnGuardar.disabled = false;
     
     if (result.success) {
+        // Recargar solicitudes para tener la nueva en memoria
+        await cargarSolicitudes();
+        
         // Mostrar modal de confirmación
         document.getElementById('modalIdSolicitud').textContent = result.id;
         document.getElementById('modalDetalle').textContent = `${nombre} ${apellidos} - ${calle} ${numero}`;
@@ -1818,6 +1890,8 @@ async function guardarF1() {
     } else {
         mostrarMsg('f1_msg', 'Error: ' + (result.error || 'No se pudo guardar'), 'err');
     }
+    
+    solicitudPendiente = null;
 }
 
 // ===================== F2: VISITA TÉCNICA =====================
@@ -3773,6 +3847,24 @@ verificarSesion();
         <div class="modal-id" id="modalIdSolicitud"></div>
         <p id="modalDetalle"></p>
         <button onclick="cerrarModal()">ACEPTAR</button>
+    </div>
+</div>
+
+<!-- MODAL ALERTA DUPLICADO -->
+<div class="modal-overlay" id="modalDuplicado">
+    <div class="modal-box">
+        <div class="icon-warning">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#E07020" stroke-width="3">
+                <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+            </svg>
+        </div>
+        <h3 style="color: #E07020;">DIRECCIÓN INGRESADA ANTERIORMENTE</h3>
+        <div class="modal-id" id="modalIdDuplicado" style="color: #E07020;"></div>
+        <p style="margin: 15px 0;">¿Corresponde a nuevo ingreso?</p>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button onclick="confirmarDuplicado(true)" style="background: #28a745;">SÍ</button>
+            <button onclick="confirmarDuplicado(false)" style="background: #dc3545;">NO</button>
+        </div>
     </div>
 </div>
 
