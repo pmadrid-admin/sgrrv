@@ -415,13 +415,34 @@ function setFiltro(filtro) {
 }
 
 // Filtrar por fecha
+// Parsear fecha de forma robusta
+function parsearFecha(fechaStr) {
+    if (!fechaStr) return null;
+    
+    // Si ya es Date
+    if (fechaStr instanceof Date) return fechaStr;
+    
+    // Intentar parsear directamente
+    let fecha = new Date(fechaStr);
+    if (!isNaN(fecha.getTime())) return fecha;
+    
+    // Intentar formato DD-MM-YYYY o DD/MM/YYYY
+    const match = String(fechaStr).match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+    if (match) {
+        fecha = new Date(match[3], match[2] - 1, match[1]);
+        if (!isNaN(fecha.getTime())) return fecha;
+    }
+    
+    return null;
+}
+
 function filtrarPorFecha(solicitudes) {
     const ahora = new Date();
     const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
     
     return solicitudes.filter(s => {
-        const fecha = new Date(s.fechaIngreso);
-        if (isNaN(fecha.getTime())) return false;
+        const fecha = parsearFecha(s.fechaIngreso);
+        if (!fecha) return filtroActual === 'todo'; // Si no hay fecha, solo mostrar en "todo"
         
         switch (filtroActual) {
             case 'hoy':
@@ -511,10 +532,15 @@ function renderizarDatos() {
     
     // Estadísticas footer
     const total = solicitudesFiltradas.length;
-    const hoy = new Date().toISOString().slice(0, 10);
+    const hoyStr = new Date().toISOString().slice(0, 10);
     const solicitudesHoy = todasLasSolicitudes.filter(s => {
-        const fecha = new Date(s.fechaIngreso).toISOString().slice(0, 10);
-        return fecha === hoy;
+        const fecha = parsearFecha(s.fechaIngreso);
+        if (!fecha) return false;
+        try {
+            return fecha.toISOString().slice(0, 10) === hoyStr;
+        } catch (e) {
+            return false;
+        }
     }).length;
     
     const pendientes = grupos['ingresado'].length + 
@@ -529,6 +555,9 @@ function renderizarDatos() {
 
 // Cargar datos - mismo método que SGRRV
 async function cargarDatos() {
+    console.log('Iniciando carga de datos...');
+    console.log('API URL:', API_URL);
+    
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -536,26 +565,33 @@ async function cargarDatos() {
             body: JSON.stringify({ action: 'obtenerSolicitudes' })
         });
         
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
         const result = await response.json();
+        console.log('Result:', result);
         
         if (!result.success) {
             console.error('Error:', result.error);
-            mostrarError();
+            mostrarError('API error: ' + result.error);
             return;
         }
         
         todasLasSolicitudes = result.solicitudes || [];
+        console.log('Solicitudes cargadas:', todasLasSolicitudes.length);
         renderizarDatos();
         
     } catch (error) {
         console.error('Error cargando datos:', error);
-        mostrarError();
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        mostrarError(error.message);
     }
 }
 
-function mostrarError() {
+function mostrarError(msg) {
     document.querySelectorAll('.columna-body').forEach(col => {
-        col.innerHTML = '<div class="empty">Error de conexión. Recargar página.</div>';
+        col.innerHTML = `<div class="empty">Error: ${msg || 'conexión'}</div>`;
     });
 }
 
