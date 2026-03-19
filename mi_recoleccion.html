@@ -527,20 +527,20 @@ function renderizarDatos() {
     document.getElementById('stat-pendientes').textContent = pendientes;
 }
 
-// Cargar datos
+// Cargar datos - mismo método que SGRRV
 async function cargarDatos() {
     try {
-        // Usar GET con parámetros para evitar problemas CORS
-        const url = API_URL + '?action=obtenerSolicitudes';
-        const response = await fetch(url, {
-            method: 'GET',
-            redirect: 'follow'
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: 'obtenerSolicitudes' })
         });
         
         const result = await response.json();
         
         if (!result.success) {
             console.error('Error:', result.error);
+            mostrarError();
             return;
         }
         
@@ -549,11 +549,14 @@ async function cargarDatos() {
         
     } catch (error) {
         console.error('Error cargando datos:', error);
-        // Mostrar mensaje en las columnas
-        document.querySelectorAll('.columna-body').forEach(col => {
-            col.innerHTML = '<div class="empty">Error de conexión</div>';
-        });
+        mostrarError();
     }
+}
+
+function mostrarError() {
+    document.querySelectorAll('.columna-body').forEach(col => {
+        col.innerHTML = '<div class="empty">Error de conexión. Recargar página.</div>';
+    });
 }
 
 // Inicializar
