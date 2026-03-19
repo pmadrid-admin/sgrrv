@@ -1635,9 +1635,12 @@ function verificarSesion() {
 }
 
 // ===================== APP =====================
-function iniciarApp() {
+async function iniciarApp() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('appScreen').style.display = 'block';
+    
+    // Cargar solicitudes en memoria para verificar duplicados
+    await cargarSolicitudes();
     
     // Header - Corona para el admin principal
     const esAdmin = usuarioActual.id && usuarioActual.id.toLowerCase() === 'pmadrid';
@@ -2297,7 +2300,20 @@ async function guardarF4() {
 
 // ===================== TABLA =====================
 // Variable global para almacenar solicitudes cargadas
+// Variable global para todas las solicitudes (para verificar duplicados)
 let solicitudesCargadas = [];
+
+// Función para cargar solicitudes en memoria (usada para verificar duplicados)
+async function cargarSolicitudes() {
+    try {
+        const result = await apiCall('obtenerSolicitudes', {});
+        if (result.success && result.solicitudes) {
+            solicitudesCargadas = result.solicitudes.slice();
+        }
+    } catch (e) {
+        console.log('Error cargando solicitudes:', e);
+    }
+}
 
 async function cargarTabla() {
     const tbody = document.querySelector('#tablaCasos tbody');
