@@ -4,295 +4,326 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Recolección - SGRRV Huechuraba</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
-            color: #e6edf3;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        /* HEADER */
-        .header {
-            background: linear-gradient(90deg, #0054A6 0%, #003D7A 100%);
-            padding: 12px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .header h1 {
-            font-size: 22px;
-            font-weight: 700;
-        }
-        
-        .header-center {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .filtro-btn {
-            padding: 6px 14px;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: transparent;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 400;
-            transition: all 0.2s;
-        }
-        
-        .filtro-btn:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        
-        .filtro-btn.active {
-            background: white;
-            color: #003D7A;
-            font-weight: 700;
-        }
-        
-        .header-info {
-            text-align: right;
-            font-size: 12px;
-            color: rgba(255,255,255,0.8);
-        }
-        
-        .header-info .fecha {
-            font-size: 14px;
-            font-weight: 700;
-        }
-        
-        .header-info .actualizacion {
-            margin-top: 3px;
-            font-size: 11px;
-            opacity: 0.7;
-        }
-        
-        /* CONTENEDOR PRINCIPAL */
-        .container {
-            padding: 20px;
-            display: flex;
-            gap: 15px;
-            height: calc(100vh - 110px);
-            overflow: hidden;
-        }
-        
-        /* COLUMNAS DE ESTADO */
-        .columna {
-            flex: 1;
-            background: #161b22;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid #30363d;
-        }
-        
-        .columna-header {
-            padding: 12px 15px;
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #30363d;
-        }
-        
-        .columna.ingresado .columna-header { background: linear-gradient(90deg, #1a3a5c 0%, #0d1117 100%); }
-        .columna.para-visita .columna-header { background: linear-gradient(90deg, #5c4a1a 0%, #0d1117 100%); }
-        .columna.programado .columna-header { background: linear-gradient(90deg, #3a1a5c 0%, #0d1117 100%); }
-        .columna.para-retiro .columna-header { background: linear-gradient(90deg, #5c2a1a 0%, #0d1117 100%); }
-        .columna.retirado .columna-header { background: linear-gradient(90deg, #1a5c2a 0%, #0d1117 100%); }
-        .columna.otros .columna-header { background: linear-gradient(90deg, #3d3d3d 0%, #0d1117 100%); }
-        
-        .contador {
-            background: rgba(255,255,255,0.15);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
-        
-        .columna-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-        
-        /* TARJETAS */
-        .tarjeta {
-            background: #21262d;
-            border-radius: 8px;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            border-left: 4px solid #30363d;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .tarjeta:hover {
-            transform: translateX(3px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        
-        .tarjeta.ingresado { border-left-color: #58a6ff; }
-        .tarjeta.para-visita { border-left-color: #d29922; }
-        .tarjeta.programado { border-left-color: #a371f7; }
-        .tarjeta.para-retiro { border-left-color: #f85149; }
-        .tarjeta.retirado { border-left-color: #3fb950; }
-        .tarjeta.otros { border-left-color: #8b949e; }
-        
-        .tarjeta-id {
-            font-size: 11px;
-            color: #8b949e;
-            margin-bottom: 4px;
-        }
-        
-        .tarjeta-direccion {
-            font-size: 13px;
-            font-weight: 500;
-            color: #e6edf3;
-            line-height: 1.3;
-        }
-        
-        .tarjeta-tipo {
-            display: inline-block;
-            margin-top: 6px;
-            font-size: 10px;
-            padding: 2px 6px;
-            background: rgba(88, 166, 255, 0.15);
-            color: #58a6ff;
-            border-radius: 3px;
-            text-transform: uppercase;
-        }
-        
-        /* FOOTER */
-        .footer {
-            background: #0d1117;
-            padding: 10px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #30363d;
-        }
-        
-        .footer .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #8b949e;
-            font-size: 12px;
-        }
-        
-        .footer .logo img {
-            height: 30px;
-            opacity: 0.7;
-        }
-        
-        .footer .stats {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .footer .stat {
-            text-align: center;
-        }
-        
-        .footer .stat-valor {
-            font-size: 18px;
-            font-weight: 700;
-            color: #58a6ff;
-        }
-        
-        .footer .stat-label {
-            font-size: 10px;
-            color: #8b949e;
-        }
-        
-        /* LOADING */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #8b949e;
-            font-size: 14px;
-        }
-        
-        .loading::after {
-            content: '';
-            width: 20px;
-            height: 20px;
-            border: 2px solid #30363d;
-            border-top-color: #58a6ff;
-            border-radius: 50%;
-            margin-left: 10px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* EMPTY STATE */
-        .empty {
-            text-align: center;
-            padding: 30px;
-            color: #8b949e;
-            font-size: 12px;
-        }
-        
-        /* Scrollbar */
-        .columna-body::-webkit-scrollbar {
-            width: 6px;
-        }
-        .columna-body::-webkit-scrollbar-track {
-            background: #0d1117;
-        }
-        .columna-body::-webkit-scrollbar-thumb {
-            background: #30363d;
-            border-radius: 3px;
-        }
-        .columna-body::-webkit-scrollbar-thumb:hover {
-            background: #484f58;
-        }
-        
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .container {
-                flex-wrap: wrap;
-            }
-            .columna {
-                flex: 1 1 calc(33% - 10px);
-                min-width: 280px;
-                max-height: 350px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .columna {
-                flex: 1 1 100%;
-                max-height: 300px;
-            }
-            .header {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .header h1 {
-                font-size: 18px;
-            }
-            .header-center {
-                order: 3;
-            }
-        }
+/* ============================================
+   MI RECOLECCIÓN - GITHUB PRIMER LIGHT
+   ============================================ */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+}
+
+body {
+    background: #f6f8fa;
+    color: #1f2328;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* HEADER */
+.header {
+    background: #ffffff;
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #d0d7de;
+    box-shadow: 0 1px 3px rgba(31, 35, 40, 0.04);
+}
+
+.header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2328;
+}
+
+.header-center {
+    display: flex;
+    gap: 8px;
+}
+
+.filtro-btn {
+    padding: 8px 16px;
+    border: 1px solid #d0d7de;
+    background: #ffffff;
+    color: #656d76;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+
+.filtro-btn:hover {
+    background: #f6f8fa;
+    border-color: #1f2328;
+    color: #1f2328;
+}
+
+.filtro-btn.active {
+    background: #0969da;
+    border-color: #0969da;
+    color: #ffffff;
+}
+
+.header-info {
+    text-align: right;
+    font-size: 12px;
+    color: #656d76;
+}
+
+.header-info .fecha {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2328;
+}
+
+.header-info .actualizacion {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #656d76;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.container {
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    height: calc(100vh - 120px);
+    overflow: hidden;
+}
+
+/* COLUMNAS DE ESTADO */
+.columna {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #d0d7de;
+    box-shadow: 0 1px 3px rgba(31, 35, 40, 0.04);
+}
+
+.columna-header {
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #d0d7de;
+    color: #1f2328;
+}
+
+/* Colores sutiles para headers */
+.columna.ingresado .columna-header { background: linear-gradient(90deg, #ddf4ff 0%, #ffffff 100%); }
+.columna.para-visita .columna-header { background: linear-gradient(90deg, #fff8c5 0%, #ffffff 100%); }
+.columna.programado .columna-header { background: linear-gradient(90deg, #fbefff 0%, #ffffff 100%); }
+.columna.para-retiro .columna-header { background: linear-gradient(90deg, #ffebe9 0%, #ffffff 100%); }
+.columna.retirado .columna-header { background: linear-gradient(90deg, #dafbe1 0%, #ffffff 100%); }
+.columna.otros .columna-header { background: linear-gradient(90deg, #f6f8fa 0%, #ffffff 100%); }
+
+.contador {
+    background: #eaeef2;
+    color: #656d76;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.columna-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    background: #f6f8fa;
+}
+
+/* TARJETAS */
+.tarjeta {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1px solid #d0d7de;
+    border-left: 4px solid #d0d7de;
+    transition: all 0.15s;
+    box-shadow: 0 1px 2px rgba(31, 35, 40, 0.04);
+}
+
+.tarjeta:hover {
+    border-color: #0969da;
+    box-shadow: 0 4px 12px rgba(31, 35, 40, 0.08);
+    transform: translateY(-1px);
+}
+
+.tarjeta.ingresado { border-left-color: #0969da; }
+.tarjeta.para-visita { border-left-color: #9a6700; }
+.tarjeta.programado { border-left-color: #8250df; }
+.tarjeta.para-retiro { border-left-color: #cf222e; }
+.tarjeta.retirado { border-left-color: #1a7f37; }
+.tarjeta.otros { border-left-color: #656d76; }
+
+.tarjeta-id {
+    font-size: 11px;
+    color: #656d76;
+    margin-bottom: 6px;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+}
+
+.tarjeta-direccion {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f2328;
+    line-height: 1.4;
+}
+
+.tarjeta-tipo {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    padding: 3px 8px;
+    background: #ddf4ff;
+    color: #0969da;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+/* FOOTER */
+.footer {
+    background: #ffffff;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #d0d7de;
+}
+
+.footer .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #656d76;
+    font-size: 12px;
+}
+
+.footer .logo img {
+    height: 32px;
+    opacity: 0.8;
+}
+
+.footer .stats {
+    display: flex;
+    gap: 32px;
+}
+
+.footer .stat {
+    text-align: center;
+}
+
+.footer .stat-valor {
+    font-size: 20px;
+    font-weight: 600;
+    color: #0969da;
+}
+
+.footer .stat-label {
+    font-size: 11px;
+    color: #656d76;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* LOADING */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #656d76;
+    font-size: 14px;
+}
+
+.loading::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d0d7de;
+    border-top-color: #0969da;
+    border-radius: 50%;
+    margin-left: 10px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* EMPTY STATE */
+.empty {
+    text-align: center;
+    padding: 32px;
+    color: #656d76;
+    font-size: 13px;
+}
+
+/* Scrollbar */
+.columna-body::-webkit-scrollbar {
+    width: 8px;
+}
+.columna-body::-webkit-scrollbar-track {
+    background: #f6f8fa;
+}
+.columna-body::-webkit-scrollbar-thumb {
+    background: #d0d7de;
+    border-radius: 4px;
+}
+.columna-body::-webkit-scrollbar-thumb:hover {
+    background: #afb8c1;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .container {
+        flex-wrap: wrap;
+    }
+    .columna {
+        flex: 1 1 calc(33% - 12px);
+        min-width: 280px;
+        max-height: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .columna {
+        flex: 1 1 100%;
+        max-height: 300px;
+    }
+    .header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+    .header h1 {
+        font-size: 18px;
+    }
+    .header-center {
+        order: 3;
+    }
+    .container {
+        padding: 12px;
+    }
+    .footer {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+}
     </style>
 </head>
 <body>
@@ -414,35 +445,28 @@ function setFiltro(filtro) {
     renderizarDatos();
 }
 
-// Filtrar por fecha
 // Parsear fecha de forma robusta
 function parsearFecha(fechaStr) {
     if (!fechaStr) return null;
-    
-    // Si ya es Date
     if (fechaStr instanceof Date) return fechaStr;
-    
-    // Intentar parsear directamente
     let fecha = new Date(fechaStr);
     if (!isNaN(fecha.getTime())) return fecha;
-    
-    // Intentar formato DD-MM-YYYY o DD/MM/YYYY
     const match = String(fechaStr).match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
     if (match) {
         fecha = new Date(match[3], match[2] - 1, match[1]);
         if (!isNaN(fecha.getTime())) return fecha;
     }
-    
     return null;
 }
 
+// Filtrar por fecha
 function filtrarPorFecha(solicitudes) {
     const ahora = new Date();
     const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
     
     return solicitudes.filter(s => {
         const fecha = parsearFecha(s.fechaIngreso);
-        if (!fecha) return filtroActual === 'todo'; // Si no hay fecha, solo mostrar en "todo"
+        if (!fecha) return filtroActual === 'todo';
         
         switch (filtroActual) {
             case 'hoy':
@@ -499,7 +523,6 @@ function crearTarjeta(solicitud) {
 function renderizarDatos() {
     const solicitudesFiltradas = filtrarPorFecha(todasLasSolicitudes);
     
-    // Agrupar por columna
     const grupos = {
         'ingresado': [],
         'para-visita': [],
@@ -515,7 +538,6 @@ function renderizarDatos() {
         grupos[columna].push(s);
     });
     
-    // Renderizar columnas
     Object.keys(grupos).forEach(col => {
         const container = document.getElementById(`col-${col}`);
         const contador = document.getElementById(`cont-${col}`);
@@ -530,7 +552,6 @@ function renderizarDatos() {
         }
     });
     
-    // Estadísticas footer
     const total = solicitudesFiltradas.length;
     const hoyStr = new Date().toISOString().slice(0, 10);
     const solicitudesHoy = todasLasSolicitudes.filter(s => {
@@ -553,11 +574,8 @@ function renderizarDatos() {
     document.getElementById('stat-pendientes').textContent = pendientes;
 }
 
-// Cargar datos - mismo método que SGRRV
+// Cargar datos
 async function cargarDatos() {
-    console.log('Iniciando carga de datos...');
-    console.log('API URL:', API_URL);
-    
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -565,33 +583,26 @@ async function cargarDatos() {
             body: JSON.stringify({ action: 'obtenerSolicitudes' })
         });
         
-        console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
-        
         const result = await response.json();
-        console.log('Result:', result);
         
         if (!result.success) {
             console.error('Error:', result.error);
-            mostrarError('API error: ' + result.error);
+            mostrarError();
             return;
         }
         
         todasLasSolicitudes = result.solicitudes || [];
-        console.log('Solicitudes cargadas:', todasLasSolicitudes.length);
         renderizarDatos();
         
     } catch (error) {
         console.error('Error cargando datos:', error);
-        console.error('Error name:', error.name);
-        console.error('Error message:', error.message);
-        mostrarError(error.message);
+        mostrarError();
     }
 }
 
-function mostrarError(msg) {
+function mostrarError() {
     document.querySelectorAll('.columna-body').forEach(col => {
-        col.innerHTML = `<div class="empty">Error: ${msg || 'conexión'}</div>`;
+        col.innerHTML = '<div class="empty">Error de conexión. Recargar página.</div>';
     });
 }
 
