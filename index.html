@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGRRV Huechuraba v19a</title>
+    <title>SGRRV Huechuraba v19b</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
@@ -1635,12 +1635,9 @@ function verificarSesion() {
 }
 
 // ===================== APP =====================
-async function iniciarApp() {
+function iniciarApp() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('appScreen').style.display = 'block';
-    
-    // Cargar solicitudes en memoria para verificar duplicados
-    await cargarSolicitudes();
     
     // Header - Corona para el admin principal
     const esAdmin = usuarioActual.id && usuarioActual.id.toLowerCase() === 'pmadrid';
@@ -1772,10 +1769,10 @@ function generarID() {
     return `RSV${añoCorto}-${String(num).padStart(4, '0')}`;
 }
 
-// Variable para guardar solicitud pendiente (cuando hay duplicado)
+// ===================== F1: INGRESO =====================
+// Variable para solicitud pendiente (duplicados)
 let solicitudPendiente = null;
 
-// ===================== F1: INGRESO =====================
 async function guardarF1() {
     // Campos obligatorios
     const camposRequeridos = [
@@ -1801,7 +1798,6 @@ async function guardarF1() {
     const calle = document.getElementById('f1_calle').value.toUpperCase();
     const numero = document.getElementById('f1_numero').value.toUpperCase();
     
-    // Preparar solicitud
     const solicitud = {
         funcionario: usuarioActual.nombre,
         tipo: document.getElementById('f1_tipo').value,
@@ -1816,37 +1812,39 @@ async function guardarF1() {
         observaciones: document.getElementById('f1_obs').value
     };
     
-    // Cargar solicitudes actuales para verificar duplicados
-    await cargarSolicitudes();
-    
-    // VERIFICAR DUPLICADO: buscar si existe misma calle + número
-    const duplicado = solicitudesCargadas.find(s => {
-        const calleExistente = (s.calle || '').toUpperCase().trim();
-        const numeroExistente = (s.numero || '').toUpperCase().trim();
-        return calleExistente === calle.trim() && numeroExistente === numero.trim();
-    });
-    
-    if (duplicado) {
-        // Guardar datos para uso posterior
-        solicitudPendiente = solicitud;
-        
-        // Mostrar modal de alerta
-        document.getElementById('modalIdDuplicado').textContent = `ID N° ${duplicado.id}`;
-        document.getElementById('modalDuplicado').classList.add('active');
-        return;
+    // VERIFICAR DUPLICADO: obtener solicitudes y buscar misma calle + número
+    try {
+        const resp = await apiCall('obtenerSolicitudes', {});
+        if (resp.success && resp.solicitudes) {
+            const duplicado = resp.solicitudes.find(s => {
+                const calleExistente = (s.calle || '').toUpperCase().trim();
+                const numeroExistente = (s.numero || '').toUpperCase().trim();
+                return calleExistente === calle.trim() && numeroExistente === numero.trim();
+            });
+            
+            if (duplicado) {
+                // Guardar para uso posterior
+                solicitudPendiente = solicitud;
+                // Mostrar modal de alerta
+                document.getElementById('modalIdDuplicado').textContent = `ID N° ${duplicado.id}`;
+                document.getElementById('modalDuplicado').classList.add('active');
+                return;
+            }
+        }
+    } catch (e) {
+        console.log('Error verificando duplicados:', e);
     }
     
-    // Si no hay duplicado, guardar directamente
-    await guardarSolicitudEnBD(solicitud, nombre, apellidos, calle, numero);
+    // Si no hay duplicado, guardar normalmente
+    await ejecutarGuardado(solicitud, nombre, apellidos, calle, numero);
 }
 
-// Función para confirmar o cancelar duplicado
+// Confirmar o cancelar duplicado
 async function confirmarDuplicado(confirmar) {
     document.getElementById('modalDuplicado').classList.remove('active');
     
     if (confirmar && solicitudPendiente) {
-        // Usuario confirmó: guardar de todas formas
-        await guardarSolicitudEnBD(
+        await ejecutarGuardado(
             solicitudPendiente,
             solicitudPendiente.nombre,
             solicitudPendiente.apellidos,
@@ -1854,15 +1852,13 @@ async function confirmarDuplicado(confirmar) {
             solicitudPendiente.numero
         );
     } else {
-        // Usuario canceló
         mostrarMsg('f1_msg', 'Ingreso cancelado', 'err');
     }
-    
     solicitudPendiente = null;
 }
 
-// Función que guarda en la base de datos
-async function guardarSolicitudEnBD(solicitud, nombre, apellidos, calle, numero) {
+// Ejecutar guardado en BD
+async function ejecutarGuardado(solicitud, nombre, apellidos, calle, numero) {
     // Mostrar guardando
     const btnGuardar = document.querySelector('#sec-f1 .btn');
     btnGuardar.textContent = 'GUARDANDO...';
@@ -1874,9 +1870,6 @@ async function guardarSolicitudEnBD(solicitud, nombre, apellidos, calle, numero)
     btnGuardar.disabled = false;
     
     if (result.success) {
-        // Recargar solicitudes para tener la nueva en memoria
-        await cargarSolicitudes();
-        
         // Mostrar modal de confirmación
         document.getElementById('modalIdSolicitud').textContent = result.id;
         document.getElementById('modalDetalle').textContent = `${nombre} ${apellidos} - ${calle} ${numero}`;
@@ -1886,8 +1879,6 @@ async function guardarSolicitudEnBD(solicitud, nombre, apellidos, calle, numero)
     } else {
         mostrarMsg('f1_msg', 'Error: ' + (result.error || 'No se pudo guardar'), 'err');
     }
-    
-    solicitudPendiente = null;
 }
 
 // ===================== F2: VISITA TÉCNICA =====================
@@ -2293,20 +2284,7 @@ async function guardarF4() {
 
 // ===================== TABLA =====================
 // Variable global para almacenar solicitudes cargadas
-// Variable global para todas las solicitudes (para verificar duplicados)
 let solicitudesCargadas = [];
-
-// Función para cargar solicitudes en memoria (usada para verificar duplicados)
-async function cargarSolicitudes() {
-    try {
-        const result = await apiCall('obtenerSolicitudes', {});
-        if (result.success && result.solicitudes) {
-            solicitudesCargadas = result.solicitudes.slice();
-        }
-    } catch (e) {
-        console.log('Error cargando solicitudes:', e);
-    }
-}
 
 async function cargarTabla() {
     const tbody = document.querySelector('#tablaCasos tbody');
