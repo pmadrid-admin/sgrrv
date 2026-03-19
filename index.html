@@ -1801,62 +1801,8 @@ async function guardarF1() {
     const calle = document.getElementById('f1_calle').value.toUpperCase();
     const numero = document.getElementById('f1_numero').value.toUpperCase();
     
-    // VERIFICAR DUPLICADO: buscar si existe misma calle + número
-    const duplicado = solicitudesCargadas.find(s => {
-        const calleExistente = (s.calle || '').toUpperCase().trim();
-        const numeroExistente = (s.numero || '').toUpperCase().trim();
-        return calleExistente === calle.trim() && numeroExistente === numero.trim();
-    });
-    
-    if (duplicado) {
-        // Guardar datos para uso posterior
-        solicitudPendiente = {
-            funcionario: usuarioActual.nombre,
-            tipo: document.getElementById('f1_tipo').value,
-            nombre: nombre,
-            apellidos: apellidos,
-            telefono: document.getElementById('f1_telefono').value,
-            calle: calle,
-            numero: numero,
-            detalleUbicacion: document.getElementById('f1_detalle_ubicacion').value.toUpperCase(),
-            uv: document.getElementById('f1_uv').value.toUpperCase(),
-            requiereVisita: document.getElementById('f1_visita').value,
-            observaciones: document.getElementById('f1_obs').value
-        };
-        
-        // Mostrar modal de alerta
-        document.getElementById('modalIdDuplicado').textContent = `ID N° ${duplicado.id}`;
-        document.getElementById('modalDuplicado').classList.add('active');
-        return;
-    }
-    
-    // Si no hay duplicado, proceder normalmente
-    await procesarGuardadoF1(nombre, apellidos, calle, numero);
-}
-
-// Función para confirmar o cancelar duplicado
-async function confirmarDuplicado(confirmar) {
-    document.getElementById('modalDuplicado').classList.remove('active');
-    
-    if (confirmar && solicitudPendiente) {
-        // Usuario confirmó: guardar de todas formas
-        await procesarGuardadoF1(
-            solicitudPendiente.nombre,
-            solicitudPendiente.apellidos,
-            solicitudPendiente.calle,
-            solicitudPendiente.numero
-        );
-    } else {
-        // Usuario canceló
-        mostrarMsg('f1_msg', 'Ingreso cancelado', 'err');
-    }
-    
-    solicitudPendiente = null;
-}
-
-// Función que procesa el guardado real
-async function procesarGuardadoF1(nombre, apellidos, calle, numero) {
-    const solicitud = solicitudPendiente || {
+    // Preparar solicitud
+    const solicitud = {
         funcionario: usuarioActual.nombre,
         tipo: document.getElementById('f1_tipo').value,
         nombre: nombre,
@@ -1870,6 +1816,53 @@ async function procesarGuardadoF1(nombre, apellidos, calle, numero) {
         observaciones: document.getElementById('f1_obs').value
     };
     
+    // Cargar solicitudes actuales para verificar duplicados
+    await cargarSolicitudes();
+    
+    // VERIFICAR DUPLICADO: buscar si existe misma calle + número
+    const duplicado = solicitudesCargadas.find(s => {
+        const calleExistente = (s.calle || '').toUpperCase().trim();
+        const numeroExistente = (s.numero || '').toUpperCase().trim();
+        return calleExistente === calle.trim() && numeroExistente === numero.trim();
+    });
+    
+    if (duplicado) {
+        // Guardar datos para uso posterior
+        solicitudPendiente = solicitud;
+        
+        // Mostrar modal de alerta
+        document.getElementById('modalIdDuplicado').textContent = `ID N° ${duplicado.id}`;
+        document.getElementById('modalDuplicado').classList.add('active');
+        return;
+    }
+    
+    // Si no hay duplicado, guardar directamente
+    await guardarSolicitudEnBD(solicitud, nombre, apellidos, calle, numero);
+}
+
+// Función para confirmar o cancelar duplicado
+async function confirmarDuplicado(confirmar) {
+    document.getElementById('modalDuplicado').classList.remove('active');
+    
+    if (confirmar && solicitudPendiente) {
+        // Usuario confirmó: guardar de todas formas
+        await guardarSolicitudEnBD(
+            solicitudPendiente,
+            solicitudPendiente.nombre,
+            solicitudPendiente.apellidos,
+            solicitudPendiente.calle,
+            solicitudPendiente.numero
+        );
+    } else {
+        // Usuario canceló
+        mostrarMsg('f1_msg', 'Ingreso cancelado', 'err');
+    }
+    
+    solicitudPendiente = null;
+}
+
+// Función que guarda en la base de datos
+async function guardarSolicitudEnBD(solicitud, nombre, apellidos, calle, numero) {
     // Mostrar guardando
     const btnGuardar = document.querySelector('#sec-f1 .btn');
     btnGuardar.textContent = 'GUARDANDO...';
