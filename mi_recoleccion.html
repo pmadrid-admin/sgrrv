@@ -21,7 +21,7 @@
         /* HEADER */
         .header {
             background: linear-gradient(90deg, #0054A6 0%, #003D7A 100%);
-            padding: 15px 30px;
+            padding: 12px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -29,15 +29,35 @@
         }
         
         .header h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
-        .header h1 span {
-            font-size: 28px;
+        .header-center {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .filtro-btn {
+            padding: 6px 14px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: transparent;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+        
+        .filtro-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .filtro-btn.active {
+            background: white;
+            color: #003D7A;
+            font-weight: 700;
         }
         
         .header-info {
@@ -62,7 +82,7 @@
             padding: 20px;
             display: flex;
             gap: 15px;
-            height: calc(100vh - 70px);
+            height: calc(100vh - 110px);
             overflow: hidden;
         }
         
@@ -78,123 +98,108 @@
         }
         
         .columna-header {
-            padding: 15px;
-            text-align: center;
-            font-weight: 700;
+            padding: 12px 15px;
             font-size: 13px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid #30363d;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            border-bottom: 1px solid #30363d;
         }
         
-        .columna-header .contador {
+        .columna.ingresado .columna-header { background: linear-gradient(90deg, #1a3a5c 0%, #0d1117 100%); }
+        .columna.para-visita .columna-header { background: linear-gradient(90deg, #5c4a1a 0%, #0d1117 100%); }
+        .columna.programado .columna-header { background: linear-gradient(90deg, #3a1a5c 0%, #0d1117 100%); }
+        .columna.para-retiro .columna-header { background: linear-gradient(90deg, #5c2a1a 0%, #0d1117 100%); }
+        .columna.retirado .columna-header { background: linear-gradient(90deg, #1a5c2a 0%, #0d1117 100%); }
+        .columna.otros .columna-header { background: linear-gradient(90deg, #3d3d3d 0%, #0d1117 100%); }
+        
+        .contador {
             background: rgba(255,255,255,0.15);
-            padding: 3px 10px;
-            border-radius: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
             font-size: 12px;
         }
-        
-        /* Colores por estado */
-        .columna.ingresado .columna-header { background: #1a365d; color: #63b3ed; }
-        .columna.para-visita .columna-header { background: #744210; color: #fbd38d; }
-        .columna.programado .columna-header { background: #276749; color: #68d391; }
-        .columna.para-retiro .columna-header { background: #553c9a; color: #b794f4; }
-        .columna.retirado .columna-header { background: #22543d; color: #48bb78; }
-        .columna.otros .columna-header { background: #742a2a; color: #fc8181; }
         
         .columna-body {
             flex: 1;
             overflow-y: auto;
             padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
         }
         
         /* TARJETAS */
         .tarjeta {
             background: #21262d;
             border-radius: 8px;
-            padding: 12px;
-            border-left: 4px solid;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid #30363d;
             transition: transform 0.2s, box-shadow 0.2s;
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         
         .tarjeta:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         
-        .tarjeta.ingresado { border-color: #63b3ed; }
-        .tarjeta.para-visita { border-color: #fbd38d; }
-        .tarjeta.programado { border-color: #68d391; }
-        .tarjeta.para-retiro { border-color: #b794f4; }
-        .tarjeta.retirado { border-color: #48bb78; }
-        .tarjeta.otros { border-color: #fc8181; }
+        .tarjeta.ingresado { border-left-color: #58a6ff; }
+        .tarjeta.para-visita { border-left-color: #d29922; }
+        .tarjeta.programado { border-left-color: #a371f7; }
+        .tarjeta.para-retiro { border-left-color: #f85149; }
+        .tarjeta.retirado { border-left-color: #3fb950; }
+        .tarjeta.otros { border-left-color: #8b949e; }
         
         .tarjeta-id {
             font-size: 11px;
-            font-weight: 700;
             color: #8b949e;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
         
         .tarjeta-direccion {
             font-size: 13px;
-            font-weight: 400;
+            font-weight: 500;
             color: #e6edf3;
-            margin-bottom: 5px;
             line-height: 1.3;
         }
         
         .tarjeta-tipo {
             display: inline-block;
+            margin-top: 6px;
             font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            color: #8b949e;
+            padding: 2px 6px;
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            border-radius: 3px;
+            text-transform: uppercase;
         }
         
         /* FOOTER */
         .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
             background: #0d1117;
             padding: 10px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-top: 1px solid #30363d;
-            font-size: 11px;
-            color: #8b949e;
         }
         
         .footer .logo {
             display: flex;
             align-items: center;
             gap: 10px;
+            color: #8b949e;
+            font-size: 12px;
         }
         
         .footer .logo img {
             height: 30px;
+            opacity: 0.7;
         }
         
         .footer .stats {
             display: flex;
-            gap: 20px;
+            gap: 30px;
         }
         
         .footer .stat {
@@ -277,8 +282,15 @@
                 flex: 1 1 100%;
                 max-height: 300px;
             }
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
             .header h1 {
                 font-size: 18px;
+            }
+            .header-center {
+                order: 3;
             }
         }
     </style>
@@ -286,7 +298,13 @@
 <body>
 
 <div class="header">
-    <h1><span>🚛</span> Mi Recolección</h1>
+    <h1>Mi Recolección</h1>
+    <div class="header-center">
+        <button class="filtro-btn active" onclick="setFiltro('hoy')">HOY</button>
+        <button class="filtro-btn" onclick="setFiltro('semana')">SEMANA</button>
+        <button class="filtro-btn" onclick="setFiltro('mes')">MES</button>
+        <button class="filtro-btn" onclick="setFiltro('todo')">TODO</button>
+    </div>
     <div class="header-info">
         <div class="fecha" id="fechaActual"></div>
         <div class="actualizacion">Actualización automática cada 5 min</div>
@@ -296,7 +314,7 @@
 <div class="container" id="container">
     <div class="columna ingresado">
         <div class="columna-header">
-            📥 Ingresado <span class="contador" id="cont-ingresado">0</span>
+            Ingresado <span class="contador" id="cont-ingresado">0</span>
         </div>
         <div class="columna-body" id="col-ingresado">
             <div class="loading">Cargando</div>
@@ -305,7 +323,7 @@
     
     <div class="columna para-visita">
         <div class="columna-header">
-            🔍 Para Visita <span class="contador" id="cont-para-visita">0</span>
+            Para Visita <span class="contador" id="cont-para-visita">0</span>
         </div>
         <div class="columna-body" id="col-para-visita">
             <div class="loading">Cargando</div>
@@ -314,7 +332,7 @@
     
     <div class="columna programado">
         <div class="columna-header">
-            📅 Programado <span class="contador" id="cont-programado">0</span>
+            Programado <span class="contador" id="cont-programado">0</span>
         </div>
         <div class="columna-body" id="col-programado">
             <div class="loading">Cargando</div>
@@ -323,7 +341,7 @@
     
     <div class="columna para-retiro">
         <div class="columna-header">
-            ⏳ Para Retiro <span class="contador" id="cont-para-retiro">0</span>
+            Para Retiro <span class="contador" id="cont-para-retiro">0</span>
         </div>
         <div class="columna-body" id="col-para-retiro">
             <div class="loading">Cargando</div>
@@ -332,7 +350,7 @@
     
     <div class="columna retirado">
         <div class="columna-header">
-            ✅ Retirado <span class="contador" id="cont-retirado">0</span>
+            Retirado <span class="contador" id="cont-retirado">0</span>
         </div>
         <div class="columna-body" id="col-retirado">
             <div class="loading">Cargando</div>
@@ -341,7 +359,7 @@
     
     <div class="columna otros">
         <div class="columna-header">
-            ⚠️ Otros <span class="contador" id="cont-otros">0</span>
+            Otros <span class="contador" id="cont-otros">0</span>
         </div>
         <div class="columna-body" id="col-otros">
             <div class="loading">Cargando</div>
@@ -351,7 +369,6 @@
 
 <div class="footer">
     <div class="logo">
-        <img src="logo_aseo_huechuraba.png" alt="Logo" onerror="this.style.display='none'">
         <span>SGRRV - Sistema de Gestión de Recolección de Residuos Voluminosos</span>
     </div>
     <div class="stats">
@@ -373,6 +390,9 @@
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbwlmWxLFq3jZD99ygE3Cy372q0rx8tZCJxmNfxTy1pxofR6IAvRbOCAdmJV9mYmYcDunQ/exec';
 
+let filtroActual = 'hoy';
+let todasLasSolicitudes = [];
+
 // Mapeo de estados a columnas
 const ESTADO_COLUMNA = {
     'INGRESADO': 'ingresado',
@@ -385,6 +405,42 @@ const ESTADO_COLUMNA = {
     'NO PROCEDE': 'otros',
     'PENDIENTE DE PAGO': 'otros'
 };
+
+// Cambiar filtro
+function setFiltro(filtro) {
+    filtroActual = filtro;
+    document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    renderizarDatos();
+}
+
+// Filtrar por fecha
+function filtrarPorFecha(solicitudes) {
+    const ahora = new Date();
+    const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+    
+    return solicitudes.filter(s => {
+        const fecha = new Date(s.fechaIngreso);
+        if (isNaN(fecha.getTime())) return false;
+        
+        switch (filtroActual) {
+            case 'hoy':
+                const fechaSolicitud = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+                return fechaSolicitud.getTime() === hoy.getTime();
+            case 'semana':
+                const hace7dias = new Date(hoy);
+                hace7dias.setDate(hace7dias.getDate() - 7);
+                return fecha >= hace7dias;
+            case 'mes':
+                const hace30dias = new Date(hoy);
+                hace30dias.setDate(hace30dias.getDate() - 30);
+                return fecha >= hace30dias;
+            case 'todo':
+            default:
+                return true;
+        }
+    });
+}
 
 // Actualizar fecha
 function actualizarFecha() {
@@ -418,13 +474,67 @@ function crearTarjeta(solicitud) {
     `;
 }
 
+// Renderizar datos filtrados
+function renderizarDatos() {
+    const solicitudesFiltradas = filtrarPorFecha(todasLasSolicitudes);
+    
+    // Agrupar por columna
+    const grupos = {
+        'ingresado': [],
+        'para-visita': [],
+        'programado': [],
+        'para-retiro': [],
+        'retirado': [],
+        'otros': []
+    };
+    
+    solicitudesFiltradas.forEach(s => {
+        const estado = s.estado || 'INGRESADO';
+        const columna = ESTADO_COLUMNA[estado] || 'otros';
+        grupos[columna].push(s);
+    });
+    
+    // Renderizar columnas
+    Object.keys(grupos).forEach(col => {
+        const container = document.getElementById(`col-${col}`);
+        const contador = document.getElementById(`cont-${col}`);
+        const items = grupos[col];
+        
+        contador.textContent = items.length;
+        
+        if (items.length === 0) {
+            container.innerHTML = '<div class="empty">Sin solicitudes</div>';
+        } else {
+            container.innerHTML = items.map(s => crearTarjeta(s)).join('');
+        }
+    });
+    
+    // Estadísticas footer
+    const total = solicitudesFiltradas.length;
+    const hoy = new Date().toISOString().slice(0, 10);
+    const solicitudesHoy = todasLasSolicitudes.filter(s => {
+        const fecha = new Date(s.fechaIngreso).toISOString().slice(0, 10);
+        return fecha === hoy;
+    }).length;
+    
+    const pendientes = grupos['ingresado'].length + 
+                      grupos['para-visita'].length + 
+                      grupos['programado'].length + 
+                      grupos['para-retiro'].length;
+    
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-hoy').textContent = solicitudesHoy;
+    document.getElementById('stat-pendientes').textContent = pendientes;
+}
+
 // Cargar datos
 async function cargarDatos() {
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ action: 'obtenerSolicitudes' })
+        // Usar GET con parámetros para evitar problemas CORS
+        const url = API_URL + '?action=obtenerSolicitudes';
+        const response = await fetch(url, {
+            method: 'GET',
+            redirect: 'follow'
         });
         
         const result = await response.json();
@@ -434,65 +544,15 @@ async function cargarDatos() {
             return;
         }
         
-        const solicitudes = result.solicitudes;
-        
-        // Agrupar por columna
-        const grupos = {
-            'ingresado': [],
-            'para-visita': [],
-            'programado': [],
-            'para-retiro': [],
-            'retirado': [],
-            'otros': []
-        };
-        
-        // Filtrar solo solicitudes recientes (últimos 30 días) para no saturar
-        const hace30dias = new Date();
-        hace30dias.setDate(hace30dias.getDate() - 30);
-        
-        solicitudes.forEach(s => {
-            const fecha = new Date(s.fechaIngreso);
-            if (fecha >= hace30dias) {
-                const estado = s.estado || 'INGRESADO';
-                const columna = ESTADO_COLUMNA[estado] || 'otros';
-                grupos[columna].push(s);
-            }
-        });
-        
-        // Renderizar columnas (máximo 30 por columna para no saturar)
-        Object.keys(grupos).forEach(col => {
-            const container = document.getElementById(`col-${col}`);
-            const contador = document.getElementById(`cont-${col}`);
-            const items = grupos[col].slice(0, 30);
-            
-            contador.textContent = grupos[col].length;
-            
-            if (items.length === 0) {
-                container.innerHTML = '<div class="empty">Sin solicitudes</div>';
-            } else {
-                container.innerHTML = items.map(s => crearTarjeta(s)).join('');
-            }
-        });
-        
-        // Estadísticas footer
-        const total = solicitudes.length;
-        const hoy = new Date().toISOString().slice(0, 10);
-        const solicitudesHoy = solicitudes.filter(s => {
-            const fecha = new Date(s.fechaIngreso).toISOString().slice(0, 10);
-            return fecha === hoy;
-        }).length;
-        
-        const pendientes = grupos['ingresado'].length + 
-                          grupos['para-visita'].length + 
-                          grupos['programado'].length + 
-                          grupos['para-retiro'].length;
-        
-        document.getElementById('stat-total').textContent = total;
-        document.getElementById('stat-hoy').textContent = solicitudesHoy;
-        document.getElementById('stat-pendientes').textContent = pendientes;
+        todasLasSolicitudes = result.solicitudes || [];
+        renderizarDatos();
         
     } catch (error) {
         console.error('Error cargando datos:', error);
+        // Mostrar mensaje en las columnas
+        document.querySelectorAll('.columna-body').forEach(col => {
+            col.innerHTML = '<div class="empty">Error de conexión</div>';
+        });
     }
 }
 
