@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGRRV Huechuraba v20</title>
+    <title>SGRRV Huechuraba v20a</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
 /* ============================================
-   SGRRV HUECHURABA v20 - GITHUB PRIMER DARK
+   SGRRV HUECHURABA v20a - GITHUB PRIMER DARK
    ============================================ */
 :root {
     /* Backgrounds */
@@ -64,7 +64,10 @@ body {
     margin: 0;
     padding: 0;
     color: var(--fgColor-default);
-    background: var(--bgColor-default);
+    background: linear-gradient(rgba(13, 17, 23, 0.85), rgba(13, 17, 23, 0.85)), url('fondo_sgrrv.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     min-height: 100vh;
 }
 
@@ -79,7 +82,9 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: var(--bgColor-default);
+    background: linear-gradient(rgba(13, 17, 23, 0.80), rgba(13, 17, 23, 0.80)), url('fondo_sgrrv.png');
+    background-size: cover;
+    background-position: center;
 }
 
 #loginBox {
@@ -1046,27 +1051,26 @@ tr.row-warning td {
             </div>
 
             <!-- DATOS SOLICITANTE -->
-            <label>Nombre Solicitante *</label>
+            <label>Nombre y Apellido Solicitante *</label>
             <input type="text" id="f1_nombre" tabindex="2" oninput="this.value = this.value.toUpperCase()">
 
-            <label>Apellido Solicitante *</label>
-            <input type="text" id="f1_apellidos" tabindex="3" oninput="this.value = this.value.toUpperCase()">
+            <input type="hidden" id="f1_apellidos" value="">
 
             <label>Fono Contacto * <small style="font-weight:normal">(9) XXXX-XXXX ó (2) XXXX-XXXX</small></label>
-            <input type="text" id="f1_telefono" tabindex="4" placeholder="(9) XXXX-XXXX" maxlength="14" oninput="formatearTelefono(this)">
+            <input type="text" id="f1_telefono" tabindex="3" placeholder="(9) XXXX-XXXX" maxlength="14" oninput="formatearTelefono(this)">
 
             <!-- DIRECCIÓN -->
             <label>Calle o Pasaje *</label>
-            <input type="text" id="f1_calle" tabindex="5" oninput="this.value = this.value.toUpperCase()">
+            <input type="text" id="f1_calle" tabindex="4" oninput="this.value = this.value.toUpperCase()">
 
             <label>N° Municipal *</label>
-            <input type="text" id="f1_numero" tabindex="6" oninput="this.value = this.value.toUpperCase()">
+            <input type="text" id="f1_numero" tabindex="5" oninput="this.value = this.value.toUpperCase()">
 
-            <label>Detalle Ubicación <small style="font-weight:normal">(Casa, Villa, Población, Condominio o Referencia de ubicación)</small></label>
-            <input type="text" id="f1_detalle_ubicacion" tabindex="7" oninput="this.value = this.value.toUpperCase()">
+            <label>Detalle Ubicación <small style="font-weight:normal">(Villa, Población, Condominio o Referencia)</small></label>
+            <input type="text" id="f1_detalle_ubicacion" tabindex="6" oninput="this.value = this.value.toUpperCase()">
 
             <label>UV (Unidad Vecinal)</label>
-            <input type="text" id="f1_uv" tabindex="8" oninput="this.value = this.value.toUpperCase()">
+            <input type="text" id="f1_uv" tabindex="7" oninput="this.value = this.value.toUpperCase()">
 
             <!-- VISITA Y OBS -->
             <label>¿Requiere Visita Técnica? *</label>
@@ -1096,7 +1100,7 @@ tr.row-warning td {
             
             <!-- Campos para HALLAZGO TERRENO -->
             <div id="f2_hallazgo_campos" style="display: none;">
-                <div style="background: #fff3cd; padding: 12px; border-radius: 4px; border-left: 4px solid #ffc107; margin: 10px 0;">
+                <div style="color: #58a6ff; font-size: 13px; margin: 10px 0;">
                     Registrando hallazgo en terreno - Se creará solicitud automáticamente
                 </div>
                 
@@ -1127,7 +1131,7 @@ tr.row-warning td {
                 <option value="5 M³">5 M³</option>
                 <option value="MÁS DE 5 M³">MÁS DE 5 M³</option>
             </select>
-            <div id="f2_aviso_pago" style="display: none; background: #d4edda; padding: 10px; border-radius: 4px; margin: 5px 0; border-left: 4px solid #28a745;">
+            <div id="f2_aviso_pago" style="display: none; color: #58a6ff; font-size: 13px; margin: 8px 0 0 0;">
                 Retiro con costo: Derechos municipales 1 UTM por m³
             </div>
 
@@ -1149,17 +1153,12 @@ tr.row-warning td {
             <!-- OPCIONES SI APRUEBA -->
             <div id="f2_opciones_retiro" style="display: none;">
                 <label>Tipo de Retiro *</label>
-                <select id="f2_tipo_retiro" onchange="toggleFechaRetiro()">
+                <select id="f2_tipo_retiro">
                     <option value="">-- Seleccionar --</option>
                     <option value="RETIRO POR RUTA">RETIRO POR RUTA (programado)</option>
                     <option value="RETIRO 24HRS">RETIRO 24HRS (inmediato)</option>
                     <option value="PENDIENTE DE PAGO">PENDIENTE DE PAGO (requiere pago previo)</option>
                 </select>
-
-                <div id="f2_fecha_retiro_container" style="display: none;">
-                    <label>Fecha de Retiro *</label>
-                    <input type="date" id="f2_fecha_retiro">
-                </div>
             </div>
 
             <!-- OPCIONES SI NO APRUEBA -->
@@ -1792,8 +1791,7 @@ async function guardarF1() {
     // Campos obligatorios
     const camposRequeridos = [
         {id: 'tipo', nombre: 'Tipo de Solicitud'},
-        {id: 'nombre', nombre: 'Nombre Solicitante'},
-        {id: 'apellidos', nombre: 'Apellido Solicitante'},
+        {id: 'nombre', nombre: 'Nombre y Apellido Solicitante'},
         {id: 'telefono', nombre: 'Fono Contacto'},
         {id: 'calle', nombre: 'Calle o Pasaje'},
         {id: 'numero', nombre: 'N° Municipal'},
@@ -1955,17 +1953,7 @@ function toggleOpcionesRetiro() {
 }
 
 function toggleFechaRetiro() {
-    const tipoRetiro = document.getElementById('f2_tipo_retiro').value;
-    const container = document.getElementById('f2_fecha_retiro_container');
-    
-    if (tipoRetiro === 'RETIRO POR RUTA') {
-        container.style.display = 'block';
-        // Fecha por defecto: mañana (o lunes si es sábado)
-        const fechaRetiro = calcularFechaVisita().fechaObj;
-        document.getElementById('f2_fecha_retiro').valueAsDate = fechaRetiro;
-    } else {
-        container.style.display = 'none';
-    }
+    // Función deshabilitada - fecha de retiro solo se asigna en Asignación de Rutas
 }
 
 // Preview de foto
@@ -2036,12 +2024,6 @@ async function guardarF2() {
         estadoAccion = 'NO PROCEDE';
     }
     
-    // Validar fecha si es RETIRO POR RUTA
-    if (estadoAccion === 'RETIRO POR RUTA' && !document.getElementById('f2_fecha_retiro').value) {
-        mostrarMsg('f2_msg', 'Seleccionar fecha de retiro', 'err');
-        return;
-    }
-    
     // Validar foto
     const fotoInput = document.getElementById('f2_foto');
     if (!fotoInput.files || !fotoInput.files[0]) {
@@ -2077,7 +2059,7 @@ async function guardarF2() {
                 uv: '',
                 volumen: document.getElementById('f2_volumen').value,
                 estadoAccion: estadoAccion,
-                fechaRetiro: estadoAccion === 'RETIRO POR RUTA' ? document.getElementById('f2_fecha_retiro').value : '',
+                fechaRetiro: '',
                 observaciones: observaciones,
                 fotoBase64: fotoBase64,
                 fotoNombre: `HALLAZGO_${Date.now()}.jpg`
@@ -2092,7 +2074,7 @@ async function guardarF2() {
                 idSolicitud: idCaso,
                 inspector: usuarioActual.nombre,
                 estadoAccion: estadoAccion,
-                fechaRetiro: estadoAccion === 'RETIRO POR RUTA' ? document.getElementById('f2_fecha_retiro').value : '',
+                fechaRetiro: '',
                 volumen: document.getElementById('f2_volumen').value,
                 observaciones: observaciones,
                 fotoBase64: fotoBase64,
