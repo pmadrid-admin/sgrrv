@@ -241,7 +241,7 @@
         button.btn:hover { background: var(--azul-oscuro); }
         
         /* BOTONES SELECCIONABLES (Tipo, Visita) */
-        .btn-group-select { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; max-width: 400px; }
+        .btn-group-select { display: flex; gap: 8px; margin-bottom: 10px; max-width: 500px; }
         .btn-group-select button { 
             padding: 8px 16px; 
             border: 2px solid #ccc; 
@@ -1837,11 +1837,8 @@ async function guardarF1() {
     // VERIFICAR DUPLICADO: obtener solicitudes y buscar misma calle + número
     try {
         const resp = await apiCall('obtenerSolicitudes', {});
-        console.log('DEBUG - Respuesta API:', resp);
-        console.log('DEBUG - Buscando calle:', calle, 'numero:', numero);
         
         if (resp && resp.success && Array.isArray(resp.solicitudes) && resp.solicitudes.length > 0) {
-            console.log('DEBUG - Total solicitudes:', resp.solicitudes.length);
             
             // Normalizar para comparar
             const calleNueva = calle.trim().toUpperCase();
@@ -1851,11 +1848,9 @@ async function guardarF1() {
                 const calleExistente = String(s.calle || '').trim().toUpperCase();
                 const numeroExistente = String(s.numero || '').trim().toUpperCase();
                 
-                console.log('DEBUG - Comparando con ID:', s.id, '| calle:', calleExistente, '| numero:', numeroExistente);
                 
                 const esIgual = (calleExistente === calleNueva) && (numeroExistente === numeroNuevo);
                 if (esIgual) {
-                    console.log('DEBUG - ¡DUPLICADO ENCONTRADO!', s.id);
                 }
                 return esIgual;
             });
@@ -1868,13 +1863,10 @@ async function guardarF1() {
                 document.getElementById('modalDuplicado').classList.add('active');
                 return;
             } else {
-                console.log('DEBUG - No se encontró duplicado');
             }
         } else {
-            console.log('DEBUG - No hay solicitudes o respuesta inválida');
         }
     } catch (e) {
-        console.error('ERROR verificando duplicados:', e);
     }
     
     // Si no hay duplicado, guardar normalmente
@@ -1894,7 +1886,9 @@ async function confirmarDuplicado(confirmar) {
             solicitudPendiente.numero
         );
     } else {
-        mostrarMsg('f1_msg', 'Ingreso cancelado', 'err');
+        // Limpiar formulario para nuevo ingreso
+        limpiarForm('f1');
+        mostrarMsg('f1_msg', 'Duplicado descartado. Formulario listo para nuevo ingreso.', 'ok');
     }
     solicitudPendiente = null;
 }
