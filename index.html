@@ -10,8 +10,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
 /* ============================================
-   SGRRV HUECHURABA v20a - GITHUB PRIMER DARK
+   SGRRV HUECHURABA v20a - GITHUB PRIMER DARK/LIGHT
    ============================================ */
+
+/* === MODO DARK (por defecto) === */
 :root {
     /* Backgrounds */
     --bgColor-default: #0d1117;
@@ -52,6 +54,44 @@
     /* Radius */
     --radius-1: 6px;
     --radius-2: 12px;
+    
+    /* Background image overlay */
+    --bg-overlay: rgba(13, 17, 23, 0.85);
+    --bg-overlay-login: rgba(13, 17, 23, 0.80);
+}
+
+/* === MODO LIGHT === */
+body.light-mode {
+    --bgColor-default: #f6f8fa;
+    --bgColor-muted: #ffffff;
+    --bgColor-inset: #f6f8fa;
+    --bgColor-emphasis: #eaeef2;
+    
+    --fgColor-default: #1f2328;
+    --fgColor-muted: #656d76;
+    --fgColor-subtle: #8c959f;
+    --fgColor-onEmphasis: #ffffff;
+    
+    --borderColor-default: #d0d7de;
+    --borderColor-muted: #d8dee4;
+    
+    --success-fg: #1a7f37;
+    --success-emphasis: #2da44e;
+    --success-muted: rgba(46, 160, 67, 0.15);
+    --accent-fg: #0969da;
+    --accent-emphasis: #0969da;
+    --accent-muted: rgba(9, 105, 218, 0.15);
+    --attention-fg: #9a6700;
+    --attention-emphasis: #9a6700;
+    --attention-muted: rgba(154, 103, 0, 0.15);
+    --danger-fg: #cf222e;
+    --danger-emphasis: #cf222e;
+    --danger-muted: rgba(207, 34, 46, 0.15);
+    --done-fg: #8250df;
+    --done-emphasis: #8250df;
+    
+    --bg-overlay: rgba(246, 248, 250, 0.92);
+    --bg-overlay-login: rgba(246, 248, 250, 0.88);
 }
 
 * {
@@ -64,15 +104,37 @@ body {
     margin: 0;
     padding: 0;
     color: var(--fgColor-default);
-    background: linear-gradient(rgba(13, 17, 23, 0.85), rgba(13, 17, 23, 0.85)), url('fondo_sgrrv.png');
+    background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('fondo_sgrrv.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     min-height: 100vh;
 }
 
-/* Toggle modo oscuro - oculto */
-.dark-toggle { display: none; }
+/* Toggle modo día/noche */
+.dark-toggle {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--borderColor-default);
+    background: var(--bgColor-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    z-index: 9999;
+    opacity: 0.7;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.dark-toggle:hover { 
+    opacity: 1; 
+    transform: scale(1.1);
+}
 
 /* ============================================
    LOGIN SCREEN
@@ -82,7 +144,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(rgba(13, 17, 23, 0.80), rgba(13, 17, 23, 0.80)), url('fondo_sgrrv.png');
+    background: linear-gradient(var(--bg-overlay-login), var(--bg-overlay-login)), url('fondo_sgrrv.png');
     background-size: cover;
     background-position: center;
 }
@@ -207,8 +269,8 @@ body {
 
 #headerTop .btn-bigmac {
     padding: 6px 14px;
-    background: var(--attention-muted);
-    border: 1px solid var(--attention-emphasis);
+    background: transparent;
+    border: 1px solid var(--attention-fg);
     color: var(--attention-fg);
     border-radius: var(--radius-1);
     font-size: 12px;
@@ -219,7 +281,7 @@ body {
 }
 
 #headerTop .btn-bigmac:hover {
-    background: rgba(187, 128, 9, 0.25);
+    background: var(--attention-muted);
 }
 
 #headerTop .btn-salir {
@@ -3456,9 +3518,9 @@ function crearKPI(label, valor, valorAnterior) {
 }
 
 function renderizarGraficos(metricas) {
-    const isDark = document.body.classList.contains('dark-mode');
-    const textColor = isDark ? '#e6edf3' : '#2C3E50';
-    const gridColor = isDark ? '#30363d' : '#ddd';
+    const isLight = document.body.classList.contains('light-mode');
+    const textColor = isLight ? '#1f2328' : '#e6edf3';
+    const gridColor = isLight ? '#d0d7de' : '#30363d';
     
     // Destruir gráficos anteriores
     if (chartEstados) chartEstados.destroy();
@@ -3890,21 +3952,21 @@ verificarSesion();
 </div>
 
 <!-- TOGGLE MODO OSCURO -->
-<button class="dark-toggle" onclick="toggleDarkMode()" title="Modo oscuro">🌙</button>
+<button class="dark-toggle" onclick="toggleLightMode()" title="Cambiar modo">◐</button>
 
 <script>
-// Modo oscuro - para gente de buen gusto
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', isDark ? 'on' : 'off');
-    document.querySelector('.dark-toggle').textContent = isDark ? '☀️' : '🌙';
+// Toggle modo día/noche - Dark es por defecto
+function toggleLightMode() {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    localStorage.setItem('lightMode', isLight ? 'on' : 'off');
+    document.querySelector('.dark-toggle').textContent = isLight ? '◑' : '◐';
 }
 
 // Cargar preferencia guardada
-if (localStorage.getItem('darkMode') === 'on') {
-    document.body.classList.add('dark-mode');
-    document.querySelector('.dark-toggle').textContent = '☀️';
+if (localStorage.getItem('lightMode') === 'on') {
+    document.body.classList.add('light-mode');
+    document.querySelector('.dark-toggle').textContent = '◑';
 }
 </script>
 
