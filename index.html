@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGRRV Huechuraba v19b</title>
+    <title>SGRRV Huechuraba v19c</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
@@ -239,6 +239,28 @@
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--azul-principal); }
         button.btn { padding: 10px 20px; margin: 10px 5px 10px 0; cursor: pointer; background: var(--azul-principal); color: white; border: none; border-radius: 4px; font-weight: 400; }
         button.btn:hover { background: var(--azul-oscuro); }
+        
+        /* BOTONES SELECCIONABLES (Tipo, Visita) */
+        .btn-group-select { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; max-width: 400px; }
+        .btn-group-select button { 
+            padding: 8px 16px; 
+            border: 2px solid #ccc; 
+            background: white; 
+            color: #333; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-group-select button:hover { border-color: var(--azul-principal); background: #f0f7ff; }
+        .btn-group-select button.selected { 
+            border-color: var(--azul-principal); 
+            background: var(--azul-principal); 
+            color: white; 
+        }
+        body.dark-mode .btn-group-select button { background: #21262d; color: #e6edf3; border-color: #30363d; }
+        body.dark-mode .btn-group-select button:hover { border-color: #58a6ff; background: #30363d; }
+        body.dark-mode .btn-group-select button.selected { background: #58a6ff; border-color: #58a6ff; color: #0d1117; }
         
         /* TABS - ESTILO BARRA AZUL */
         .tab-buttons { 
@@ -1022,13 +1044,13 @@
             
             <!-- TIPO DE SOLICITUD (primero) -->
             <label>Tipo de Solicitud *</label>
-            <select id="f1_tipo" tabindex="1">
-                <option value="">-- Seleccionar --</option>
-                <option>ESCOMBROS</option>
-                <option>CACHUREOS</option>
-                <option>PODAS</option>
-                <option>OTRO</option>
-            </select>
+            <input type="hidden" id="f1_tipo" value="">
+            <div class="btn-group-select" id="f1_tipo_btns">
+                <button type="button" onclick="seleccionarTipo('ESCOMBROS')" tabindex="1">ESCOMBROS</button>
+                <button type="button" onclick="seleccionarTipo('CACHUREOS')">CACHUREOS</button>
+                <button type="button" onclick="seleccionarTipo('PODAS')">PODAS</button>
+                <button type="button" onclick="seleccionarTipo('OTRO')">OTRO</button>
+            </div>
 
             <!-- DATOS SOLICITANTE -->
             <label>Nombre Solicitante *</label>
@@ -1055,11 +1077,11 @@
 
             <!-- VISITA Y OBS -->
             <label>¿Requiere Visita Técnica? *</label>
-            <select id="f1_visita" tabindex="9">
-                <option value="">-- Seleccionar --</option>
-                <option>SI</option>
-                <option>NO</option>
-            </select>
+            <input type="hidden" id="f1_visita" value="">
+            <div class="btn-group-select" id="f1_visita_btns">
+                <button type="button" onclick="seleccionarVisita('SI')" tabindex="9">SÍ</button>
+                <button type="button" onclick="seleccionarVisita('NO')">NO</button>
+            </div>
 
             <label>Observaciones</label>
             <textarea id="f1_obs" tabindex="10" rows="3"></textarea>
@@ -1815,11 +1837,27 @@ async function guardarF1() {
     // VERIFICAR DUPLICADO: obtener solicitudes y buscar misma calle + número
     try {
         const resp = await apiCall('obtenerSolicitudes', {});
-        if (resp.success && resp.solicitudes) {
+        console.log('DEBUG - Respuesta API:', resp);
+        console.log('DEBUG - Buscando calle:', calle, 'numero:', numero);
+        
+        if (resp && resp.success && Array.isArray(resp.solicitudes) && resp.solicitudes.length > 0) {
+            console.log('DEBUG - Total solicitudes:', resp.solicitudes.length);
+            
+            // Normalizar para comparar
+            const calleNueva = calle.trim().toUpperCase();
+            const numeroNuevo = numero.trim().toUpperCase();
+            
             const duplicado = resp.solicitudes.find(s => {
-                const calleExistente = (s.calle || '').toUpperCase().trim();
-                const numeroExistente = (s.numero || '').toUpperCase().trim();
-                return calleExistente === calle.trim() && numeroExistente === numero.trim();
+                const calleExistente = String(s.calle || '').trim().toUpperCase();
+                const numeroExistente = String(s.numero || '').trim().toUpperCase();
+                
+                console.log('DEBUG - Comparando con ID:', s.id, '| calle:', calleExistente, '| numero:', numeroExistente);
+                
+                const esIgual = (calleExistente === calleNueva) && (numeroExistente === numeroNuevo);
+                if (esIgual) {
+                    console.log('DEBUG - ¡DUPLICADO ENCONTRADO!', s.id);
+                }
+                return esIgual;
             });
             
             if (duplicado) {
@@ -1829,10 +1867,14 @@ async function guardarF1() {
                 document.getElementById('modalIdDuplicado').textContent = `ID N° ${duplicado.id}`;
                 document.getElementById('modalDuplicado').classList.add('active');
                 return;
+            } else {
+                console.log('DEBUG - No se encontró duplicado');
             }
+        } else {
+            console.log('DEBUG - No hay solicitudes o respuesta inválida');
         }
     } catch (e) {
-        console.log('Error verificando duplicados:', e);
+        console.error('ERROR verificando duplicados:', e);
     }
     
     // Si no hay duplicado, guardar normalmente
@@ -3076,6 +3118,25 @@ function mostrarMsg(id, texto, tipo) {
     setTimeout(() => el.textContent = '', 5000);
 }
 
+// Funciones para botones de selección (Tipo y Visita)
+function seleccionarTipo(valor) {
+    document.getElementById('f1_tipo').value = valor;
+    document.querySelectorAll('#f1_tipo_btns button').forEach(btn => {
+        btn.classList.remove('selected');
+        if (btn.textContent === valor) btn.classList.add('selected');
+    });
+}
+
+function seleccionarVisita(valor) {
+    document.getElementById('f1_visita').value = valor;
+    document.querySelectorAll('#f1_visita_btns button').forEach(btn => {
+        btn.classList.remove('selected');
+        if ((valor === 'SI' && btn.textContent === 'SÍ') || (valor === 'NO' && btn.textContent === 'NO')) {
+            btn.classList.add('selected');
+        }
+    });
+}
+
 function limpiarForm(prefix) {
     document.querySelectorAll(`#sec-${prefix} input, #sec-${prefix} select, #sec-${prefix} textarea`).forEach(el => {
         if (el.type === 'radio' || el.type === 'checkbox') {
@@ -3083,6 +3144,10 @@ function limpiarForm(prefix) {
         } else if (el.type !== 'button') {
             el.value = '';
         }
+    });
+    // Limpiar botones seleccionados
+    document.querySelectorAll(`#sec-${prefix} .btn-group-select button`).forEach(btn => {
+        btn.classList.remove('selected');
     });
     // Limpiar detalle si existe
     const detalle = document.getElementById(prefix + '_detalle');
