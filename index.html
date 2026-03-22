@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGRRV Huechuraba v20a</title>
+    <title>SGRRV Huechuraba v21</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
 /* ============================================
-   SGRRV HUECHURABA v20a - GITHUB PRIMER DARK/LIGHT
+   SGRRV HUECHURABA v21 - GITHUB PRIMER DARK/LIGHT
+   Mejoras: MOD_001 Compresión imagen, MOD_004 Estados pendientes, MOD_005 Telegram+FotoF4
    ============================================ */
 
 /* === MODO DARK (por defecto) === */
@@ -92,6 +93,35 @@ body.light-mode {
     
     --bg-overlay: rgba(246, 248, 250, 0.92);
     --bg-overlay-login: rgba(246, 248, 250, 0.88);
+}
+
+/* Animación parpadeante para casos urgentes 24HRS */
+@keyframes pulse24hrs {
+    0%, 100% { background-color: var(--accent-emphasis); }
+    50% { background-color: var(--accent-fg); }
+}
+
+.caso-urgente-24hrs {
+    animation: pulse24hrs 1.5s ease-in-out infinite;
+    border-left: 3px solid var(--accent-fg) !important;
+}
+
+.detalle-urgente {
+    background: var(--accent-muted) !important;
+    border: 1px solid var(--accent-fg) !important;
+    position: relative;
+}
+
+.detalle-urgente::before {
+    content: '⚡ RETIRO INMEDIATO - BNUP';
+    display: block;
+    background: var(--accent-emphasis);
+    color: #fff;
+    padding: 6px 12px;
+    margin: -12px -12px 10px -12px;
+    font-weight: 600;
+    font-size: 12px;
+    border-radius: var(--radius-1) var(--radius-1) 0 0;
 }
 
 * {
@@ -1218,9 +1248,16 @@ tr.row-warning td {
                 <select id="f2_tipo_retiro">
                     <option value="">-- Seleccionar --</option>
                     <option value="RETIRO POR RUTA">RETIRO POR RUTA (programado)</option>
-                    <option value="RETIRO 24HRS">RETIRO 24HRS (inmediato)</option>
-                    <option value="PENDIENTE DE PAGO">PENDIENTE DE PAGO (requiere pago previo)</option>
+                    <option value="RETIRO PENDIENTE">RETIRO PENDIENTE (pago / otros)</option>
+                    <option value="RETIRO 24HRS">RETIRO 24HRS (residuos en BNUP)</option>
+                    <option value="RETIRO DESISTIDO">RETIRO DESISTIDO</option>
                 </select>
+                <div id="f2_aviso_pendiente" style="display: none; background: var(--attention-muted); border-left: 3px solid var(--attention-fg); padding: 10px 12px; margin-top: 8px; border-radius: var(--radius-1); font-size: 13px; color: var(--attention-fg);">
+                    ⚠ PENDIENTE: El caso permanecerá en lista de visitas. Si supera 5 días, alertará para cierre.
+                </div>
+                <div id="f2_aviso_desistido" style="display: none; background: var(--danger-muted); border-left: 3px solid var(--danger-fg); padding: 10px 12px; margin-top: 8px; border-radius: var(--radius-1); font-size: 13px; color: var(--danger-fg);">
+                    ✗ DESISTIDO: El caso se cerrará directamente sin pasar por F3/F4.
+                </div>
             </div>
 
             <!-- OPCIONES SI NO APRUEBA -->
@@ -1303,7 +1340,12 @@ tr.row-warning td {
             <textarea id="f3_obs" rows="3"></textarea>
 
             <br>
-            <button class="btn" onclick="guardarF3()">ASIGNAR RUTA</button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn" onclick="guardarF3()">ASIGNAR RUTA</button>
+                <button class="btn" style="background: #0088cc; border-color: #0088cc;" onclick="enviarTelegram()" title="Enviar foto y datos al grupo de terreno">
+                    <span style="margin-right: 6px;">✈</span> ENVIAR A TERRENO
+                </button>
+            </div>
             <div id="f3_msg"></div>
         </div>
 
@@ -1330,6 +1372,11 @@ tr.row-warning td {
 
             <label>Volumen retirado (m³)</label>
             <input type="number" id="f4_volumen" step="0.1">
+
+            <label>Foto de respaldo (ejecución conforme)</label>
+            <input type="file" id="f4_foto" accept="image/*" capture="environment" style="max-width: 400px;">
+            <div id="f4_foto_preview" style="margin: 10px 0; max-width: 300px;"></div>
+            <div style="font-size: 12px; color: var(--fgColor-muted); margin-bottom: 10px;">Foto del lugar limpio después del retiro (recomendada para SI - COMPLETO)</div>
 
             <label>Observaciones de cierre</label>
             <textarea id="f4_obs" rows="3"></textarea>
@@ -1749,7 +1796,7 @@ function showTab(tab) {
     document.getElementById('btn-' + tab).classList.add('active');
     
     if (tab === 'f2') cargarSelectCasos('f2', ['INGRESADO', 'PARA VISITA']);
-    if (tab === 'f3') cargarSelectCasos('f3', ['PARA RETIRO', 'VISITADO']);
+    if (tab === 'f3') cargarSelectCasos('f3', ['PARA RETIRO', 'VISITADO', 'RETIRO 24HRS']);
     if (tab === 'f4') cargarSelectCasos('f4', ['PROGRAMADO']);
     if (tab === 'visitas') cargarLogVisitas();
     if (tab === 'ruta') cargarPanelRutas();
@@ -1783,7 +1830,11 @@ async function cargarSelectCasos(form, estadosPermitidos) {
     
     filtrados.forEach(c => {
         const direccion = c.direccion || (c.calle + ' ' + c.numero);
-        select.innerHTML += `<option value="${c.id}">${c.id} | ${direccion} | ${c.tipo}</option>`;
+        // Destacar casos 24HRS y Hallazgos en F3 con estilo especial
+        const es24hrs = c.estado === 'RETIRO 24HRS' || c.origen === 'HALLAZGO' || (c.id && c.id.startsWith('H-'));
+        const estilo24hrs = es24hrs ? 'style="background: #1f6feb; color: #fff; font-weight: 500;"' : '';
+        const icono24hrs = es24hrs ? '⚡ ' : '';
+        select.innerHTML += `<option value="${c.id}" ${estilo24hrs}>${icono24hrs}${c.id} | ${direccion} | ${c.tipo}</option>`;
     });
     
     // Guardar para mostrar detalle
@@ -1801,6 +1852,9 @@ async function cargarSelectCasos(form, estadosPermitidos) {
             if (caso) {
                 const solicitante = caso.solicitante || (caso.nombre + ' ' + caso.apellidos);
                 const direccion = caso.direccion || (caso.calle + ' ' + caso.numero);
+                // Detectar si es caso urgente 24HRS
+                const es24hrs = caso.estado === 'RETIRO 24HRS' || caso.origen === 'HALLAZGO' || (caso.id && caso.id.startsWith('H-'));
+                detalle.className = 'detalle-caso' + (es24hrs ? ' detalle-urgente' : '');
                 detalle.innerHTML = `
                     <strong>Solicitante:</strong> ${solicitante}<br>
                     <strong>Teléfono:</strong> ${caso.telefono || '-'}<br>
@@ -1811,6 +1865,7 @@ async function cargarSelectCasos(form, estadosPermitidos) {
                 `;
             } else {
                 detalle.innerHTML = '';
+                detalle.className = 'detalle-caso';
             }
         }
     };
@@ -2094,12 +2149,12 @@ async function guardarF2() {
     }
     
     const btnGuardar = document.querySelector('#sec-f2 .btn');
-    btnGuardar.textContent = 'SUBIENDO FOTO...';
+    btnGuardar.textContent = 'COMPRIMIENDO FOTO...';
     btnGuardar.disabled = true;
     
     try {
-        // Convertir foto a base64
-        const fotoBase64 = await fileToBase64(fotoInput.files[0]);
+        // Convertir foto a base64 CON COMPRESIÓN (MOD_001 - reduce 5MB a ~200KB)
+        const fotoBase64 = await comprimirImagen(fotoInput.files[0], 1200, 0.7);
         
         // Agregar motivo de rechazo a observaciones si no aprueba
         let observaciones = document.getElementById('f2_obs').value;
@@ -2140,7 +2195,8 @@ async function guardarF2() {
                 volumen: document.getElementById('f2_volumen').value,
                 observaciones: observaciones,
                 fotoBase64: fotoBase64,
-                fotoNombre: `${idCaso}_${Date.now()}.jpg`
+                fotoNombre: `${idCaso}_${Date.now()}.jpg`,
+                es24hrs: estadoAccion === 'RETIRO 24HRS'  // Flag para que backend envíe correo como Hallazgo
             };
             
             btnGuardar.textContent = 'GUARDANDO...';
@@ -2175,7 +2231,41 @@ async function guardarF2() {
     }
 }
 
-// Convertir archivo a base64
+// ===================== COMPRESIÓN DE IMAGEN (MOD_001) =====================
+// Reduce fotos de 5MB+ a ~200KB manteniendo calidad aceptable para registro
+function comprimirImagen(file, maxAncho = 1200, calidad = 0.7) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let w = img.width;
+            let h = img.height;
+            
+            // Redimensionar si excede el ancho máximo
+            if (w > maxAncho) {
+                h = Math.round(h * maxAncho / w);
+                w = maxAncho;
+            }
+            
+            canvas.width = w;
+            canvas.height = h;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            
+            // Convertir a base64 JPEG comprimido
+            const base64 = canvas.toDataURL('image/jpeg', calidad);
+            resolve(base64.split(',')[1]); // Sin prefijo data:image/jpeg;base64,
+            
+            // Liberar memoria
+            URL.revokeObjectURL(img.src);
+        };
+        img.onerror = () => reject(new Error('Error al cargar imagen'));
+        img.src = URL.createObjectURL(file);
+    });
+}
+
+// Convertir archivo a base64 (legacy, mantener para archivos no-imagen)
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -2205,12 +2295,12 @@ async function guardarRetiro24() {
     }
     
     const btnGuardar = document.querySelector('#sec-retiro24 .btn');
-    btnGuardar.textContent = 'SUBIENDO FOTO...';
+    btnGuardar.textContent = 'COMPRIMIENDO FOTO...';
     btnGuardar.disabled = true;
     
     try {
-        // Convertir foto a base64
-        const fotoBase64 = await fileToBase64(fotoInput.files[0]);
+        // Convertir foto a base64 CON COMPRESIÓN (MOD_001)
+        const fotoBase64 = await comprimirImagen(fotoInput.files[0], 1200, 0.7);
         
         const retiro24 = {
             inspector: usuarioActual.nombre,
@@ -2286,7 +2376,7 @@ async function guardarF3() {
         limpiarForm('f3');
         // Limpiar selección de camión
         document.querySelectorAll('input[name="f3_camion"]').forEach(r => r.checked = false);
-        cargarSelectCasos('f3', ['PARA RETIRO']);
+        cargarSelectCasos('f3', ['PARA RETIRO', 'RETIRO 24HRS']);
     } else {
         mostrarMsg('f3_msg', 'Error: ' + (result.error || 'No se pudo asignar'), 'err');
     }
@@ -2322,10 +2412,29 @@ async function guardarF4() {
     if (!document.getElementById('f4_ejecutado').value) { mostrarMsg('f4_msg', 'Indicar resultado', 'err'); return; }
     
     const btnGuardar = document.querySelector('#sec-f4 .btn');
+    const resultado = document.getElementById('f4_ejecutado').value;
+    
+    // Procesar foto de respaldo si existe (MOD_005)
+    let fotoRespaldoBase64 = '';
+    let fotoRespaldoNombre = '';
+    const fotoInput = document.getElementById('f4_foto');
+    
+    if (fotoInput.files && fotoInput.files[0]) {
+        btnGuardar.textContent = 'COMPRIMIENDO FOTO...';
+        btnGuardar.disabled = true;
+        try {
+            fotoRespaldoBase64 = await comprimirImagen(fotoInput.files[0], 1200, 0.7);
+            fotoRespaldoNombre = `${idCaso}_CIERRE_${Date.now()}.jpg`;
+        } catch (err) {
+            mostrarMsg('f4_msg', 'Error procesando foto: ' + err.message, 'err');
+            btnGuardar.textContent = 'CERRAR SOLICITUD';
+            btnGuardar.disabled = false;
+            return;
+        }
+    }
+    
     btnGuardar.textContent = 'GUARDANDO...';
     btnGuardar.disabled = true;
-    
-    const resultado = document.getElementById('f4_ejecutado').value;
     
     const cierre = {
         idSolicitud: idCaso,
@@ -2333,7 +2442,9 @@ async function guardarF4() {
         resultado: resultado,
         volumenRetirado: document.getElementById('f4_volumen').value,
         inspector: usuarioActual.nombre,
-        observaciones: document.getElementById('f4_obs').value
+        observaciones: document.getElementById('f4_obs').value,
+        fotoRespaldoBase64: fotoRespaldoBase64,
+        fotoRespaldoNombre: fotoRespaldoNombre
     };
     
     const result = await apiCall('cerrarSolicitud', { cierre });
@@ -2349,10 +2460,195 @@ async function guardarF4() {
         document.getElementById('modalOk').classList.add('active');
         
         limpiarForm('f4');
+        document.getElementById('f4_foto_preview').innerHTML = '';
         cargarSelectCasos('f4', ['PROGRAMADO']);
     } else {
         mostrarMsg('f4_msg', 'Error: ' + (result.error || 'No se pudo cerrar'), 'err');
     }
+}
+
+// ===================== MOD_005: TELEGRAM =====================
+// Configuración SGRRV Huechuraba - Bot conectado a grupo Terreno
+const TELEGRAM_CONFIG = {
+    botToken: '8748572409:AAFDPMQIjL6cKoccTyr0bGYZn5Ktvv7nBPA',
+    chatId: '-1003847839749',
+    habilitado: true
+};
+
+async function enviarTelegram() {
+    const idCaso = document.getElementById('f3_caso').value;
+    if (!idCaso) {
+        mostrarMsg('f3_msg', 'Seleccionar caso primero', 'err');
+        return;
+    }
+    
+    if (!TELEGRAM_CONFIG.habilitado || !TELEGRAM_CONFIG.botToken || !TELEGRAM_CONFIG.chatId) {
+        mostrarMsg('f3_msg', 'Telegram no configurado. Contactar administrador.', 'err');
+        return;
+    }
+    
+    const camionRadio = document.querySelector('input[name="f3_camion"]:checked');
+    if (!camionRadio) {
+        mostrarMsg('f3_msg', 'Seleccionar camión primero', 'err');
+        return;
+    }
+    
+    // Obtener datos del caso desde el select
+    const select = document.getElementById('f3_caso');
+    const casos = JSON.parse(select.dataset.casos || '[]');
+    const caso = casos.find(c => c.id === idCaso);
+    
+    if (!caso) {
+        mostrarMsg('f3_msg', 'No se encontraron datos del caso', 'err');
+        return;
+    }
+    
+    // Construir dirección (evitar mostrar solo el ID)
+    const direccion = caso.direccion || 
+                      ((caso.calle && caso.numero) ? (caso.calle + ' ' + caso.numero) : '') || 
+                      caso.calle || 
+                      'Sin dirección';
+    const tipo = caso.tipo || '-';
+    
+    // Buscar foto en todos los campos posibles
+    const fotoUrl = caso.fotoVisita || caso.fotoRetiro || caso.fotoUrl || caso.foto || caso.fotoHallazgo || '';
+    
+    const mensaje = `RETIRO ASIGNADO
+━━━━━━━━━━━━━━
+${direccion}
+${idCaso}
+Camión: ${camionRadio.value}
+Tipo: ${tipo}
+━━━━━━━━━━━━━━
+⚡ Retiro inmediato`;
+    
+    try {
+        let response;
+        
+        // Si hay foto, enviar con sendPhoto
+        if (fotoUrl) {
+            mostrarMsg('f3_msg', 'Enviando foto...', 'ok');
+            response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendPhoto`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CONFIG.chatId,
+                    photo: fotoUrl,
+                    caption: mensaje,
+                    parse_mode: 'HTML'
+                })
+            });
+        } else {
+            // Sin foto, solo texto
+            response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CONFIG.chatId,
+                    text: mensaje,
+                    parse_mode: 'HTML'
+                })
+            });
+        }
+        
+        const result = await response.json();
+        if (result.ok) {
+            mostrarMsg('f3_msg', fotoUrl ? 'Foto + mensaje enviados a Telegram ✓' : 'Enviado a Telegram ✓', 'ok');
+            // Limpiar formulario después de envío exitoso
+            limpiarFormularioF3();
+        } else {
+            // Si falla con foto, intentar solo texto
+            if (fotoUrl) {
+                mostrarMsg('f3_msg', 'Foto no accesible, enviando solo texto...', 'ok');
+                const response2 = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CONFIG.chatId,
+                        text: mensaje + '\n\n📷 Foto: ' + fotoUrl,
+                        parse_mode: 'HTML'
+                    })
+                });
+                const result2 = await response2.json();
+                if (result2.ok) {
+                    mostrarMsg('f3_msg', 'Enviado a Telegram (con link a foto) ✓', 'ok');
+                    limpiarFormularioF3();
+                } else {
+                    mostrarMsg('f3_msg', 'Error Telegram: ' + result2.description, 'err');
+                }
+            } else {
+                mostrarMsg('f3_msg', 'Error Telegram: ' + result.description, 'err');
+            }
+        }
+    } catch (err) {
+        mostrarMsg('f3_msg', 'Error de conexión: ' + err.message, 'err');
+    }
+}
+
+// ===================== MOD_004: CONTROL ESTADOS F2 =====================
+
+// Limpiar formulario F3 después de envío exitoso
+function limpiarFormularioF3() {
+    document.getElementById('f3_caso').value = '';
+    document.getElementById('f3_detalle').innerHTML = '';
+    document.getElementById('f3_fecha').value = '';
+    document.getElementById('f3_obs').value = '';
+    const camionChecked = document.querySelector('input[name="f3_camion"]:checked');
+    if (camionChecked) camionChecked.checked = false;
+}
+
+// Mostrar avisos según tipo de retiro seleccionado
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoRetiroSelect = document.getElementById('f2_tipo_retiro');
+    if (tipoRetiroSelect) {
+        tipoRetiroSelect.addEventListener('change', function() {
+            const valor = this.value;
+            const avisoPendiente = document.getElementById('f2_aviso_pendiente');
+            const avisoDesistido = document.getElementById('f2_aviso_desistido');
+            
+            if (avisoPendiente) avisoPendiente.style.display = valor === 'RETIRO PENDIENTE' ? 'block' : 'none';
+            if (avisoDesistido) avisoDesistido.style.display = valor === 'RETIRO DESISTIDO' ? 'block' : 'none';
+        });
+    }
+    
+    // Preview de foto F4
+    const f4Foto = document.getElementById('f4_foto');
+    if (f4Foto) {
+        f4Foto.addEventListener('change', function() {
+            const preview = document.getElementById('f4_foto_preview');
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.innerHTML = `<img src="${e.target.result}" style="max-width: 100%; border-radius: var(--radius-1); border: 1px solid var(--borderColor-default);">`;
+                };
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                preview.innerHTML = '';
+            }
+        });
+    }
+});
+
+// Verificar pendientes vencidos (>5 días) - MOD_004
+function verificarPendientesVencidos(solicitudes) {
+    const hoy = new Date();
+    const pendientesVencidos = [];
+    
+    solicitudes.forEach(s => {
+        if (s.estado === 'PENDIENTE' && s.fechaVisita) {
+            const fechaVisita = new Date(s.fechaVisita);
+            const diasTranscurridos = Math.floor((hoy - fechaVisita) / (1000 * 60 * 60 * 24));
+            if (diasTranscurridos > 5) {
+                pendientesVencidos.push({
+                    id: s.id,
+                    dias: diasTranscurridos,
+                    direccion: s.direccion
+                });
+            }
+        }
+    });
+    
+    return pendientesVencidos;
 }
 
 // ===================== TABLA =====================
@@ -2442,14 +2738,29 @@ async function cargarTabla() {
     
     tbody.innerHTML = '';
     const hoy = new Date();
-    const estadosNoRetirado = ['INGRESADO', 'PARA VISITA', 'PARA RETIRO', 'RETIRO 24HRS', 'PROGRAMADO'];
+    const estadosNoRetirado = ['INGRESADO', 'PARA VISITA', 'PARA RETIRO', 'RETIRO 24HRS', 'PROGRAMADO', 'PENDIENTE'];
     
     solicitudes.forEach(c => {
         const fecha = formatearFecha(c.fechaIngreso);
-        const tieneFoto = c.fotoVisita || c.fotoRetiro;
-        const fotoLink = tieneFoto ? 
-            `<a href="${c.fotoVisita || c.fotoRetiro}" target="_blank" title="Ver foto">📷</a>` : 
-            '<span style="color: var(--texto-secundario);">-</span>';
+        
+        // MOD v21: Mostrar ambas fotos (levantamiento y cierre) - siempre mostrar espacios
+        const fotoLevantamiento = c.fotoVisita || c.fotoUrl || c.foto || c.fotoHallazgo || '';
+        const fotoCierre = c.fotoRetiro || c.fotoCierre || c.fotoRespaldo || '';
+        
+        let fotosHtml = '';
+        // Foto levantamiento
+        if (fotoLevantamiento) {
+            fotosHtml += `<a href="${fotoLevantamiento}" target="_blank" title="Foto levantamiento">📷</a>`;
+        } else {
+            fotosHtml += `<span style="color: var(--fgColor-subtle);" title="Sin foto levantamiento">○</span>`;
+        }
+        fotosHtml += ' ';
+        // Foto cierre/retirado
+        if (fotoCierre) {
+            fotosHtml += `<a href="${fotoCierre}" target="_blank" title="Foto retirado limpio" style="color: #3fb950;">✓</a>`;
+        } else {
+            fotosHtml += `<span style="color: var(--fgColor-subtle);" title="Sin foto cierre">○</span>`;
+        }
         
         const badgeClass = getBadgeClass(c.estado);
         
@@ -2474,7 +2785,7 @@ async function cargarTabla() {
                 <td>${c.direccion || (c.calle + ' ' + c.numero) || '-'}</td>
                 <td>${c.uv || '-'}</td>
                 <td><span class="badge-estado ${badgeClass}">${c.estado || 'INGRESADO'}</span></td>
-                <td style="text-align:center;">${fotoLink}</td>
+                <td style="text-align:center;">${fotosHtml}</td>
             </tr>
         `;
     });
