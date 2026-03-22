@@ -1830,9 +1830,10 @@ async function cargarSelectCasos(form, estadosPermitidos) {
     
     filtrados.forEach(c => {
         const direccion = c.direccion || (c.calle + ' ' + c.numero);
-        // Destacar casos 24HRS y Hallazgos en F3 con estilo especial
-        const es24hrs = c.estado === 'RETIRO 24HRS' || c.origen === 'HALLAZGO' || (c.id && c.id.startsWith('H-'));
-        const estilo24hrs = es24hrs ? 'style="background: #1f6feb; color: #fff; font-weight: 500;"' : '';
+        // Destacar casos RETIRO 24HRS y Hallazgos (nombre contiene "HALLAZGO")
+        const esHallazgo = (c.nombre && c.nombre.toString().includes('HALLAZGO'));
+        const es24hrs = c.estado === 'RETIRO 24HRS' || esHallazgo;
+        const estilo24hrs = es24hrs ? 'style="color: #58a6ff; font-weight: 600;"' : '';
         const icono24hrs = es24hrs ? '⚡ ' : '';
         select.innerHTML += `<option value="${c.id}" ${estilo24hrs}>${icono24hrs}${c.id} | ${direccion} | ${c.tipo}</option>`;
     });
@@ -1852,8 +1853,9 @@ async function cargarSelectCasos(form, estadosPermitidos) {
             if (caso) {
                 const solicitante = caso.solicitante || (caso.nombre + ' ' + caso.apellidos);
                 const direccion = caso.direccion || (caso.calle + ' ' + caso.numero);
-                // Detectar si es caso urgente 24HRS
-                const es24hrs = caso.estado === 'RETIRO 24HRS' || caso.origen === 'HALLAZGO' || (caso.id && caso.id.startsWith('H-'));
+                // Detectar si es caso urgente: 24HRS o Hallazgo
+                const esHallazgo = (caso.nombre && caso.nombre.toString().includes('HALLAZGO'));
+                const es24hrs = caso.estado === 'RETIRO 24HRS' || esHallazgo;
                 detalle.className = 'detalle-caso' + (es24hrs ? ' detalle-urgente' : '');
                 detalle.innerHTML = `
                     <strong>Solicitante:</strong> ${solicitante}<br>
@@ -2470,7 +2472,7 @@ async function guardarF4() {
 // ===================== MOD_005: TELEGRAM =====================
 // Configuración SGRRV Huechuraba - Bot conectado a grupo Terreno
 const TELEGRAM_CONFIG = {
-    botToken: '8748572409:AAFDPMQIjL6cKoccTyr0bGYZn5Ktvv7nBPA',
+    botToken: '8748572409:AAF_a0p3raHLQluxFF_lHmV8KmyPDU9NKR4',
     chatId: '-1003847839749',
     habilitado: true
 };
