@@ -3,621 +3,735 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Recolección - SGRRV Huechuraba</title>
+    <title>Big Mac - Monitor SGRRV</title>
     <style>
 /* ============================================
-   MI RECOLECCIÓN - GITHUB PRIMER LIGHT
+   BIG MAC v4 - MONITOR SGRRV EN VIVO
+   Conectado a API Google Apps Script
+   Actualización cada 5 minutos
    ============================================ */
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box;
+
+:root {
+    /* === FONDOS === */
+    --bgColor-default: #0d1117;
+    --bgColor-muted: #161b22;
+    --bgColor-inset: #010409;
+    
+    /* === TEXTOS === */
+    --fgColor-default: #e6edf3;
+    --fgColor-muted: #8b949e;
+    --fgColor-subtle: #6e7681;
+    --fgColor-onEmphasis: #ffffff;
+    
+    /* === BORDES === */
+    --borderColor-default: #30363d;
+    --borderColor-muted: #21262d;
+    
+    /* === SEMANTICOS === */
+    --accent-fg: #58a6ff;
+    --danger-fg: #f85149;
+    --success-fg: #3fb950;
+    --attention-fg: #d29922;
+    
+    /* === RADIO === */
+    --radius-1: 6px;
+}
+
+* {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    background: #f6f8fa;
-    color: #1f2328;
+    background: var(--bgColor-default);
+    color: var(--fgColor-default);
     min-height: 100vh;
-    overflow-x: hidden;
 }
 
-/* HEADER */
+/* === HEADER === */
 .header {
-    background: #ffffff;
-    padding: 16px 32px;
+    background: var(--bgColor-muted);
+    padding: 12px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #d0d7de;
-    box-shadow: 0 1px 3px rgba(31, 35, 40, 0.04);
+    border-bottom: 1px solid var(--borderColor-default);
 }
 
-.header h1 {
-    font-size: 20px;
+.header-left h1 {
+    font-size: 18px;
     font-weight: 600;
-    color: #1f2328;
+    color: var(--fgColor-default);
 }
 
-.header-center {
-    display: flex;
-    gap: 8px;
+.header-left h1 span {
+    color: var(--attention-fg);
 }
 
-.filtro-btn {
-    padding: 8px 16px;
-    border: 1px solid #d0d7de;
-    background: #ffffff;
-    color: #656d76;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.15s;
-}
-
-.filtro-btn:hover {
-    background: #f6f8fa;
-    border-color: #1f2328;
-    color: #1f2328;
-}
-
-.filtro-btn.active {
-    background: #0969da;
-    border-color: #0969da;
-    color: #ffffff;
-}
-
-.header-info {
-    text-align: right;
+.header-left .subtitulo {
     font-size: 12px;
-    color: #656d76;
+    color: var(--fgColor-muted);
+    display: block;
+    margin-top: 2px;
 }
 
-.header-info .fecha {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1f2328;
-}
-
-.header-info .actualizacion {
-    margin-top: 4px;
-    font-size: 11px;
-    color: #656d76;
-}
-
-/* CONTENEDOR PRINCIPAL */
-.container {
-    padding: 24px;
-    display: flex;
-    gap: 16px;
-    height: calc(100vh - 120px);
-    overflow: hidden;
-}
-
-/* COLUMNAS DE ESTADO */
-.columna {
-    flex: 1;
-    background: #ffffff;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border: 1px solid #d0d7de;
-    box-shadow: 0 1px 3px rgba(31, 35, 40, 0.04);
-}
-
-.columna-header {
-    padding: 14px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #d0d7de;
-    color: #1f2328;
-}
-
-/* Colores sutiles para headers */
-.columna.ingresado .columna-header { background: linear-gradient(90deg, #ddf4ff 0%, #ffffff 100%); }
-.columna.para-visita .columna-header { background: linear-gradient(90deg, #fff8c5 0%, #ffffff 100%); }
-.columna.programado .columna-header { background: linear-gradient(90deg, #fbefff 0%, #ffffff 100%); }
-.columna.para-retiro .columna-header { background: linear-gradient(90deg, #ffebe9 0%, #ffffff 100%); }
-.columna.retirado .columna-header { background: linear-gradient(90deg, #dafbe1 0%, #ffffff 100%); }
-.columna.otros .columna-header { background: linear-gradient(90deg, #f6f8fa 0%, #ffffff 100%); }
-
-.contador {
-    background: #eaeef2;
-    color: #656d76;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.columna-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px;
-    background: #f6f8fa;
-}
-
-/* TARJETAS */
-.tarjeta {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    border: 1px solid #d0d7de;
-    border-left: 4px solid #d0d7de;
-    transition: all 0.15s;
-    box-shadow: 0 1px 2px rgba(31, 35, 40, 0.04);
-}
-
-.tarjeta:hover {
-    border-color: #0969da;
-    box-shadow: 0 4px 12px rgba(31, 35, 40, 0.08);
-    transform: translateY(-1px);
-}
-
-.tarjeta.ingresado { border-left-color: #0969da; }
-.tarjeta.para-visita { border-left-color: #9a6700; }
-.tarjeta.programado { border-left-color: #8250df; }
-.tarjeta.para-retiro { border-left-color: #cf222e; }
-.tarjeta.retirado { border-left-color: #1a7f37; }
-.tarjeta.otros { border-left-color: #656d76; }
-
-.tarjeta-id {
-    font-size: 11px;
-    color: #656d76;
-    margin-bottom: 6px;
-    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
-}
-
-.tarjeta-direccion {
-    font-size: 14px;
-    font-weight: 500;
-    color: #1f2328;
-    line-height: 1.4;
-}
-
-.tarjeta-tipo {
-    display: inline-block;
-    margin-top: 8px;
-    font-size: 11px;
-    padding: 3px 8px;
-    background: #ddf4ff;
-    color: #0969da;
-    border-radius: 20px;
-    font-weight: 500;
-}
-
-/* FOOTER */
-.footer {
-    background: #ffffff;
-    padding: 14px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #d0d7de;
-}
-
-.footer .logo {
+.header-right {
     display: flex;
     align-items: center;
-    gap: 12px;
-    color: #656d76;
-    font-size: 12px;
-}
-
-.footer .logo img {
-    height: 32px;
-    opacity: 0.8;
-}
-
-.footer .stats {
-    display: flex;
     gap: 32px;
 }
 
-.footer .stat {
+.header-stat {
     text-align: center;
 }
 
-.footer .stat-valor {
-    font-size: 20px;
+.header-stat .valor {
+    font-size: 24px;
     font-weight: 600;
-    color: #0969da;
+    color: var(--fgColor-default);
 }
 
-.footer .stat-label {
+.header-stat .label {
     font-size: 11px;
-    color: #656d76;
+    color: var(--fgColor-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* LOADING */
+.header-stat.stat-warning .valor { color: var(--accent-fg); }
+.header-stat.stat-danger .valor { color: var(--danger-fg); }
+
+.update-info {
+    text-align: right;
+    font-size: 12px;
+    color: var(--fgColor-subtle);
+}
+
+.update-info .tiempo {
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+    color: var(--fgColor-muted);
+}
+
+.update-info .updating {
+    color: var(--success-fg);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.update-info .updating.visible {
+    opacity: 1;
+}
+
+/* === BOARD === */
+.board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 16px;
+    height: calc(100vh - 72px);
+    overflow: hidden;
+}
+
+/* === COLUMNAS === */
+.columna {
+    background: var(--bgColor-muted);
+    border: 1px solid var(--borderColor-default);
+    border-radius: var(--radius-1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.columna-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--borderColor-default);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.columna-titulo {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--fgColor-muted);
+}
+
+.columna-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fgColor-muted);
+    background: var(--bgColor-default);
+    min-width: 28px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-1);
+}
+
+/* === LISTA DE TARJETAS === */
+.columna-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.columna-body::-webkit-scrollbar {
+    width: 4px;
+}
+.columna-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+.columna-body::-webkit-scrollbar-thumb {
+    background: var(--borderColor-default);
+    border-radius: 2px;
+}
+
+.columna-empty {
+    text-align: center;
+    padding: 20px;
+    color: var(--fgColor-subtle);
+    font-size: 12px;
+}
+
+/* === TARJETAS === */
+.tarjeta {
+    background: var(--bgColor-default);
+    border: 1px solid var(--borderColor-default);
+    border-radius: var(--radius-1);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+}
+
+.tarjeta:hover {
+    border-color: var(--fgColor-subtle);
+}
+
+.tarjeta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.tarjeta-id {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+}
+
+.tarjeta-tipo {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--fgColor-subtle);
+}
+
+.tarjeta-direccion {
+    font-size: 12px;
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.tarjeta-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+}
+
+.tarjeta-tiempo {
+    color: var(--fgColor-subtle);
+}
+
+.tarjeta-info {
+    color: var(--fgColor-subtle);
+}
+
+/* === ESTADOS === */
+
+/* Estado A - Normal (gris bajo perfil) */
+.estado-a .tarjeta-id,
+.estado-a .tarjeta-direccion,
+.estado-a .tarjeta-tipo,
+.estado-a .tarjeta-tiempo,
+.estado-a .tarjeta-info {
+    color: var(--fgColor-muted);
+}
+
+/* Estado B - Riesgo (azul parpadeo) */
+.estado-b .tarjeta-id,
+.estado-b .tarjeta-direccion {
+    color: var(--accent-fg);
+    animation: parpadeo 1.5s ease-in-out infinite;
+}
+
+.estado-b .tarjeta-tipo,
+.estado-b .tarjeta-tiempo,
+.estado-b .tarjeta-info {
+    color: var(--accent-fg);
+    opacity: 0.7;
+}
+
+@keyframes parpadeo {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* Estado C - Incumplimiento (rojo solido) */
+.estado-c {
+    border-color: var(--danger-fg) !important;
+}
+
+.estado-c .tarjeta-id,
+.estado-c .tarjeta-direccion {
+    color: var(--danger-fg);
+}
+
+.estado-c .tarjeta-tipo,
+.estado-c .tarjeta-tiempo,
+.estado-c .tarjeta-info {
+    color: var(--danger-fg);
+    opacity: 0.8;
+}
+
+/* === LOADING === */
 .loading {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #656d76;
-    font-size: 14px;
+    color: var(--fgColor-muted);
 }
 
-.loading::after {
-    content: '';
-    width: 20px;
-    height: 20px;
-    border: 2px solid #d0d7de;
-    border-top-color: #0969da;
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--borderColor-default);
+    border-top-color: var(--accent-fg);
     border-radius: 50%;
-    margin-left: 10px;
     animation: spin 1s linear infinite;
+    margin-right: 10px;
 }
 
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
 
-/* EMPTY STATE */
-.empty {
-    text-align: center;
-    padding: 32px;
-    color: #656d76;
-    font-size: 13px;
-}
-
-/* Scrollbar */
-.columna-body::-webkit-scrollbar {
-    width: 8px;
-}
-.columna-body::-webkit-scrollbar-track {
-    background: #f6f8fa;
-}
-.columna-body::-webkit-scrollbar-thumb {
-    background: #d0d7de;
-    border-radius: 4px;
-}
-.columna-body::-webkit-scrollbar-thumb:hover {
-    background: #afb8c1;
-}
-
-/* Responsive */
+/* === RESPONSIVE === */
 @media (max-width: 1200px) {
-    .container {
-        flex-wrap: wrap;
+    .board {
+        grid-template-columns: repeat(2, 1fr);
+        height: auto;
     }
     .columna {
-        flex: 1 1 calc(33% - 12px);
-        min-width: 280px;
-        max-height: 350px;
+        min-height: 300px;
     }
 }
 
-@media (max-width: 768px) {
-    .columna {
-        flex: 1 1 100%;
-        max-height: 300px;
+@media (max-width: 600px) {
+    .board {
+        grid-template-columns: 1fr;
     }
     .header {
         flex-direction: column;
         gap: 12px;
-        padding: 12px 16px;
     }
-    .header h1 {
-        font-size: 18px;
-    }
-    .header-center {
-        order: 3;
-    }
-    .container {
-        padding: 12px;
-    }
-    .footer {
-        flex-direction: column;
-        gap: 12px;
-        padding: 12px 16px;
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
     }
 }
-    </style>
+</style>
 </head>
 <body>
 
 <div class="header">
-    <h1>Mi Recolección</h1>
-    <div class="header-center">
-        <button class="filtro-btn active" onclick="setFiltro('hoy')">HOY</button>
-        <button class="filtro-btn" onclick="setFiltro('semana')">SEMANA</button>
-        <button class="filtro-btn" onclick="setFiltro('mes')">MES</button>
-        <button class="filtro-btn" onclick="setFiltro('todo')">TODO</button>
+    <div class="header-left">
+        <h1>🍔 <span>Big Mac</span> Monitor</h1>
+        <span class="subtitulo">SGRRV Huechuraba - En vivo</span>
     </div>
-    <div class="header-info">
-        <div class="fecha" id="fechaActual"></div>
-        <div class="actualizacion">Actualización automática cada 5 min</div>
-    </div>
-</div>
-
-<div class="container" id="container">
-    <div class="columna ingresado">
-        <div class="columna-header">
-            Ingresado <span class="contador" id="cont-ingresado">0</span>
+    <div class="header-right">
+        <div class="header-stat">
+            <div class="valor" id="totalActivos">-</div>
+            <div class="label">Activos</div>
         </div>
-        <div class="columna-body" id="col-ingresado">
-            <div class="loading">Cargando</div>
+        <div class="header-stat stat-warning">
+            <div class="valor" id="totalRiesgo">-</div>
+            <div class="label">En riesgo</div>
         </div>
-    </div>
-    
-    <div class="columna para-visita">
-        <div class="columna-header">
-            Para Visita <span class="contador" id="cont-para-visita">0</span>
+        <div class="header-stat stat-danger">
+            <div class="valor" id="totalIncumplidos">-</div>
+            <div class="label">Incumplidos</div>
         </div>
-        <div class="columna-body" id="col-para-visita">
-            <div class="loading">Cargando</div>
-        </div>
-    </div>
-    
-    <div class="columna programado">
-        <div class="columna-header">
-            Programado <span class="contador" id="cont-programado">0</span>
-        </div>
-        <div class="columna-body" id="col-programado">
-            <div class="loading">Cargando</div>
-        </div>
-    </div>
-    
-    <div class="columna para-retiro">
-        <div class="columna-header">
-            Para Retiro <span class="contador" id="cont-para-retiro">0</span>
-        </div>
-        <div class="columna-body" id="col-para-retiro">
-            <div class="loading">Cargando</div>
-        </div>
-    </div>
-    
-    <div class="columna retirado">
-        <div class="columna-header">
-            Retirado <span class="contador" id="cont-retirado">0</span>
-        </div>
-        <div class="columna-body" id="col-retirado">
-            <div class="loading">Cargando</div>
-        </div>
-    </div>
-    
-    <div class="columna otros">
-        <div class="columna-header">
-            Otros <span class="contador" id="cont-otros">0</span>
-        </div>
-        <div class="columna-body" id="col-otros">
-            <div class="loading">Cargando</div>
+        <div class="update-info">
+            <div>Próxima actualización</div>
+            <div class="tiempo" id="countdown">05:00</div>
+            <div class="updating" id="updating">Actualizando...</div>
         </div>
     </div>
 </div>
 
-<div class="footer">
-    <div class="logo">
-        <span>SGRRV - Sistema de Gestión de Recolección de Residuos Voluminosos</span>
+<div class="board">
+    <!-- C1: Solicitudes de Retiro -->
+    <div class="columna">
+        <div class="columna-header">
+            <span class="columna-titulo">Solicitudes de Retiro</span>
+            <span class="columna-count" id="count-c1">0</span>
+        </div>
+        <div class="columna-body" id="col-c1">
+            <div class="loading"><div class="loading-spinner"></div> Cargando...</div>
+        </div>
     </div>
-    <div class="stats">
-        <div class="stat">
-            <div class="stat-valor" id="stat-total">0</div>
-            <div class="stat-label">TOTAL</div>
+    
+    <!-- C2: Visita Factibilidad -->
+    <div class="columna">
+        <div class="columna-header">
+            <span class="columna-titulo">Visita Factibilidad</span>
+            <span class="columna-count" id="count-c2">0</span>
         </div>
-        <div class="stat">
-            <div class="stat-valor" id="stat-hoy">0</div>
-            <div class="stat-label">HOY</div>
+        <div class="columna-body" id="col-c2">
+            <div class="loading"><div class="loading-spinner"></div> Cargando...</div>
         </div>
-        <div class="stat">
-            <div class="stat-valor" id="stat-pendientes">0</div>
-            <div class="stat-label">PENDIENTES</div>
+    </div>
+    
+    <!-- C3: Asignación de Rutas -->
+    <div class="columna">
+        <div class="columna-header">
+            <span class="columna-titulo">Asignación de Rutas</span>
+            <span class="columna-count" id="count-c3">0</span>
+        </div>
+        <div class="columna-body" id="col-c3">
+            <div class="loading"><div class="loading-spinner"></div> Cargando...</div>
+        </div>
+    </div>
+    
+    <!-- C4: Cerradas Hoy -->
+    <div class="columna">
+        <div class="columna-header">
+            <span class="columna-titulo">Cerradas Hoy</span>
+            <span class="columna-count" id="count-c4">0</span>
+        </div>
+        <div class="columna-body" id="col-c4">
+            <div class="loading"><div class="loading-spinner"></div> Cargando...</div>
         </div>
     </div>
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwlmWxLFq3jZD99ygE3Cy372q0rx8tZCJxmNfxTy1pxofR6IAvRbOCAdmJV9mYmYcDunQ/exec';
+// =====================================================
+// CONFIGURACIÓN
+// =====================================================
 
-let filtroActual = 'hoy';
-let todasLasSolicitudes = [];
-
-// Mapeo de estados a columnas
-const ESTADO_COLUMNA = {
-    'INGRESADO': 'ingresado',
-    'PARA VISITA': 'para-visita',
-    'PROGRAMADO': 'programado',
-    'PARA RETIRO': 'para-retiro',
-    'RETIRO 24HRS': 'para-retiro',
-    'RETIRADO': 'retirado',
-    'FALLIDO': 'otros',
-    'NO PROCEDE': 'otros',
-    'PENDIENTE DE PAGO': 'otros'
+const CONFIG = {
+    intervaloActualizacion: 300, // 5 minutos en segundos
+    horasRiesgo: 4,              // Horas laborales para estado B (azul)
+    horasIncumplimiento: 8,      // Horas laborales para estado C (rojo)
+    horaInicio: 8,               // Inicio jornada laboral
+    horaFin: 18                  // Fin jornada laboral
 };
 
-// Cambiar filtro
-function setFiltro(filtro) {
-    filtroActual = filtro;
-    document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    renderizarDatos();
-}
+// API del SGRRV
+const API_URL = 'https://script.google.com/macros/s/AKfycbwlmWxLFq3jZD99ygE3Cy372q0rx8tZCJxmNfxTy1pxofR6IAvRbOCAdmJV9mYmYcDunQ/exec';
 
-// Parsear fecha de forma robusta
-function parsearFecha(fechaStr) {
-    if (!fechaStr) return null;
-    if (fechaStr instanceof Date) return fechaStr;
-    let fecha = new Date(fechaStr);
-    if (!isNaN(fecha.getTime())) return fecha;
-    const match = String(fechaStr).match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
-    if (match) {
-        fecha = new Date(match[3], match[2] - 1, match[1]);
-        if (!isNaN(fecha.getTime())) return fecha;
-    }
-    return null;
-}
+// =====================================================
+// LLAMADA A LA API
+// =====================================================
 
-// Filtrar por fecha
-function filtrarPorFecha(solicitudes) {
-    const ahora = new Date();
-    const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
-    
-    return solicitudes.filter(s => {
-        const fecha = parsearFecha(s.fechaIngreso);
-        if (!fecha) return filtroActual === 'todo';
+async function obtenerSolicitudes() {
+    try {
+        const response = await fetch(API_URL + '?action=obtenerSolicitudes');
+        const data = await response.json();
         
-        switch (filtroActual) {
-            case 'hoy':
-                const fechaSolicitud = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-                return fechaSolicitud.getTime() === hoy.getTime();
-            case 'semana':
-                const hace7dias = new Date(hoy);
-                hace7dias.setDate(hace7dias.getDate() - 7);
-                return fecha >= hace7dias;
-            case 'mes':
-                const hace30dias = new Date(hoy);
-                hace30dias.setDate(hace30dias.getDate() - 30);
-                return fecha >= hace30dias;
-            case 'todo':
-            default:
-                return true;
+        if (data.success) {
+            return data.solicitudes || [];
+        }
+        console.error('Error API:', data.error);
+        return [];
+    } catch (error) {
+        console.error('Error de conexión:', error);
+        return [];
+    }
+}
+
+// =====================================================
+// CLASIFICACIÓN POR ESTADO
+// =====================================================
+
+function clasificarSolicitudes(solicitudes) {
+    const ahora = new Date();
+    
+    const c1 = []; // INGRESADO - Esperando visita
+    const c2 = []; // PARA VISITA, VISITADO - En proceso de visita
+    const c3 = []; // PARA RETIRO, RETIRO 24HRS, PROGRAMADO - Asignación/Retiro
+    const c4 = []; // RETIRADO - Cerradas hoy
+    
+    const hoy = ahora.toDateString();
+    
+    solicitudes.forEach(s => {
+        const estado = s.estado || 'INGRESADO';
+        
+        switch(estado) {
+            case 'INGRESADO':
+                c1.push({
+                    ...s,
+                    timestamp: s.fechaIngreso
+                });
+                break;
+                
+            case 'PARA VISITA':
+            case 'VISITADO':
+            case 'PENDIENTE':
+                c2.push({
+                    ...s,
+                    timestamp: s.fechaIngreso
+                });
+                break;
+                
+            case 'PARA RETIRO':
+            case 'RETIRO 24HRS':
+            case 'PROGRAMADO':
+                c3.push({
+                    ...s,
+                    timestamp: s.fechaIngreso
+                });
+                break;
+                
+            case 'RETIRADO':
+                // Solo mostrar los cerrados hoy
+                // (En producción, filtrar por fechaCierre)
+                c4.push(s);
+                break;
         }
     });
-}
-
-// Actualizar fecha
-function actualizarFecha() {
-    const ahora = new Date();
-    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    let fecha = ahora.toLocaleDateString('es-CL', opciones);
-    fecha = fecha.charAt(0).toUpperCase() + fecha.slice(1);
-    const hora = ahora.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('fechaActual').textContent = `${fecha} - ${hora}`;
-}
-
-// Crear tarjeta
-function crearTarjeta(solicitud) {
-    const id = solicitud.id || '';
-    const tipo = solicitud.tipo || 'OTRO';
-    const calle = solicitud.calle || '';
-    const numero = solicitud.numero || '';
-    const detalle = solicitud.detalleUbicacion || '';
-    const estado = solicitud.estado || 'INGRESADO';
-    const columna = ESTADO_COLUMNA[estado] || 'otros';
     
-    const direccion = `${calle} ${numero}`.trim();
-    const direccionCompleta = detalle ? `${direccion}, ${detalle}` : direccion;
+    return { c1, c2, c3, c4 };
+}
+
+// =====================================================
+// CÁLCULO DE HORAS LABORALES
+// =====================================================
+
+function esFinDeSemana(fecha) {
+    const dia = fecha.getDay();
+    return dia === 0 || dia === 6;
+}
+
+function calcularHorasLaborales(desde, hasta) {
+    let horas = 0;
+    let cursor = new Date(desde);
+    
+    while (cursor < hasta) {
+        if (!esFinDeSemana(cursor)) {
+            const hora = cursor.getHours();
+            if (hora >= CONFIG.horaInicio && hora < CONFIG.horaFin) {
+                horas++;
+            }
+        }
+        cursor.setHours(cursor.getHours() + 1);
+    }
+    
+    return horas;
+}
+
+function obtenerEstado(timestamp, ahora) {
+    if (!timestamp) return 'a';
+    
+    const desde = new Date(timestamp);
+    if (isNaN(desde.getTime())) return 'a';
+    
+    const horasLaborales = calcularHorasLaborales(desde, ahora);
+    
+    if (horasLaborales >= CONFIG.horasIncumplimiento) {
+        return 'c';
+    } else if (horasLaborales >= CONFIG.horasRiesgo) {
+        return 'b';
+    }
+    return 'a';
+}
+
+// =====================================================
+// RENDERIZADO
+// =====================================================
+
+function formatearTiempo(timestamp) {
+    if (!timestamp) return '-';
+    
+    const fecha = new Date(timestamp);
+    if (isNaN(fecha.getTime())) return '-';
+    
+    const ahora = new Date();
+    const hoy = ahora.toDateString();
+    const ayer = new Date(ahora);
+    ayer.setDate(ayer.getDate() - 1);
+    
+    if (fecha.toDateString() === hoy) {
+        return 'Hoy ' + fecha.getHours().toString().padStart(2, '0') + ':' + 
+               fecha.getMinutes().toString().padStart(2, '0');
+    } else if (fecha.toDateString() === ayer.toDateString()) {
+        return 'Ayer ' + fecha.getHours().toString().padStart(2, '0') + ':' + 
+               fecha.getMinutes().toString().padStart(2, '0');
+    }
+    return fecha.getDate() + '/' + (fecha.getMonth() + 1);
+}
+
+function generarTarjeta(item, estado, infoExtra = '') {
+    const idCorto = item.id ? item.id.split('-').pop() : '?';
+    const direccion = item.direccion || (item.calle + ' ' + item.numero) || '-';
+    const tipo = item.tipo || '-';
     
     return `
-        <div class="tarjeta ${columna}">
-            <div class="tarjeta-id">${id}</div>
-            <div class="tarjeta-direccion">${direccionCompleta || 'Sin dirección'}</div>
-            <span class="tarjeta-tipo">${tipo}</span>
+        <div class="tarjeta estado-${estado}">
+            <div class="tarjeta-header">
+                <span class="tarjeta-id">${idCorto}</span>
+                <span class="tarjeta-tipo">${tipo}</span>
+            </div>
+            <div class="tarjeta-direccion">${direccion}</div>
+            <div class="tarjeta-footer">
+                <span class="tarjeta-tiempo">${infoExtra}</span>
+            </div>
         </div>
     `;
 }
 
-// Renderizar datos filtrados
-function renderizarDatos() {
-    const solicitudesFiltradas = filtrarPorFecha(todasLasSolicitudes);
+function renderizarColumna(colId, datos, ahora) {
+    const container = document.getElementById('col-' + colId);
+    const countEl = document.getElementById('count-' + colId);
     
-    const grupos = {
-        'ingresado': [],
-        'para-visita': [],
-        'programado': [],
-        'para-retiro': [],
-        'retirado': [],
-        'otros': []
-    };
+    if (datos.length === 0) {
+        container.innerHTML = '<div class="columna-empty">Sin casos</div>';
+        countEl.textContent = '0';
+        return { a: 0, b: 0, c: 0 };
+    }
     
-    solicitudesFiltradas.forEach(s => {
-        const estado = s.estado || 'INGRESADO';
-        const columna = ESTADO_COLUMNA[estado] || 'otros';
-        grupos[columna].push(s);
+    let htmlItems = [];
+    let contadores = { a: 0, b: 0, c: 0 };
+    
+    datos.forEach(item => {
+        const estado = obtenerEstado(item.timestamp, ahora);
+        contadores[estado]++;
+        const info = formatearTiempo(item.timestamp);
+        htmlItems.push(generarTarjeta(item, estado, info));
     });
     
-    Object.keys(grupos).forEach(col => {
-        const container = document.getElementById(`col-${col}`);
-        const contador = document.getElementById(`cont-${col}`);
-        const items = grupos[col];
-        
-        contador.textContent = items.length;
-        
-        if (items.length === 0) {
-            container.innerHTML = '<div class="empty">Sin solicitudes</div>';
-        } else {
-            container.innerHTML = items.map(s => crearTarjeta(s)).join('');
-        }
-    });
+    container.innerHTML = htmlItems.join('');
+    countEl.textContent = datos.length;
     
-    const total = solicitudesFiltradas.length;
-    const hoyStr = new Date().toISOString().slice(0, 10);
-    const solicitudesHoy = todasLasSolicitudes.filter(s => {
-        const fecha = parsearFecha(s.fechaIngreso);
-        if (!fecha) return false;
-        try {
-            return fecha.toISOString().slice(0, 10) === hoyStr;
-        } catch (e) {
-            return false;
-        }
-    }).length;
-    
-    const pendientes = grupos['ingresado'].length + 
-                      grupos['para-visita'].length + 
-                      grupos['programado'].length + 
-                      grupos['para-retiro'].length;
-    
-    document.getElementById('stat-total').textContent = total;
-    document.getElementById('stat-hoy').textContent = solicitudesHoy;
-    document.getElementById('stat-pendientes').textContent = pendientes;
+    return contadores;
 }
 
-// Cargar datos
-async function cargarDatos() {
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ action: 'obtenerSolicitudes' })
+function renderizarC4(datos) {
+    const container = document.getElementById('col-c4');
+    const countEl = document.getElementById('count-c4');
+    
+    if (datos.length === 0) {
+        container.innerHTML = '<div class="columna-empty">Sin cierres hoy</div>';
+        countEl.textContent = '0';
+        return;
+    }
+    
+    container.innerHTML = datos.slice(0, 20).map(item => {
+        const idCorto = item.id ? item.id.split('-').pop() : '?';
+        const direccion = item.direccion || (item.calle + ' ' + item.numero) || '-';
+        const tipo = item.tipo || '-';
+        
+        return `
+            <div class="tarjeta">
+                <div class="tarjeta-header">
+                    <span class="tarjeta-id">${idCorto}</span>
+                    <span class="tarjeta-tipo">${tipo}</span>
+                </div>
+                <div class="tarjeta-direccion">${direccion}</div>
+                <div class="tarjeta-footer">
+                    <span class="tarjeta-tiempo" style="color: var(--success-fg);">✓ Cerrado</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    countEl.textContent = datos.length;
+}
+
+async function renderizarTablero() {
+    const solicitudes = await obtenerSolicitudes();
+    const { c1, c2, c3, c4 } = clasificarSolicitudes(solicitudes);
+    const ahora = new Date();
+    
+    let totalB = 0;
+    let totalC = 0;
+    
+    // C1: Solicitudes de Retiro (INGRESADO)
+    const contC1 = renderizarColumna('c1', c1, ahora);
+    totalB += contC1.b;
+    totalC += contC1.c;
+    
+    // C2: Visita Factibilidad (PARA VISITA, VISITADO)
+    const contC2 = renderizarColumna('c2', c2, ahora);
+    totalB += contC2.b;
+    totalC += contC2.c;
+    
+    // C3: Asignación de Rutas (PARA RETIRO, RETIRO 24HRS, PROGRAMADO)
+    const contC3 = renderizarColumna('c3', c3, ahora);
+    totalB += contC3.b;
+    totalC += contC3.c;
+    
+    // C4: Cerradas
+    renderizarC4(c4);
+    
+    // Actualizar KPIs
+    const activos = c1.length + c2.length + c3.length;
+    document.getElementById('totalActivos').textContent = activos;
+    document.getElementById('totalRiesgo').textContent = totalB;
+    document.getElementById('totalIncumplidos').textContent = totalC;
+}
+
+// =====================================================
+// COUNTDOWN Y AUTO-ACTUALIZACIÓN
+// =====================================================
+
+let segundosRestantes = CONFIG.intervaloActualizacion;
+
+function actualizarCountdown() {
+    const minutos = Math.floor(segundosRestantes / 60);
+    const segundos = segundosRestantes % 60;
+    document.getElementById('countdown').textContent = 
+        String(minutos).padStart(2, '0') + ':' + String(segundos).padStart(2, '0');
+    
+    if (segundosRestantes <= 0) {
+        // Mostrar indicador de actualización
+        document.getElementById('updating').classList.add('visible');
+        
+        // Actualizar datos
+        renderizarTablero().then(() => {
+            setTimeout(() => {
+                document.getElementById('updating').classList.remove('visible');
+            }, 1000);
         });
         
-        const result = await response.json();
-        
-        if (!result.success) {
-            console.error('Error:', result.error);
-            mostrarError();
-            return;
-        }
-        
-        todasLasSolicitudes = result.solicitudes || [];
-        renderizarDatos();
-        
-    } catch (error) {
-        console.error('Error cargando datos:', error);
-        mostrarError();
+        // Reiniciar contador
+        segundosRestantes = CONFIG.intervaloActualizacion;
+    } else {
+        segundosRestantes--;
     }
 }
 
-function mostrarError() {
-    document.querySelectorAll('.columna-body').forEach(col => {
-        col.innerHTML = '<div class="empty">Error de conexión. Recargar página.</div>';
-    });
-}
+// =====================================================
+// INICIALIZAR
+// =====================================================
 
-// Inicializar
-actualizarFecha();
-cargarDatos();
-
-// Actualización automática cada 5 minutos
-setInterval(() => {
-    actualizarFecha();
-    cargarDatos();
-}, 5 * 60 * 1000);
-
-// Actualizar reloj cada minuto
-setInterval(actualizarFecha, 60 * 1000);
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar datos inicial
+    renderizarTablero();
+    
+    // Iniciar countdown
+    setInterval(actualizarCountdown, 1000);
+});
 </script>
 
 </body>
