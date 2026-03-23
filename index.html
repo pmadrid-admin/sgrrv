@@ -603,6 +603,75 @@ tr.row-warning td {
     background: var(--bgColor-inset);
 }
 
+/* Selector desplegable con filtros para F3 */
+.caso-selector-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.caso-filtros {
+    display: flex;
+    gap: 0;
+    margin-bottom: 4px;
+}
+
+.caso-filtro-btn {
+    flex: 1;
+    padding: 5px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--bgColor-muted);
+    border: 1px solid var(--borderColor-default);
+    color: var(--fgColor-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.caso-filtro-btn:first-child { border-radius: var(--radius-1) 0 0 var(--radius-1); }
+.caso-filtro-btn:last-child  { border-radius: 0 var(--radius-1) var(--radius-1) 0; border-left: none; }
+.caso-filtro-btn:not(:first-child):not(:last-child) { border-left: none; }
+
+.caso-filtro-btn.active {
+    background: var(--accent-emphasis);
+    border-color: var(--accent-emphasis);
+    color: #fff;
+}
+
+.caso-input-trigger {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bgColor-muted);
+    border: 1px solid var(--borderColor-default);
+    border-radius: var(--radius-1);
+    color: var(--fgColor-default);
+    font-size: 13px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.caso-input-trigger:focus {
+    outline: none;
+    border-color: var(--accent-fg);
+}
+
+.caso-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    max-height: 280px;
+    overflow-y: auto;
+    background: var(--bgColor-muted);
+    border: 1px solid var(--accent-fg);
+    border-top: none;
+    border-radius: 0 0 var(--radius-1) var(--radius-1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.caso-dropdown.open { display: block; }
+
 .caso-item {
     display: flex;
     align-items: center;
@@ -1378,7 +1447,22 @@ tr.row-warning td {
             
             <label>Seleccionar caso *</label>
             <input type="hidden" id="f3_caso">
-            <div id="f3_lista_casos" class="lista-casos-custom"></div>
+            <div class="caso-selector-wrapper" id="f3_selector_wrapper">
+                <div class="caso-filtros">
+                    <button type="button" class="caso-filtro-btn active" data-modo="id" onclick="setModoFiltroF3(this)">ID</button>
+                    <button type="button" class="caso-filtro-btn" data-modo="fecha" onclick="setModoFiltroF3(this)">Fecha</button>
+                    <button type="button" class="caso-filtro-btn" data-modo="dir" onclick="setModoFiltroF3(this)">Dirección</button>
+                </div>
+                <input type="text" class="caso-input-trigger" id="f3_input_trigger"
+                    placeholder="-- Seleccionar caso --"
+                    autocomplete="off"
+                    oninput="filtrarListaF3()"
+                    onfocus="abrirDropdownF3()"
+                    readonly>
+                <div class="caso-dropdown" id="f3_dropdown">
+                    <div id="f3_lista_casos" class="lista-casos-custom" style="border:none; margin:0; max-height:280px; border-radius:0;"></div>
+                </div>
+            </div>
             <div id="f3_detalle" class="detalle-caso"></div>
 
             <label>Fecha programada para retiro *</label>
@@ -1901,11 +1985,13 @@ function showTab(tab) {
 async function cargarSelectCasos(form, estadosPermitidos) {
     const result = await apiCall('obtenerSolicitudes', {});
 
-    // F3 usa lista custom, F2/F4 usan select nativo
+    // F3 usa selector desplegable custom
     if (form === 'f3') {
         const lista = document.getElementById('f3_lista_casos');
         const hidden = document.getElementById('f3_caso');
+        const trigger = document.getElementById('f3_input_trigger');
         const detalle = document.getElementById('f3_detalle');
+
         lista.innerHTML = '<div style="padding:10px;color:var(--fgColor-muted)">Cargando...</div>';
 
         if (!result.success) {
@@ -1913,57 +1999,14 @@ async function cargarSelectCasos(form, estadosPermitidos) {
             return;
         }
 
-        const filtrados = result.solicitudes.filter(c => estadosPermitidos.includes(c.estado));
-        lista.innerHTML = '';
+        casosF3 = result.solicitudes.filter(c => estadosPermitidos.includes(c.estado));
         hidden.value = '';
+        trigger.value = '';
+        trigger.setAttribute('readonly', true);
         detalle.innerHTML = '';
         detalle.className = 'detalle-caso';
-
-        if (filtrados.length === 0) {
-            lista.innerHTML = '<div style="padding:10px;color:var(--fgColor-muted)">Sin casos pendientes</div>';
-            return;
-        }
-
-        // Ordenar: urgentes primero
-        filtrados.sort((a, b) => {
-            const aUrgente = a.estado === 'RETIRO 24HRS' || (a.nombre && a.nombre.toString().includes('HALLAZGO'));
-            const bUrgente = b.estado === 'RETIRO 24HRS' || (b.nombre && b.nombre.toString().includes('HALLAZGO'));
-            return (bUrgente ? 1 : 0) - (aUrgente ? 1 : 0);
-        });
-
-        filtrados.forEach(c => {
-            const direccion = c.direccion || (c.calle + ' ' + c.numero);
-            const esHallazgo = (c.nombre && c.nombre.toString().includes('HALLAZGO'));
-            const esUrgente = c.estado === 'RETIRO 24HRS' || esHallazgo;
-
-            const div = document.createElement('div');
-            div.className = 'caso-item' + (esUrgente ? ' urgente' : '');
-            div.dataset.id = c.id;
-            div.innerHTML = `<span class="caso-item-id">${c.id}</span><span class="caso-item-dir">${direccion} | ${c.tipo}</span>`;
-
-            div.onclick = function() {
-                // Deseleccionar anterior
-                lista.querySelectorAll('.caso-item').forEach(el => el.classList.remove('selected'));
-                div.classList.add('selected');
-                hidden.value = c.id;
-
-                // Mostrar detalle
-                const solicitante = c.solicitante || ((c.nombre || '') + ' ' + (c.apellidos || '')).trim();
-                detalle.className = 'detalle-caso' + (esUrgente ? ' detalle-urgente' : '');
-                detalle.innerHTML = `
-                    <strong>Solicitante:</strong> ${solicitante}<br>
-                    <strong>Teléfono:</strong> ${c.telefono || '-'}<br>
-                    <strong>Dirección:</strong> ${direccion}<br>
-                    <strong>Detalle:</strong> ${c.detalleUbicacion || '-'}<br>
-                    <strong>Tipo:</strong> ${c.tipo}<br>
-                    <strong>Observaciones:</strong> ${c.observaciones || '-'}
-                `;
-            };
-            lista.appendChild(div);
-        });
-
-        // Guardar para guardarF3
-        hidden.dataset.casos = JSON.stringify(filtrados);
+        hidden.dataset.casos = JSON.stringify(casosF3);
+        renderListaF3(casosF3);
         return;
     }
 
@@ -2538,8 +2581,9 @@ async function guardarF3() {
         document.getElementById('modalOk').classList.add('active');
         
         limpiarForm('f3');
-        // Limpiar selección de camión
         document.querySelectorAll('input[name="f3_camion"]').forEach(r => r.checked = false);
+        const trigger = document.getElementById('f3_input_trigger');
+        if (trigger) { trigger.value = ''; trigger.setAttribute('readonly', true); }
         cargarSelectCasos('f3', ['PARA RETIRO', 'RETIRO 24HRS']);
     } else {
         mostrarMsg('f3_msg', 'Error: ' + (result.error || 'No se pudo asignar'), 'err');
@@ -2607,6 +2651,103 @@ async function guardarF4() {
     } else {
         mostrarMsg('f4_msg', 'Error: ' + (result.error || 'No se pudo cerrar'), 'err');
     }
+}
+
+// ===================== SELECTOR DESPLEGABLE F3 =====================
+let modoFiltroF3 = 'id';
+let casosF3 = [];
+
+function setModoFiltroF3(btn) {
+    document.querySelectorAll('.caso-filtro-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    modoFiltroF3 = btn.dataset.modo;
+    document.getElementById('f3_input_trigger').value = '';
+    document.getElementById('f3_input_trigger').removeAttribute('readonly');
+    renderListaF3(casosF3);
+    abrirDropdownF3();
+}
+
+function abrirDropdownF3() {
+    document.getElementById('f3_input_trigger').removeAttribute('readonly');
+    document.getElementById('f3_dropdown').classList.add('open');
+    // Cerrar al hacer clic fuera
+    setTimeout(() => {
+        document.addEventListener('click', cerrarDropdownF3Outside, { once: true });
+    }, 100);
+}
+
+function cerrarDropdownF3Outside(e) {
+    const wrapper = document.getElementById('f3_selector_wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+        document.getElementById('f3_dropdown').classList.remove('open');
+    }
+}
+
+function filtrarListaF3() {
+    const q = document.getElementById('f3_input_trigger').value.toLowerCase();
+    const filtrados = casosF3.filter(c => {
+        if (modoFiltroF3 === 'id') return c.id.toLowerCase().includes(q);
+        if (modoFiltroF3 === 'fecha') return (c.fechaIngreso || '').toLowerCase().includes(q);
+        if (modoFiltroF3 === 'dir') {
+            const dir = (c.direccion || (c.calle + ' ' + c.numero)).toLowerCase();
+            return dir.includes(q);
+        }
+        return true;
+    });
+    renderListaF3(filtrados);
+    document.getElementById('f3_dropdown').classList.add('open');
+}
+
+function renderListaF3(lista) {
+    const contenedor = document.getElementById('f3_lista_casos');
+    contenedor.innerHTML = '';
+
+    if (!lista || lista.length === 0) {
+        contenedor.innerHTML = '<div style="padding:10px;color:var(--fgColor-muted);font-size:13px;">Sin resultados</div>';
+        return;
+    }
+
+    // Urgentes primero
+    const ordenados = [...lista].sort((a, b) => {
+        const aU = a.estado === 'RETIRO 24HRS' || (a.nombre && a.nombre.toString().includes('HALLAZGO'));
+        const bU = b.estado === 'RETIRO 24HRS' || (b.nombre && b.nombre.toString().includes('HALLAZGO'));
+        return (bU ? 1 : 0) - (aU ? 1 : 0);
+    });
+
+    ordenados.forEach(c => {
+        const direccion = c.direccion || ((c.calle || '') + ' ' + (c.numero || '')).trim();
+        const esHallazgo = (c.nombre && c.nombre.toString().includes('HALLAZGO'));
+        const esUrgente = c.estado === 'RETIRO 24HRS' || esHallazgo;
+
+        const div = document.createElement('div');
+        div.className = 'caso-item' + (esUrgente ? ' urgente' : '');
+        div.dataset.id = c.id;
+        div.innerHTML = `<span class="caso-item-id">${c.id}</span><span class="caso-item-dir">${direccion} | ${c.tipo}</span>`;
+
+        div.onclick = function() {
+            // Seleccionar
+            contenedor.querySelectorAll('.caso-item').forEach(el => el.classList.remove('selected'));
+            div.classList.add('selected');
+            document.getElementById('f3_caso').value = c.id;
+            document.getElementById('f3_input_trigger').value = `${c.id} | ${direccion}`;
+            document.getElementById('f3_input_trigger').setAttribute('readonly', true);
+            document.getElementById('f3_dropdown').classList.remove('open');
+
+            // Mostrar detalle
+            const solicitante = c.solicitante || ((c.nombre || '') + ' ' + (c.apellidos || '')).trim();
+            const detalle = document.getElementById('f3_detalle');
+            detalle.className = 'detalle-caso' + (esUrgente ? ' detalle-urgente' : '');
+            detalle.innerHTML = `
+                <strong>Solicitante:</strong> ${solicitante}<br>
+                <strong>Teléfono:</strong> ${c.telefono || '-'}<br>
+                <strong>Dirección:</strong> ${direccion}<br>
+                <strong>Detalle:</strong> ${c.detalleUbicacion || '-'}<br>
+                <strong>Tipo:</strong> ${c.tipo}<br>
+                <strong>Observaciones:</strong> ${c.observaciones || '-'}
+            `;
+        };
+        contenedor.appendChild(div);
+    });
 }
 
 // ===================== MOD_004: CONTROL ESTADOS F2 =====================
