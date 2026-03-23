@@ -1454,9 +1454,11 @@ tr.row-warning td {
             <input type="hidden" id="f3_caso">
             <div class="caso-selector-wrapper" id="f3_selector_wrapper">
                 <div class="caso-filtros">
-                    <button type="button" class="caso-filtro-btn active" data-modo="id" onclick="setModoFiltroF3(this)">ID</button>
-                    <button type="button" class="caso-filtro-btn" data-modo="fecha" onclick="setModoFiltroF3(this)">Fecha</button>
-                    <button type="button" class="caso-filtro-btn" data-modo="dir" onclick="setModoFiltroF3(this)">Dirección</button>
+                    <select id="f3_modo_filtro" onchange="setModoFiltroF3(this)" style="flex:1; padding:10px 12px; background:var(--bgColor-muted); border:1px solid var(--borderColor-default); border-radius:var(--radius-1); color:var(--fgColor-default); font-size:13px; cursor:pointer;">
+                        <option value="id">Buscar por ID</option>
+                        <option value="fecha">Buscar por Fecha</option>
+                        <option value="dir">Buscar por Dirección</option>
+                    </select>
                 </div>
                 <input type="text" class="caso-input-trigger" id="f3_input_trigger"
                     placeholder="-- Seleccionar caso --"
@@ -2662,10 +2664,8 @@ async function guardarF4() {
 let modoFiltroF3 = 'id';
 let casosF3 = [];
 
-function setModoFiltroF3(btn) {
-    document.querySelectorAll('.caso-filtro-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    modoFiltroF3 = btn.dataset.modo;
+function setModoFiltroF3(sel) {
+    modoFiltroF3 = sel.value;
     document.getElementById('f3_input_trigger').value = '';
     document.getElementById('f3_input_trigger').removeAttribute('readonly');
     renderListaF3(casosF3);
@@ -2738,10 +2738,10 @@ function renderListaF3(lista) {
             document.getElementById('f3_input_trigger').setAttribute('readonly', true);
             document.getElementById('f3_dropdown').classList.remove('open');
 
-            // Mostrar detalle
+            // Mostrar detalle — siempre estilo normal
             const solicitante = c.solicitante || ((c.nombre || '') + ' ' + (c.apellidos || '')).trim();
             const detalle = document.getElementById('f3_detalle');
-            detalle.className = 'detalle-caso' + (esUrgente ? ' detalle-urgente' : '');
+            detalle.className = 'detalle-caso';
             detalle.innerHTML = `
                 <strong>Solicitante:</strong> ${solicitante}<br>
                 <strong>Teléfono:</strong> ${c.telefono || '-'}<br>
