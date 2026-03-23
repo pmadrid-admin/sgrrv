@@ -11,7 +11,7 @@
     <style>
 /* ============================================
    SGRRV HUECHURABA v21 - GITHUB PRIMER DARK/LIGHT
-   Mejoras: MOD_001 Compresión imagen, MOD_004 Estados pendientes, MOD_005 Telegram+FotoF4
+   Mejoras: MOD_001 Compresión imagen, MOD_004 Estados pendientes, MOD_006 Camiones RR
    ============================================ */
 
 /* === MODO DARK (por defecto) === */
@@ -106,16 +106,46 @@ body.light-mode {
     border-left: 3px solid var(--accent-fg) !important;
 }
 
+@keyframes parpadeo-urgente {
+    0%, 100% { border-color: var(--accent-fg); background: var(--accent-muted); }
+    50%       { border-color: #a0d4ff;          background: rgba(56,139,253,0.28); }
+}
+
+@keyframes parpadeo-pendiente {
+    0%, 100% { border-color: var(--attention-fg); background: var(--attention-muted); }
+    50%       { border-color: #f0c040;              background: rgba(187,128,9,0.25); }
+}
+
 .detalle-urgente {
     background: var(--accent-muted) !important;
     border: 1px solid var(--accent-fg) !important;
     position: relative;
+    animation: parpadeo-urgente 1.2s ease-in-out infinite;
 }
 
 .detalle-urgente::before {
-    content: '⚡ RETIRO INMEDIATO - BNUP';
+    content: 'RETIRO INMEDIATO - BNUP';
     display: block;
     background: var(--accent-emphasis);
+    color: #fff;
+    padding: 6px 12px;
+    margin: -12px -12px 10px -12px;
+    font-weight: 600;
+    font-size: 12px;
+    border-radius: var(--radius-1) var(--radius-1) 0 0;
+}
+
+.detalle-pendiente {
+    background: var(--attention-muted) !important;
+    border: 1px solid var(--attention-fg) !important;
+    position: relative;
+    animation: parpadeo-pendiente 1.8s ease-in-out infinite;
+}
+
+.detalle-pendiente::before {
+    content: 'PENDIENTE - REQUIERE SEGUNDA VISITA';
+    display: block;
+    background: var(--attention-emphasis);
     color: #fff;
     padding: 6px 12px;
     margin: -12px -12px 10px -12px;
@@ -558,6 +588,63 @@ tr:hover td {
 /* Row warning (más de 3 días) */
 tr.row-warning td {
     background: var(--attention-muted) !important;
+}
+
+/* Lista custom de casos F3 */
+.lista-casos-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid var(--borderColor-default);
+    border-radius: var(--radius-1);
+    background: var(--bgColor-inset);
+}
+
+.caso-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--borderColor-muted);
+    transition: background 0.15s;
+    font-size: 13px;
+    color: var(--fgColor-default);
+}
+
+.caso-item:last-child { border-bottom: none; }
+.caso-item:hover { background: var(--bgColor-muted); }
+
+.caso-item.selected {
+    background: var(--accent-muted);
+    border-left: 3px solid var(--accent-fg);
+}
+
+.caso-item.urgente {
+    color: var(--accent-fg);
+    font-weight: 600;
+}
+
+.caso-item.urgente.selected {
+    background: var(--accent-muted);
+    border-left: 3px solid var(--accent-fg);
+    color: var(--accent-fg);
+    font-weight: 600;
+}
+
+.caso-item-id {
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    min-width: 110px;
+    color: inherit;
+}
+
+.caso-item-dir {
+    flex: 1;
+    color: inherit;
 }
 
 /* Radio Options */
@@ -1290,7 +1377,8 @@ tr.row-warning td {
             <h2>Asignación de Rutas</h2>
             
             <label>Seleccionar caso *</label>
-            <select id="f3_caso" onchange="mostrarDetalleF3()"></select>
+            <input type="hidden" id="f3_caso">
+            <div id="f3_lista_casos" class="lista-casos-custom"></div>
             <div id="f3_detalle" class="detalle-caso"></div>
 
             <label>Fecha programada para retiro *</label>
@@ -1334,18 +1422,25 @@ tr.row-warning td {
                     <span class="camion-numero">2253</span>
                     <span class="camion-sector">Volante (apoyo)</span>
                 </label>
+                <label class="radio-camion" style="border-left: 3px solid var(--accent-fg);">
+                    <input type="radio" name="f3_camion" value="2256">
+                    <span class="radio-box">✓</span>
+                    <span class="camion-numero">2256</span>
+                    <span class="camion-sector" style="color: var(--accent-fg);">Servicio de Respuesta Rápida (J2)</span>
+                </label>
+                <label class="radio-camion" style="border-left: 3px solid var(--accent-fg);">
+                    <input type="radio" name="f3_camion" value="1786">
+                    <span class="radio-box">✓</span>
+                    <span class="camion-numero">1786</span>
+                    <span class="camion-sector" style="color: var(--accent-fg);">Servicio de Respuesta Rápida (J1)</span>
+                </label>
             </div>
 
             <label>Observaciones</label>
             <textarea id="f3_obs" rows="3"></textarea>
 
             <br>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn" onclick="guardarF3()">ASIGNAR RUTA</button>
-                <button class="btn" style="background: #0088cc; border-color: #0088cc;" onclick="enviarTelegram()" title="Enviar foto y datos al grupo de terreno">
-                    <span style="margin-right: 6px;">✈</span> ENVIAR A TERRENO
-                </button>
-            </div>
+            <button class="btn" onclick="guardarF3()">ASIGNAR RUTA</button>
             <div id="f3_msg"></div>
         </div>
 
@@ -1795,7 +1890,7 @@ function showTab(tab) {
     document.getElementById('sec-' + tab).classList.add('active');
     document.getElementById('btn-' + tab).classList.add('active');
     
-    if (tab === 'f2') cargarSelectCasos('f2', ['INGRESADO', 'PARA VISITA']);
+    if (tab === 'f2') cargarSelectCasos('f2', ['INGRESADO', 'PARA VISITA', 'PENDIENTE']);
     if (tab === 'f3') cargarSelectCasos('f3', ['PARA RETIRO', 'VISITADO', 'RETIRO 24HRS']);
     if (tab === 'f4') cargarSelectCasos('f4', ['PROGRAMADO']);
     if (tab === 'visitas') cargarLogVisitas();
@@ -1804,48 +1899,111 @@ function showTab(tab) {
 }
 
 async function cargarSelectCasos(form, estadosPermitidos) {
+    const result = await apiCall('obtenerSolicitudes', {});
+
+    // F3 usa lista custom, F2/F4 usan select nativo
+    if (form === 'f3') {
+        const lista = document.getElementById('f3_lista_casos');
+        const hidden = document.getElementById('f3_caso');
+        const detalle = document.getElementById('f3_detalle');
+        lista.innerHTML = '<div style="padding:10px;color:var(--fgColor-muted)">Cargando...</div>';
+
+        if (!result.success) {
+            lista.innerHTML = '<div style="padding:10px;color:var(--danger-fg)">Error al cargar</div>';
+            return;
+        }
+
+        const filtrados = result.solicitudes.filter(c => estadosPermitidos.includes(c.estado));
+        lista.innerHTML = '';
+        hidden.value = '';
+        detalle.innerHTML = '';
+        detalle.className = 'detalle-caso';
+
+        if (filtrados.length === 0) {
+            lista.innerHTML = '<div style="padding:10px;color:var(--fgColor-muted)">Sin casos pendientes</div>';
+            return;
+        }
+
+        // Ordenar: urgentes primero
+        filtrados.sort((a, b) => {
+            const aUrgente = a.estado === 'RETIRO 24HRS' || (a.nombre && a.nombre.toString().includes('HALLAZGO'));
+            const bUrgente = b.estado === 'RETIRO 24HRS' || (b.nombre && b.nombre.toString().includes('HALLAZGO'));
+            return (bUrgente ? 1 : 0) - (aUrgente ? 1 : 0);
+        });
+
+        filtrados.forEach(c => {
+            const direccion = c.direccion || (c.calle + ' ' + c.numero);
+            const esHallazgo = (c.nombre && c.nombre.toString().includes('HALLAZGO'));
+            const esUrgente = c.estado === 'RETIRO 24HRS' || esHallazgo;
+
+            const div = document.createElement('div');
+            div.className = 'caso-item' + (esUrgente ? ' urgente' : '');
+            div.dataset.id = c.id;
+            div.innerHTML = `<span class="caso-item-id">${c.id}</span><span class="caso-item-dir">${direccion} | ${c.tipo}</span>`;
+
+            div.onclick = function() {
+                // Deseleccionar anterior
+                lista.querySelectorAll('.caso-item').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                hidden.value = c.id;
+
+                // Mostrar detalle
+                const solicitante = c.solicitante || ((c.nombre || '') + ' ' + (c.apellidos || '')).trim();
+                detalle.className = 'detalle-caso' + (esUrgente ? ' detalle-urgente' : '');
+                detalle.innerHTML = `
+                    <strong>Solicitante:</strong> ${solicitante}<br>
+                    <strong>Teléfono:</strong> ${c.telefono || '-'}<br>
+                    <strong>Dirección:</strong> ${direccion}<br>
+                    <strong>Detalle:</strong> ${c.detalleUbicacion || '-'}<br>
+                    <strong>Tipo:</strong> ${c.tipo}<br>
+                    <strong>Observaciones:</strong> ${c.observaciones || '-'}
+                `;
+            };
+            lista.appendChild(div);
+        });
+
+        // Guardar para guardarF3
+        hidden.dataset.casos = JSON.stringify(filtrados);
+        return;
+    }
+
+    // Select nativo para F2 y F4
     const select = document.getElementById(form + '_caso');
     select.innerHTML = '<option value="">Cargando...</option>';
-    
-    const result = await apiCall('obtenerSolicitudes', {});
-    
+
     if (!result.success) {
         select.innerHTML = '<option value="">Error al cargar</option>';
         return;
     }
-    
+
     const filtrados = result.solicitudes.filter(c => estadosPermitidos.includes(c.estado));
-    
     select.innerHTML = '<option value="">-- Seleccionar caso --</option>';
-    
-    // Agregar HALLAZGO TERRENO solo en F2
+
     if (form === 'f2') {
-        select.innerHTML += '<option value="HALLAZGO_TERRENO" style="background: #21262d; color: #d29922;">⚠️ HALLAZGO TERRENO (sin solicitud previa)</option>';
+        select.innerHTML += '<option value="HALLAZGO_TERRENO" style="background: #21262d; color: #d29922;">HALLAZGO TERRENO (sin solicitud previa)</option>';
     }
-    
+
     if (filtrados.length === 0 && form !== 'f2') {
         select.innerHTML = '<option value="">-- No hay casos pendientes --</option>';
         return;
     }
-    
+
     filtrados.forEach(c => {
         const direccion = c.direccion || (c.calle + ' ' + c.numero);
-        // Destacar casos RETIRO 24HRS y Hallazgos (nombre contiene "HALLAZGO")
         const esHallazgo = (c.nombre && c.nombre.toString().includes('HALLAZGO'));
         const es24hrs = c.estado === 'RETIRO 24HRS' || esHallazgo;
-        const estilo24hrs = es24hrs ? 'style="color: #58a6ff; font-weight: 600;"' : '';
-        const icono24hrs = es24hrs ? '⚡ ' : '';
-        select.innerHTML += `<option value="${c.id}" ${estilo24hrs}>${icono24hrs}${c.id} | ${direccion} | ${c.tipo}</option>`;
+        const esPendiente = c.estado === 'PENDIENTE';
+        let estiloOption = '';
+        if (es24hrs) estiloOption = 'style="color: #58a6ff; font-weight: 600;"';
+        else if (esPendiente) estiloOption = 'style="color: var(--attention-fg); font-weight: 600;"';
+        select.innerHTML += `<option value="${c.id}" ${estiloOption}>${c.id} | ${direccion} | ${c.tipo}${esPendiente ? ' [PENDIENTE]' : ''}</option>`;
     });
-    
-    // Guardar para mostrar detalle
+
     select.dataset.casos = JSON.stringify(filtrados);
-    
+
     select.onchange = function() {
-        if (form === 'f2') {
-            toggleHallazgoTerreno();
-        }
-        
+        if (form === 'f2') toggleHallazgoTerreno();
+
         if (this.value && this.value !== 'HALLAZGO_TERRENO') {
             const casos = JSON.parse(this.dataset.casos || '[]');
             const caso = casos.find(c => c.id === this.value);
@@ -1853,10 +2011,10 @@ async function cargarSelectCasos(form, estadosPermitidos) {
             if (caso) {
                 const solicitante = caso.solicitante || (caso.nombre + ' ' + caso.apellidos);
                 const direccion = caso.direccion || (caso.calle + ' ' + caso.numero);
-                // Detectar si es caso urgente: 24HRS o Hallazgo
                 const esHallazgo = (caso.nombre && caso.nombre.toString().includes('HALLAZGO'));
                 const es24hrs = caso.estado === 'RETIRO 24HRS' || esHallazgo;
-                detalle.className = 'detalle-caso' + (es24hrs ? ' detalle-urgente' : '');
+                const esPendiente = caso.estado === 'PENDIENTE';
+                detalle.className = 'detalle-caso' + (es24hrs ? ' detalle-urgente' : '') + (esPendiente ? ' detalle-pendiente' : '');
                 detalle.innerHTML = `
                     <strong>Solicitante:</strong> ${solicitante}<br>
                     <strong>Teléfono:</strong> ${caso.telefono || '-'}<br>
@@ -2222,7 +2380,11 @@ async function guardarF2() {
             document.getElementById('f2_fecha_retiro_container').style.display = 'none';
             document.getElementById('f2_hallazgo_campos').style.display = 'none';
             document.getElementById('f2_aviso_pago').style.display = 'none';
-            cargarSelectCasos('f2', ['INGRESADO', 'PARA VISITA']);
+            document.getElementById('f2_aviso_pendiente').style.display = 'none';
+            document.getElementById('f2_opciones_retiro').style.display = 'none';
+            document.getElementById('f2_opciones_no_aprueba').style.display = 'none';
+            document.querySelectorAll('input[name="f2_aprueba"]').forEach(r => r.checked = false);
+            cargarSelectCasos('f2', ['INGRESADO', 'PARA VISITA', 'PENDIENTE']);
         } else {
             mostrarMsg('f2_msg', 'Error: ' + (result.error || 'No se pudo guardar'), 'err');
         }
@@ -2384,28 +2546,6 @@ async function guardarF3() {
     }
 }
 
-function mostrarDetalleF3() {
-    const select = document.getElementById('f3_caso');
-    const detalle = document.getElementById('f3_detalle');
-    
-    if (select.value && select.dataset.casos) {
-        const casos = JSON.parse(select.dataset.casos);
-        const caso = casos.find(c => c.id === select.value);
-        if (caso) {
-            const solicitante = caso.solicitante || (caso.nombre + ' ' + caso.apellidos);
-            const direccion = caso.direccion || (caso.calle + ' ' + caso.numero);
-            detalle.innerHTML = `
-                <strong>Solicitante:</strong> ${solicitante}<br>
-                <strong>Dirección:</strong> ${direccion}<br>
-                <strong>Tipo:</strong> ${caso.tipo}<br>
-                <strong>Volumen:</strong> ${caso.volumen || '-'}
-            `;
-        }
-    } else {
-        detalle.innerHTML = '';
-    }
-}
-
 // ===================== F4: CIERRE =====================
 async function guardarF4() {
     const idCaso = document.getElementById('f4_caso').value;
@@ -2469,135 +2609,7 @@ async function guardarF4() {
     }
 }
 
-// ===================== MOD_005: TELEGRAM =====================
-// Configuración SGRRV Huechuraba - Bot conectado a grupo Terreno
-const TELEGRAM_CONFIG = {
-    botToken: '8748572409:AAF_a0p3raHLQluxFF_lHmV8KmyPDU9NKR4',
-    chatId: '-1003847839749',
-    habilitado: true
-};
-
-async function enviarTelegram() {
-    const idCaso = document.getElementById('f3_caso').value;
-    if (!idCaso) {
-        mostrarMsg('f3_msg', 'Seleccionar caso primero', 'err');
-        return;
-    }
-    
-    if (!TELEGRAM_CONFIG.habilitado || !TELEGRAM_CONFIG.botToken || !TELEGRAM_CONFIG.chatId) {
-        mostrarMsg('f3_msg', 'Telegram no configurado. Contactar administrador.', 'err');
-        return;
-    }
-    
-    const camionRadio = document.querySelector('input[name="f3_camion"]:checked');
-    if (!camionRadio) {
-        mostrarMsg('f3_msg', 'Seleccionar camión primero', 'err');
-        return;
-    }
-    
-    // Obtener datos del caso desde el select
-    const select = document.getElementById('f3_caso');
-    const casos = JSON.parse(select.dataset.casos || '[]');
-    const caso = casos.find(c => c.id === idCaso);
-    
-    if (!caso) {
-        mostrarMsg('f3_msg', 'No se encontraron datos del caso', 'err');
-        return;
-    }
-    
-    // Construir dirección (evitar mostrar solo el ID)
-    const direccion = caso.direccion || 
-                      ((caso.calle && caso.numero) ? (caso.calle + ' ' + caso.numero) : '') || 
-                      caso.calle || 
-                      'Sin dirección';
-    const tipo = caso.tipo || '-';
-    
-    // Buscar foto en todos los campos posibles
-    const fotoUrl = caso.fotoVisita || caso.fotoRetiro || caso.fotoUrl || caso.foto || caso.fotoHallazgo || '';
-    
-    const mensaje = `RETIRO ASIGNADO
-━━━━━━━━━━━━━━
-${direccion}
-${idCaso}
-Camión: ${camionRadio.value}
-Tipo: ${tipo}
-━━━━━━━━━━━━━━
-⚡ Retiro inmediato`;
-    
-    try {
-        let response;
-        
-        // Si hay foto, enviar con sendPhoto
-        if (fotoUrl) {
-            mostrarMsg('f3_msg', 'Enviando foto...', 'ok');
-            response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendPhoto`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CONFIG.chatId,
-                    photo: fotoUrl,
-                    caption: mensaje,
-                    parse_mode: 'HTML'
-                })
-            });
-        } else {
-            // Sin foto, solo texto
-            response = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CONFIG.chatId,
-                    text: mensaje,
-                    parse_mode: 'HTML'
-                })
-            });
-        }
-        
-        const result = await response.json();
-        if (result.ok) {
-            mostrarMsg('f3_msg', fotoUrl ? 'Foto + mensaje enviados a Telegram ✓' : 'Enviado a Telegram ✓', 'ok');
-            // Limpiar formulario después de envío exitoso
-            limpiarFormularioF3();
-        } else {
-            // Si falla con foto, intentar solo texto
-            if (fotoUrl) {
-                mostrarMsg('f3_msg', 'Foto no accesible, enviando solo texto...', 'ok');
-                const response2 = await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: TELEGRAM_CONFIG.chatId,
-                        text: mensaje + '\n\n📷 Foto: ' + fotoUrl,
-                        parse_mode: 'HTML'
-                    })
-                });
-                const result2 = await response2.json();
-                if (result2.ok) {
-                    mostrarMsg('f3_msg', 'Enviado a Telegram (con link a foto) ✓', 'ok');
-                    limpiarFormularioF3();
-                } else {
-                    mostrarMsg('f3_msg', 'Error Telegram: ' + result2.description, 'err');
-                }
-            } else {
-                mostrarMsg('f3_msg', 'Error Telegram: ' + result.description, 'err');
-            }
-        }
-    } catch (err) {
-        mostrarMsg('f3_msg', 'Error de conexión: ' + err.message, 'err');
-    }
-}
-
 // ===================== MOD_004: CONTROL ESTADOS F2 =====================
-
-// Limpiar formulario F3 después de envío exitoso
-function limpiarFormularioF3() {
-    document.getElementById('f3_caso').value = '';
-    document.getElementById('f3_detalle').innerHTML = '';
-    document.getElementById('f3_fecha').value = '';
-    document.getElementById('f3_obs').value = '';
-    const camionChecked = document.querySelector('input[name="f3_camion"]:checked');
-    if (camionChecked) camionChecked.checked = false;
-}
 
 // Mostrar avisos según tipo de retiro seleccionado
 document.addEventListener('DOMContentLoaded', function() {
