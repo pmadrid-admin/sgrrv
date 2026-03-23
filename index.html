@@ -611,35 +611,41 @@ tr.row-warning td {
 
 .caso-filtros {
     display: flex;
-    gap: 0;
-    margin-bottom: 4px;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 .caso-filtro-btn {
     flex: 1;
-    padding: 5px 8px;
-    font-size: 12px;
+    padding: 10px 18px;
+    font-size: 13px;
     font-weight: 500;
     background: var(--bgColor-muted);
     border: 1px solid var(--borderColor-default);
     color: var(--fgColor-muted);
+    border-radius: var(--radius-1);
     cursor: pointer;
     transition: all 0.15s;
 }
 
-.caso-filtro-btn:first-child { border-radius: var(--radius-1) 0 0 var(--radius-1); }
-.caso-filtro-btn:last-child  { border-radius: 0 var(--radius-1) var(--radius-1) 0; border-left: none; }
-.caso-filtro-btn:not(:first-child):not(:last-child) { border-left: none; }
+.caso-filtro-btn:first-child { border-radius: var(--radius-1); }
+.caso-filtro-btn:last-child  { border-radius: var(--radius-1); }
+.caso-filtro-btn:not(:first-child):not(:last-child) { border-radius: var(--radius-1); }
+
+.caso-filtro-btn:hover {
+    border-color: var(--accent-fg);
+    color: var(--fgColor-default);
+}
 
 .caso-filtro-btn.active {
-    background: var(--accent-emphasis);
-    border-color: var(--accent-emphasis);
-    color: #fff;
+    background: var(--accent-fg);
+    border-color: var(--accent-fg);
+    color: var(--bgColor-default);
 }
 
 .caso-input-trigger {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 14px;
     background: var(--bgColor-muted);
     border: 1px solid var(--borderColor-default);
     border-radius: var(--radius-1);
@@ -657,16 +663,15 @@ tr.row-warning td {
 .caso-dropdown {
     display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 2px);
     left: 0;
     right: 0;
     z-index: 100;
-    max-height: 280px;
+    max-height: 300px;
     overflow-y: auto;
     background: var(--bgColor-muted);
     border: 1px solid var(--accent-fg);
-    border-top: none;
-    border-radius: 0 0 var(--radius-1) var(--radius-1);
+    border-radius: var(--radius-1);
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
